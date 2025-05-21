@@ -232,7 +232,7 @@ const handleLogout = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(44, 62, 80, 0.85), rgba(52, 152, 219, 0.85)), url('/images/gens-d-affaires-se-serrant-la-main.jpg');
+  background: linear-gradient(135deg, rgba(44, 62, 80, 0.85), rgba(52, 152, 219, 0.85)), url('/images/m1.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
