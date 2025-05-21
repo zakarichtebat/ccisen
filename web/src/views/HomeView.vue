@@ -5,14 +5,17 @@
     
     <!-- Section Hero - Première impression du visiteur -->
     <section class="hero" id="hero">
-      <div class="hero-background"></div>
+      <div class="hero-background">
+        <div class="hero-overlay"></div>
+        <div class="hero-pattern"></div>
+      </div>
       <div class="container">
         <div class="hero-content">
           <!-- Titre principal avec animation de fondu -->
-          <h1 class="animate-fade-in">Bienvenue sur CCISN</h1>
+          <h1 class="animate-fade-in">Chambre de Commerce de Nador</h1>
           
           <!-- Sous-titre avec animation de fondu retardé -->
-          <p class="animate-fade-in-delay">Votre partenaire de confiance pour le développement de votre entreprise</p>
+          <p class="animate-fade-in-delay">Votre partenaire de confiance pour le développement économique de la région de Nador</p>
           
           <!-- Boutons d'action avec animation de fondu et délai plus long -->
           <div class="hero-buttons animate-fade-in-delay-2">
@@ -34,38 +37,66 @@
       <div class="container">
         <!-- Titre de section avec animation au défilement -->
         <h2 class="section-title animate-on-scroll">Nos Services</h2>
+        <div class="section-divider">
+          <span class="divider-line"></span>
+        </div>
         
         <!-- Grille de services -->
         <div class="services-grid">
-          <!-- Carte service 1 - Consultation -->
+          <!-- Carte service 1 - Accompagnement des entreprises -->
           <div class="service-card animate-slide-up">
-            <div class="service-icon">📊</div>
-            <h3>Consultation</h3>
-            <p>Conseils stratégiques pour le développement de votre entreprise</p>
+            <div class="service-icon">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                <g fill="none" stroke="currentColor" stroke-width="2" stroke-miterlimit="10">
+                  <path d="M10 10h44v44H10z"></path>
+                  <path d="M18 46V26M26 46V20M34 46V30M42 46V34M18 26l8-6 8 10 8-4"></path>
+                </g>
+              </svg>
+            </div>
+            <h3>Accompagnement des Entreprises</h3>
+            <p>Assistance, conseil et orientation pour le développement de votre activité</p>
             <div class="service-overlay">
-              <router-link to="/services/consultation" class="service-btn">En savoir plus</router-link>
+              <router-link to="/services/accompagnement" class="service-btn">En savoir plus</router-link>
             </div>
           </div>
           
-          <!-- Carte service 2 - Réseau -->
+          <!-- Carte service 2 - Certificats et documents -->
           <div class="service-card animate-slide-up-delay">
-            <div class="service-icon">🤝</div>
-            <h3>Réseau</h3>
-            <p>Accès à un réseau professionnel étendu</p>
+            <div class="service-icon">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                <g fill="none" stroke="currentColor" stroke-width="2" stroke-miterlimit="10">
+                  <path d="M44 5H9v54h46V16z"></path>
+                  <path d="M44 5v11h11M22 25h20M22 33h20M22 41h20"></path>
+                </g>
+              </svg>
+            </div>
+            <h3>Certificats et Documents</h3>
+            <p>Certificats d'origine, attestations professionnelles et visas de documents commerciaux</p>
             <div class="service-overlay">
-              <router-link to="/services/reseau" class="service-btn">En savoir plus</router-link>
+              <router-link to="/services/certificats" class="service-btn">En savoir plus</router-link>
             </div>
           </div>
           
           <!-- Carte service 3 - Formation -->
           <div class="service-card animate-slide-up-delay-2">
-            <div class="service-icon">📈</div>
+            <div class="service-icon">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                <g fill="none" stroke="currentColor" stroke-width="2" stroke-miterlimit="10">
+                  <path d="M32 7L5 21l27 14 27-14z"></path>
+                  <path d="M14 27v15l18 9 18-9V27M32 35v16"></path>
+                  <path d="M49 44c0 .552-.447 1-1 1s-1-.448-1-1 .447-1 1-1 1 .448 1 1z"></path>
+                </g>
+              </svg>
+            </div>
             <h3>Formation</h3>
-            <p>Programmes de formation adaptés à vos besoins</p>
+            <p>Programmes de formation adaptés aux besoins des commerçants et entrepreneurs</p>
             <div class="service-overlay">
               <router-link to="/services/formation" class="service-btn">En savoir plus</router-link>
             </div>
           </div>
+
+          <!-- Carte service 4 - Promotion et Export -->
+         
         </div>
       </div>
     </section>
@@ -102,7 +133,9 @@
 
     <!-- Section d'appel à l'action - Encourager l'inscription -->
     <section class="cta-section" id="cta">
-      <div class="cta-background"></div>
+      <div class="cta-background">
+        <div class="cta-pattern"></div>
+      </div>
       <div class="container">
         <!-- Contenu CTA avec animation de fondu -->
         <div class="cta-content animate-on-scroll">
@@ -232,38 +265,150 @@ const handleLogout = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(44, 62, 80, 0.85), rgba(52, 152, 219, 0.85)), url('/images/m1.jpg');
+  z-index: -1;
+  overflow: hidden;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(44, 62, 80, 0.85), rgba(52, 152, 219, 0.85));
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
-  z-index: -1;
+  z-index: 1;
+}
+
+.hero-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/images/m1.jpg');
+  background-size: cover;
+  background-position: center;
+  opacity: 10;
+  filter: blur(1px);
+  z-index: 0;
 }
 
 .hero-content {
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
+  position: relative;
+  z-index: 2;
+  text-align: center;
 }
 
 .hero h1 {
-  font-size: 3.5rem;
+  font-size: 4rem;
   margin-bottom: 1.5rem;
   font-weight: 700;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  background: linear-gradient(45deg, #ffffff, #e0e0e0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .hero p {
   font-size: 1.5rem;
-  margin-bottom: 2rem;
-  opacity: 0.9;
-  font-weight: 300;
-  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2.5rem;
+  opacity: 0.95;
+  font-weight: 400;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
+  line-height: 1.6;
 }
 
 .hero-buttons {
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
   justify-content: center;
+}
+
+.hero .cta-button {
+  display: inline-block;
+  padding: 1.1rem 2.8rem;
+  background: linear-gradient(45deg, #4CAF50, #2196F3);
+  color: white;
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero .cta-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, #2196F3, #4CAF50);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.hero .cta-button:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.hero .cta-button:hover::after {
+  opacity: 1;
+}
+
+.hero .secondary-button {
+  display: inline-block;
+  padding: 1.1rem 2.8rem;
+  background-color: transparent;
+  color: white;
+  text-decoration: none;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.hero .secondary-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: -1;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.hero .secondary-button:hover {
+  border-color: rgba(255, 255, 255, 0.8);
+  transform: translateY(-5px);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+.hero .secondary-button:hover::before {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 /* Indicateur de défilement */
@@ -279,6 +424,12 @@ const handleLogout = () => {
   font-size: 0.9rem;
   opacity: 0.8;
   cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.scroll-indicator:hover {
+  opacity: 1;
 }
 
 .arrow-down {
@@ -302,30 +453,95 @@ const handleLogout = () => {
   60% { transform: translateY(-5px) translateX(-50%); }
 }
 
+/* Animations */
+.animate-fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeIn 1s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+.animate-fade-in-delay {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeIn 1s cubic-bezier(0.165, 0.84, 0.44, 1) 0.3s forwards;
+}
+
+.animate-fade-in-delay-2 {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeIn 1s cubic-bezier(0.165, 0.84, 0.44, 1) 0.6s forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2.8rem;
+  }
+
+  .hero p {
+    font-size: 1.2rem;
+    padding: 0 20px;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0 20px;
+  }
+  
+  .hero .cta-button, 
+  .hero .secondary-button {
+    padding: 1rem 2rem;
+  }
+}
+
 /* ===== Section Services ===== */
 .services {
   padding: 8rem 0;
   background-color: #f8f9fa;
   position: relative;
+  overflow: hidden;
+}
+
+.services::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.03) 0%, rgba(33, 150, 243, 0.03) 100%);
+  z-index: 0;
 }
 
 .section-title {
   text-align: center;
   font-size: 2.5rem;
-  margin-bottom: 4rem;
+  margin-bottom: 1.5rem;
   color: #2c3e50;
   position: relative;
+  font-weight: 700;
 }
 
-.section-title:after {
-  content: '';
-  position: absolute;
+.section-divider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 4rem;
+}
+
+.divider-line {
+  position: relative;
   width: 80px;
   height: 4px;
   background: linear-gradient(45deg, #4CAF50, #2196F3);
-  bottom: -15px;
-  left: 50%;
-  transform: translateX(-50%);
   border-radius: 2px;
 }
 
@@ -334,35 +550,77 @@ const handleLogout = () => {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2.5rem;
   width: 100%;
+  position: relative;
+  z-index: 1;
 }
 
 .service-card {
   background: white;
-  padding: 2.5rem 2rem;
+  padding: 3rem 2rem;
   border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   text-align: center;
-  transition: all 0.4s ease;
+  transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
   position: relative;
   overflow: hidden;
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  transform: translateY(0);
 }
 
 .service-card:hover {
   transform: translateY(-15px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border-color: rgba(76, 175, 80, 0.2);
+}
+
+.service-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(90deg, #4CAF50, #2196F3);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s ease;
+}
+
+.service-card:hover::before {
+  transform: scaleX(1);
 }
 
 .service-icon {
-  font-size: 3.5rem;
+  width: 80px;
+  height: 80px;
   margin-bottom: 1.5rem;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
   z-index: 1;
+  color: #4CAF50;
+  transition: all 0.5s ease;
+}
+
+.service-card:hover .service-icon {
+  color: #2196F3;
+  transform: scale(1.1);
+}
+
+.service-icon svg {
+  width: 100%;
+  height: 100%;
+  transition: all 0.5s ease;
+}
+
+.service-card:hover .service-icon svg {
+  filter: drop-shadow(0 0 5px rgba(33, 150, 243, 0.5));
 }
 
 .service-card h3 {
@@ -371,6 +629,11 @@ const handleLogout = () => {
   color: #2c3e50;
   position: relative;
   z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.service-card:hover h3 {
+  color: #2196F3;
 }
 
 .service-card p {
@@ -378,52 +641,124 @@ const handleLogout = () => {
   margin-bottom: 1.5rem;
   position: relative;
   z-index: 1;
+  line-height: 1.6;
 }
 
 /* Overlay au survol avec bouton d'action */
 .service-overlay {
   position: absolute;
-  top: 0;
+  bottom: -60px;
   left: 0;
   right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.9), rgba(33, 150, 243, 0.9));
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.9), transparent);
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 2rem 0;
   opacity: 0;
-  transform: scale(0.8);
-  transition: all 0.4s ease;
-  border-radius: 15px;
+  transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .service-card:hover .service-overlay {
   opacity: 1;
-  transform: scale(1);
+  bottom: 0;
 }
 
 .service-btn {
   padding: 0.8rem 1.5rem;
-  background-color: white;
-  color: #4CAF50;
+  background: linear-gradient(45deg, #4CAF50, #2196F3);
+  color: white;
   border-radius: 30px;
   text-decoration: none;
   font-weight: 500;
-  transition: all 0.3s ease;
-  transform: translateY(20px);
-  opacity: 0;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
 }
 
-.service-card:hover .service-btn {
-  transform: translateY(0);
-  opacity: 1;
-  transition-delay: 0.1s;
+.service-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, #2196F3, #4CAF50);
+  z-index: -1;
+  opacity: 0;
+  transition: all 0.4s ease;
 }
 
 .service-btn:hover {
-  background-color: #2c3e50;
-  color: white;
-  transform: scale(1.05);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(33, 150, 243, 0.4);
+}
+
+.service-btn:hover::before {
+  opacity: 1;
+}
+
+/* Animations améliorées */
+.animate-slide-up {
+  opacity: 0;
+  transform: translateY(50px);
+  animation: enhancedSlideUp 1s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+.animate-slide-up-delay {
+  opacity: 0;
+  transform: translateY(50px);
+  animation: enhancedSlideUp 1s cubic-bezier(0.165, 0.84, 0.44, 1) 0.2s forwards;
+}
+
+.animate-slide-up-delay-2 {
+  opacity: 0;
+  transform: translateY(50px);
+  animation: enhancedSlideUp 1s cubic-bezier(0.165, 0.84, 0.44, 1) 0.4s forwards;
+}
+
+.animate-slide-up-delay-3 {
+  opacity: 0;
+  transform: translateY(50px);
+  animation: enhancedSlideUp 1s cubic-bezier(0.165, 0.84, 0.44, 1) 0.6s forwards;
+}
+
+@keyframes enhancedSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  20% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 992px) {
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  .service-card {
+    padding: 2.5rem 1.5rem;
+  }
+  .service-icon {
+    width: 70px;
+    height: 70px;
+  }
 }
 
 /* ===== Section Caractéristiques ===== */
@@ -583,6 +918,7 @@ const handleLogout = () => {
   color: white;
   text-align: center;
   overflow: hidden;
+  margin-bottom: 0; /* Suppression de la marge */
 }
 
 .cta-background {
@@ -593,17 +929,24 @@ const handleLogout = () => {
   bottom: 0;
   background: linear-gradient(135deg, #4CAF50, #2196F3);
   z-index: -1;
+  overflow: hidden;
 }
 
-.cta-background:before {
-  content: '';
+.cta-pattern {
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
   opacity: 0.5;
+  animation: patternMove 50s linear infinite;
+}
+
+@keyframes patternMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 500px 500px; }
 }
 
 .cta-content {
@@ -615,77 +958,80 @@ const handleLogout = () => {
 }
 
 .cta-content h2 {
-  font-size: 2.8rem;
+  font-size: 3.2rem;
   margin-bottom: 1.5rem;
-  font-weight: 600;
+  font-weight: 700;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transform: translateY(20px);
+  opacity: 0;
+  animation: fadeInUp 1s ease forwards;
 }
 
 .cta-content p {
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   margin-bottom: 2.5rem;
-  opacity: 0.9;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 1s ease 0.3s forwards;
   text-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* ===== Boutons ===== */
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .cta-button {
   display: inline-block;
-  padding: 1rem 2.5rem;
-  background-color: #4CAF50;
-  color: white;
+  padding: 1.2rem 3rem;
+  background-color: white;
+  color: #2196F3;
   text-decoration: none;
   border-radius: 50px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  font-weight: 600;
+  font-size: 1.2rem;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
   border: 2px solid transparent;
-  font-size: 1.1rem;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 1s ease 0.6s forwards;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, rgba(76, 175, 80, 0.1), rgba(33, 150, 243, 0.1));
+  z-index: -1;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 .cta-button:hover {
-  background-color: #45a049;
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  color: #4CAF50;
 }
 
-.cta-button:active {
-  transform: translateY(-1px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+.cta-button:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
-.secondary-button {
-  display: inline-block;
-  padding: 1rem 2.5rem;
-  background-color: transparent;
-  color: white;
-  text-decoration: none;
-  border: 2px solid white;
-  border-radius: 50px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  font-size: 1.1rem;
-}
-
-.secondary-button:hover {
-  background-color: white;
-  color: #2c3e50;
-  transform: translateY(-3px);
-  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
-}
-
-.secondary-button:active {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
-}
-
-/* Animation de pulsation pour les boutons importants */
 .pulse-animation {
   position: relative;
-  overflow: visible !important;
 }
 
-.pulse-animation:after {
+.pulse-animation::before {
   content: '';
   position: absolute;
   top: 0;
@@ -693,14 +1039,20 @@ const handleLogout = () => {
   right: 0;
   bottom: 0;
   border-radius: 50px;
-  box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
-  animation: pulse 2s infinite;
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  animation: pulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
 }
 
 @keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
-  70% { box-shadow: 0 0 0 15px rgba(76, 175, 80, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(255, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
 }
 
 /* ===== Animations ===== */
@@ -714,18 +1066,6 @@ const handleLogout = () => {
 
 .animate-fade-in-delay-2 {
   animation: fadeIn 1s ease-out 0.6s both;
-}
-
-.animate-slide-up {
-  animation: slideUp 1s ease-out;
-}
-
-.animate-slide-up-delay {
-  animation: slideUp 1s ease-out 0.3s both;
-}
-
-.animate-slide-up-delay-2 {
-  animation: slideUp 1s ease-out 0.6s both;
 }
 
 .animate-slide-right {
@@ -769,17 +1109,6 @@ const handleLogout = () => {
   }
   to {
     opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -844,10 +1173,15 @@ const handleLogout = () => {
   }
   
   .cta-content h2 {
-    font-size: 2.2rem;
+    font-size: 2.5rem;
   }
   
   .cta-content p {
+    font-size: 1.2rem;
+  }
+  
+  .cta-button {
+    padding: 1rem 2.5rem;
     font-size: 1.1rem;
   }
   
