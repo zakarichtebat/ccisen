@@ -1056,17 +1056,7 @@ const handleLogout = () => {
 }
 
 /* ===== Animations ===== */
-.animate-fade-in {
-  animation: fadeIn 1s ease-out;
-}
 
-.animate-fade-in-delay {
-  animation: fadeIn 1s ease-out 0.3s both;
-}
-
-.animate-fade-in-delay-2 {
-  animation: fadeIn 1s ease-out 0.6s both;
-}
 
 .animate-slide-right {
   animation: slideRight 1s ease-out;
