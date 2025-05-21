@@ -225,14 +225,17 @@ const handleLogout = () => {
   width: 100%;
 }
 
-/* Arrière-plan avec dégradé */
+/* Arrière-plan avec dégradé et image */
 .hero-background {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, #2c3e50, #3498db);
+  background: linear-gradient(135deg, rgba(44, 62, 80, 0.85), rgba(52, 152, 219, 0.85)), url('/images/gens-d-affaires-se-serrant-la-main.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   z-index: -1;
 }
 
