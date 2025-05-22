@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,15 +11,51 @@ datasource db {
 }
 
 model User {
-  id                  Int      @id @default(autoincrement())
+  id                  Int          @id @default(autoincrement())
   nom                 String
   prenom              String
-  email               String   @unique
+  email               String       @unique
   motDePasse          String
-  numRegistreCommerce String   @unique
+  numRegistreCommerce String       @unique
   secteurActivite     String
   telephone           String
   adresse             String
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  role                String       @default("client")
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  rendezVous          RendezVous[]
+}
+
+model Service {
+  id          Int          @id @default(autoincrement())
+  nom         String
+  description String       @db.Text
+  duree       Int // Durée en minutes
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  rendezVous  RendezVous[]
+}
+
+model RendezVous {
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  heure     String // Format HH:MM
+  status    String   @default("en_attente") // en_attente, confirmé, annulé
+  notes     String?  @db.Text
+  userId    Int
+  serviceId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id])
+  service Service @relation(fields: [serviceId], references: [id])
+}
+
+model PlageHoraire {
+  id         Int      @id @default(autoincrement())
+  jour       String // lundi, mardi, etc.
+  heureDebut String // Format HH:MM
+  heureFin   String // Format HH:MM
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }

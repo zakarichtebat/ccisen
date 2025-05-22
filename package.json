@@ -1,4 +1,9 @@
 {
+  "name": "ccisn",
+  "version": "1.0.0",
+  "scripts": {
+    "start:dev": "cd api && nest start --watch"
+  },
   "dependencies": {
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/passport": "^11.0.5",
