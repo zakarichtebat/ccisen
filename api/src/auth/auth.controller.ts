@@ -1,6 +1,7 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, Res, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { Response, Request } from 'express';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -92,7 +93,47 @@ export class AuthController {
       }
     }
   })
-  async login(@Body() loginData: { email: string; motDePasse: string }) {
-    return this.authService.login(loginData.email, loginData.motDePasse);
+  async login(
+    @Body() loginData: { email: string; motDePasse: string },
+    @Res({ passthrough: true }) response: Response
+  ) {
+    const result = await this.authService.login(loginData.email, loginData.motDePasse);
+    
+    // Définir un cookie avec l'ID de l'utilisateur
+    response.cookie('userId', result.user.id, {
+      httpOnly: false,  // Permettre au JavaScript côté client d'accéder au cookie
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
+      sameSite: 'lax',
+      path: '/',
+      secure: process.env.NODE_ENV === 'production' // Uniquement en HTTPS en production
+    });
+    
+    console.log(`Utilisateur connecté: ${result.user.nom} ${result.user.prenom} (ID: ${result.user.id})`);
+    
+    return result;
+  }
+  
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Logout user' })
+  @ApiResponse({ status: 200, description: 'User successfully logged out.' })
+  async logout(@Res({ passthrough: true }) response: Response) {
+    response.clearCookie('userId');
+    return { message: 'Déconnexion réussie' };
+  }
+  
+  @Post('current-user')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get current user' })
+  @ApiResponse({ status: 200, description: 'Returns current user info.' })
+  async getCurrentUser(@Req() request: Request) {
+    const userId = request.cookies['userId'];
+    
+    if (!userId) {
+      return { isLoggedIn: false, user: null };
+    }
+    
+    const user = await this.authService.getUserById(parseInt(userId));
+    return { isLoggedIn: !!user, user };
   }
 } 

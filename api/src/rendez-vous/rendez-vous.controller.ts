@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Param, Delete, Patch, Query, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Patch, Query, HttpException, HttpStatus, Req } from '@nestjs/common';
 import { RendezVousService } from './rendez-vous.service';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { Request } from 'express';
 
 @ApiTags('rendez-vous')
 @Controller('rendez-vous')
@@ -16,28 +17,47 @@ export class RendezVousController {
         date: { type: 'string', format: 'date', example: '2025-06-01' },
         heure: { type: 'string', example: '10:00' },
         notes: { type: 'string', example: 'Notes spécifiques pour ce rendez-vous' },
-        userId: { type: 'number', example: 1 },
         serviceId: { type: 'number', example: 1 }
       },
-      required: ['date', 'heure', 'userId', 'serviceId']
+      required: ['date', 'heure', 'serviceId']
     }
   })
   @ApiResponse({ status: 201, description: 'Rendez-vous successfully created.' })
-  async create(@Body() body: {
-    date: Date | string;
-    heure: string;
-    status?: string;
-    notes?: string;
-    userId: number;
-    serviceId: number;
-  }) {
+  async create(
+    @Body() body: {
+      date: Date | string;
+      heure: string;
+      status?: string;
+      notes?: string;
+      serviceId: number;
+    },
+    @Req() request: Request
+  ) {
     try {
+      // Récupérer l'ID utilisateur depuis le cookie
+      const userId = request.cookies['userId'];
+      
+      console.log('Cookies reçus:', request.cookies);
+      console.log('User ID dans cookie:', userId);
+      
+      if (!userId) {
+        throw new HttpException(
+          {
+            status: HttpStatus.UNAUTHORIZED,
+            error: 'Utilisateur non connecté',
+          },
+          HttpStatus.UNAUTHORIZED
+        );
+      }
+      
+      console.log(`Création de rendez-vous par l'utilisateur avec ID: ${userId}`);
+      
       // Si date est une chaîne, la convertir en objet Date
       const parsedData = {
         ...body,
         date: typeof body.date === 'string' ? new Date(body.date) : body.date,
-        userId: Number(body.userId),
-        serviceId: Number(body.serviceId)
+        serviceId: Number(body.serviceId),
+        userId: Number(userId) // Utiliser l'ID de l'utilisateur connecté
       };
       
       console.log('Création de rendez-vous avec données:', parsedData);
@@ -48,10 +68,10 @@ export class RendezVousController {
       console.error('Erreur lors de la création du rendez-vous:', error);
       throw new HttpException(
         {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
           error: `Erreur lors de la création du rendez-vous: ${error.message}`,
         },
-        HttpStatus.INTERNAL_SERVER_ERROR
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }

@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, BadRequestException } from '@nestjs/common';
+import { Injectable, ConflictException, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -13,6 +13,24 @@ export class RendezVousService {
     userId: number;
     serviceId: number;
   }) {
+    // Vérifier que l'utilisateur existe
+    const utilisateur = await this.prisma.user.findUnique({
+      where: { id: data.userId }
+    });
+    
+    if (!utilisateur) {
+      throw new NotFoundException(`Utilisateur avec l'ID ${data.userId} non trouvé`);
+    }
+
+    // Vérifier que le service existe
+    const service = await this.prisma.service.findUnique({
+      where: { id: data.serviceId }
+    });
+    
+    if (!service) {
+      throw new NotFoundException(`Service avec l'ID ${data.serviceId} non trouvé`);
+    }
+    
     // Vérifier que la date est au moins 24h dans le futur
     const dateRendezVous = new Date(data.date);
     const [heures, minutes] = data.heure.split(':').map(Number);
@@ -37,6 +55,8 @@ export class RendezVousService {
       throw new ConflictException('Un rendez-vous existe déjà à cette date et heure');
     }
 
+    console.log(`Création d'un rendez-vous pour l'utilisateur ${utilisateur.nom} ${utilisateur.prenom} (ID: ${data.userId})`);
+    
     return this.prisma.rendezVous.create({ 
       data,
       include: {

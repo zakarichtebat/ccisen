@@ -91,7 +91,7 @@
               </ul>
               
               <div class="service-cta">
-                <router-link to="/contact" class="btn-service">Demander un accompagnement</router-link>
+                <router-link to="/rendez-vous" class="btn-service">Demander un accompagnement</router-link>
               </div>
             </div>
           </div>
@@ -148,7 +148,7 @@
               </ul>
               
               <div class="service-cta">
-                <router-link to="/contact" class="btn-service">Demander un document</router-link>
+                <router-link to="/rendez-vous" class="btn-service">Demander un document</router-link>
               </div>
             </div>
           </div>
@@ -193,7 +193,7 @@
               </ul>
               
               <div class="service-cta">
-                <router-link to="/contact" class="btn-service">S'inscrire à une formation</router-link>
+                <router-link to="/rendez-vous" class="btn-service">S'inscrire à une formation</router-link>
               </div>
             </div>
           </div>
@@ -250,7 +250,7 @@
               </ul>
               
               <div class="service-cta">
-                <router-link to="/contact" class="btn-service">Développer à l'international</router-link>
+                <router-link to="/rendez-vous" class="btn-service">Développer à l'international</router-link>
               </div>
             </div>
           </div>
@@ -295,7 +295,7 @@
               </ul>
               
               <div class="service-cta">
-                <router-link to="/adhesion" class="btn-service">Devenir membre</router-link>
+                <router-link to="/rendez-vous" class="btn-service">Devenir membre</router-link>
               </div>
             </div>
           </div>
@@ -316,7 +316,7 @@
           <h2>Besoin d'informations supplémentaires ?</h2>
           <p>Notre équipe est à votre disposition pour répondre à toutes vos questions concernant nos services</p>
           <div class="contact-actions">
-            <router-link to="/contact" class="btn-primary">Contactez-nous</router-link>
+            <router-link to="/rendez-vous" class="btn-primary">Contactez-nous</router-link>
             <a href="tel:+212536603857" class="btn-secondary">
               <i class="fas fa-phone-alt"></i> +212 536 603 857
             </a>

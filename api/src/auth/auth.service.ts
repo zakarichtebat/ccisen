@@ -61,4 +61,15 @@ export class AuthService {
       },
     };
   }
+
+  async getUserById(id: number) {
+    const user = await this.userService.findOne(id);
+    if (!user) {
+      return null;
+    }
+    
+    // Créer une copie de l'utilisateur sans le mot de passe
+    const { motDePasse, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  }
 } 
