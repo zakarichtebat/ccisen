@@ -157,6 +157,7 @@ import { ref, onMounted, onUnmounted } from 'vue'   // Pour la réactivité et l
 import { useRouter } from 'vue-router'              // Pour la navigation entre les pages
 import TheHeader from '@/components/TheHeader.vue'  // Composant d'en-tête
 import TheFooter from '@/components/TheFooter.vue'  // Composant de pied de page
+import { getLocalStorageItem, removeLocalStorageItem, cleanupAuthData } from '@/utils/localStorage.js'
 
 // Initialisation du router pour la navigation
 const router = useRouter()
@@ -165,8 +166,7 @@ const router = useRouter()
 const user = ref(null)  // Stocke les informations de l'utilisateur connecté
 
 /**
- * Observer pour les animations au défilement
- * Détecte quand les éléments entrent dans la vue pour déclencher les animations
+ * Variable pour stocker l'observer des animations au défilement
  */
 let scrollObserver = null
 
@@ -175,11 +175,11 @@ let scrollObserver = null
  * Récupère les données utilisateur et configure l'observer pour les animations au défilement
  */
 onMounted(() => {
-  // Récupération des données utilisateur du localStorage
-  const storedUser = localStorage.getItem('user')
-  if (storedUser) {
-    user.value = JSON.parse(storedUser)
-  }
+  // Nettoyage des données corrompues
+  cleanupAuthData()
+  
+  // Récupération des données utilisateur du localStorage de manière sécurisée
+  user.value = getLocalStorageItem('user')
   
   // Configuration de l'Intersection Observer pour les animations au défilement
   scrollObserver = new IntersectionObserver((entries) => {
@@ -217,8 +217,8 @@ onUnmounted(() => {
  */
 const handleLogout = () => {
   // Suppression des données d'authentification
-  localStorage.removeItem('token')
-  localStorage.removeItem('user')
+  removeLocalStorageItem('token')
+  removeLocalStorageItem('user')
   user.value = null
   
   // Redirection vers la page de connexion

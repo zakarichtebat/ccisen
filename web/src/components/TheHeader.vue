@@ -106,9 +106,13 @@
 
 <script setup>
 // Importation des composants et fonctionnalités nécessaires
-import { ref, onMounted, onUnmounted } from 'vue'  // Pour la réactivité et les hooks du cycle de vie
+import { ref, computed, onMounted, onUnmounted } from 'vue'  // Pour la réactivité et les hooks du cycle de vie
 import { useRouter } from 'vue-router'             // Pour la navigation entre les pages
 import axios from 'axios'                          // Pour les requêtes HTTP
+import { getLocalStorageItem, removeLocalStorageItem, cleanupAuthData, setLocalStorageItem } from '@/utils/localStorage.js'
+
+// Configuration d'axios pour inclure les cookies dans les requêtes
+axios.defaults.withCredentials = true;
 
 // Initialisation du router pour la navigation
 const router = useRouter()
@@ -130,7 +134,7 @@ const fetchUserData = async () => {
     if (response.data.isLoggedIn && response.data.user) {
       user.value = response.data.user
       // Mettre à jour le localStorage avec les données complètes
-      localStorage.setItem('user', JSON.stringify(response.data.user))
+      setLocalStorageItem('user', response.data.user)
       console.log('Données utilisateur mises à jour:', response.data.user)
     }
   } catch (error) {
@@ -143,11 +147,11 @@ const fetchUserData = async () => {
  * Récupère les informations utilisateur du localStorage et configure les écouteurs d'événements
  */
 onMounted(async () => {
-  // Récupération des données utilisateur du localStorage
-  const storedUser = localStorage.getItem('user')
-  if (storedUser) {
-    user.value = JSON.parse(storedUser)
-  }
+  // Nettoyage des données corrompues
+  cleanupAuthData()
+  
+  // Récupération des données utilisateur du localStorage de manière sécurisée
+  user.value = getLocalStorageItem('user')
   
   // Récupérer les données à jour depuis l'API
   await fetchUserData()
@@ -180,8 +184,8 @@ const handleScroll = () => {
  */
 const handleLogout = () => {
   // Suppression des données d'authentification
-  localStorage.removeItem('token')
-  localStorage.removeItem('user')
+  removeLocalStorageItem('token')
+  removeLocalStorageItem('user')
   user.value = null
   
   // Redirection vers la page de connexion

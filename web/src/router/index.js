@@ -38,8 +38,68 @@ const router = createRouter({
       component: () => import('../views/HomeView.vue')
     },
     {
+      path: '/about',
+      name: 'about',
+      component: () => import('../views/HomeView.vue') // Temporairement redirigé vers home
+    },
+    {
+      path: '/actualites',
+      name: 'actualites',
+      component: () => import('../views/HomeView.vue') // Temporairement redirigé vers home
+    },
+    {
+      path: '/contact',
+      name: 'contact',
+      component: () => import('../views/HomeView.vue') // Temporairement redirigé vers home
+    },
+    {
+      path: '/faq',
+      name: 'faq',
+      component: () => import('../views/HomeView.vue') // Temporairement redirigé vers home
+    },
+    {
+      path: '/privacy',
+      name: 'privacy',
+      component: () => import('../views/HomeView.vue') // Temporairement redirigé vers home
+    },
+    {
+      path: '/terms',
+      name: 'terms',
+      component: () => import('../views/HomeView.vue') // Temporairement redirigé vers home
+    },
+    {
+      path: '/legal',
+      name: 'legal',
+      component: () => import('../views/HomeView.vue') // Temporairement redirigé vers home
+    },
+    {
       path: '/services',
       name: 'services',
+      component: () => import('../views/ServicesView.vue')
+    },
+    {
+      path: '/services/accompagnement',
+      name: 'services-accompagnement',
+      component: () => import('../views/ServicesView.vue')
+    },
+    {
+      path: '/services/certificats',
+      name: 'services-certificats',
+      component: () => import('../views/ServicesView.vue')
+    },
+    {
+      path: '/services/formation',
+      name: 'services-formation',
+      component: () => import('../views/ServicesView.vue')
+    },
+    {
+      path: '/services/export',
+      name: 'services-export',
+      component: () => import('../views/ServicesView.vue')
+    },
+    {
+      path: '/services/carte-adherent',
+      name: 'services-carte-adherent',
       component: () => import('../views/ServicesView.vue')
     },
     {
