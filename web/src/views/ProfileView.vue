@@ -473,6 +473,17 @@ const updateProfile = async () => {
   successMessage.value = '';
   
   try {
+    if (!user.value) {
+      errorMessage.value = 'Vous devez être connecté pour modifier votre profil.';
+      isSubmitting.value = false;
+      return;
+    }
+    
+    console.log('Mise à jour du profil pour l\'utilisateur ID:', user.value.id);
+    
+    // Préparer les données à envoyer
+    const updateData = { ...formData.value };
+    
     // Vérifier si le mot de passe doit être mis à jour
     if (passwordData.value.newPassword) {
       // Vérifier que les mots de passe correspondent
@@ -482,16 +493,40 @@ const updateProfile = async () => {
         return;
       }
       
-      // Ajouter le mot de passe aux données à mettre à jour
-      formData.value.motDePasse = passwordData.value.newPassword;
-      formData.value.currentPassword = passwordData.value.currentPassword;
+      // Vérifier que le mot de passe actuel est fourni
+      if (!passwordData.value.currentPassword) {
+        errorMessage.value = 'Veuillez saisir votre mot de passe actuel pour le modifier.';
+        isSubmitting.value = false;
+        return;
+      }
+      
+      // Ajouter les données de mot de passe
+      updateData.motDePasse = passwordData.value.newPassword;
+      updateData.currentPassword = passwordData.value.currentPassword;
     }
     
-    // Envoyer la requête de mise à jour
-    const response = await axios.put(`http://localhost:3000/user/${user.value.id}`, formData.value);
+    console.log('Données à envoyer:', updateData);
+    
+    // Envoyer la requête de mise à jour avec authentification
+    const response = await axios.patch(`http://localhost:3000/users/${user.value.id}`, updateData, {
+      withCredentials: true
+    });
+    
+    console.log('Profil mis à jour avec succès:', response.data);
     
     // Mettre à jour les données utilisateur locales
     user.value = response.data;
+    
+    // Mettre à jour aussi les données du formulaire
+    formData.value = {
+      nom: response.data.nom,
+      prenom: response.data.prenom,
+      email: response.data.email,
+      telephone: response.data.telephone,
+      adresse: response.data.adresse,
+      secteurActivite: response.data.secteurActivite,
+      numRegistreCommerce: response.data.numRegistreCommerce
+    };
     
     // Réinitialiser les champs de mot de passe
     passwordData.value = {
@@ -511,9 +546,21 @@ const updateProfile = async () => {
     console.error('Erreur lors de la mise à jour du profil:', error);
     
     if (error.response) {
-      errorMessage.value = error.response.data.error || 'Une erreur est survenue lors de la mise à jour du profil.';
+      console.error('Détails de l\'erreur:', error.response.status, error.response.data);
+      
+      if (error.response.status === 401) {
+        errorMessage.value = 'Vous devez être connecté pour modifier votre profil. Veuillez vous reconnecter.';
+      } else if (error.response.status === 403) {
+        errorMessage.value = 'Vous n\'avez pas les droits pour modifier ce profil.';
+      } else if (error.response.status === 400) {
+        errorMessage.value = error.response.data.error || 'Données invalides. Veuillez vérifier vos informations.';
+      } else {
+        errorMessage.value = error.response.data.error || 'Une erreur est survenue lors de la mise à jour du profil.';
+      }
+    } else if (error.request) {
+      errorMessage.value = 'Le serveur ne répond pas. Veuillez vérifier votre connexion et réessayer.';
     } else {
-      errorMessage.value = 'Impossible de se connecter au serveur. Veuillez vérifier votre connexion et réessayer.';
+      errorMessage.value = 'Erreur lors de la préparation de la requête. Veuillez réessayer.';
     }
   } finally {
     isSubmitting.value = false;

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Patch, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 
@@ -80,6 +80,7 @@ export class UserController {
         prenom: { type: 'string', example: 'John Updated' },
         email: { type: 'string', example: 'john.updated@example.com' },
         motDePasse: { type: 'string', example: 'newpassword123' },
+        currentPassword: { type: 'string', example: 'oldpassword123' },
         numRegistreCommerce: { type: 'string', example: 'RC123456' },
         secteurActivite: { type: 'string', example: 'Informatique' },
         telephone: { type: 'string', example: '+212 6XX-XXXXXX' },
@@ -105,17 +106,35 @@ export class UserController {
       }
     }
   })
-  update(@Param('id') id: string, @Body() body: {
+  async update(@Param('id') id: string, @Body() body: {
     nom?: string;
     prenom?: string;
     email?: string;
     motDePasse?: string;
+    currentPassword?: string;
     numRegistreCommerce?: string;
     secteurActivite?: string;
     telephone?: string;
     adresse?: string;
   }) {
-    return this.userService.update(+id, body);
+    try {
+      console.log(`Mise à jour de l'utilisateur ${id} avec données:`, { ...body, motDePasse: body.motDePasse ? '[MASQUÉ]' : undefined, currentPassword: body.currentPassword ? '[MASQUÉ]' : undefined });
+      
+      const result = await this.userService.update(+id, body);
+      console.log(`Utilisateur ${id} mis à jour avec succès`);
+      return result;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+      console.error(`Erreur lors de la mise à jour de l'utilisateur ${id}:`, errorMessage);
+      
+      if (errorMessage === 'Utilisateur non trouvé') {
+        throw new NotFoundException('Utilisateur non trouvé');
+      } else if (errorMessage === 'Mot de passe actuel incorrect') {
+        throw new BadRequestException('Mot de passe actuel incorrect');
+      } else {
+        throw new InternalServerErrorException('Erreur lors de la mise à jour du profil');
+      }
+    }
   }
 
   @Delete(':id')
