@@ -2,295 +2,363 @@
   <div class="profile-page">
     <TheHeader />
     
-    <section class="profile-section">
+    <!-- Section héro avec dégradé moderne -->
+    <section class="hero-gradient-section">
+      <div class="hero-gradient-bg"></div>
       <div class="container">
-        <div class="profile-container">
-          <div class="profile-header">
-            <h1>Mon Profil</h1>
-          </div>
-          
-          <div class="profile-content">
-            <!-- Section Photo de profil -->
-            <div class="profile-sidebar">
-              <div class="profile-photo-container">
-                <div class="profile-photo" v-if="profilePhoto">
-                  <img :src="profilePhoto" alt="Photo de profil" />
-                </div>
-                <div class="profile-photo profile-photo-placeholder" v-else>
-                  <span>{{ userInitials }}</span>
-                </div>
-                <div class="photo-upload">
-                  <label for="photo-input" class="upload-btn">
-                    <i class="fas fa-camera"></i> Changer la photo
-                  </label>
-                  <input 
-                    type="file" 
-                    id="photo-input" 
-                    accept="image/*" 
-                    @change="handlePhotoUpload" 
-                    hidden
-                  />
-                </div>
-              </div>
-              
-              <div class="user-info-summary">
-                <h3>{{ user?.nom }} {{ user?.prenom }}</h3>
-                <p>{{ user?.email }}</p>
-                <p class="text-muted">Client depuis {{ formattedJoinDate }}</p>
-              </div>
+        <div class="profile-hero-content">
+          <div class="profile-avatar-circle">
+            <div class="avatar-inner" v-if="profilePhoto">
+              <img :src="profilePhoto" alt="Photo de profil" />
             </div>
-            
-            <!-- Section des onglets -->
-            <div class="profile-tabs-content">
-              <div class="profile-tabs">
-                <button 
-                  class="tab-btn" 
-                  :class="{ 'active': activeTab === 'info' }" 
-                  @click="activeTab = 'info'"
-                >
-                  Informations personnelles
-                </button>
-                <button 
-                  class="tab-btn" 
-                  :class="{ 'active': activeTab === 'rendezVous' }" 
-                  @click="activeTab = 'rendezVous'"
-                >
-                  Mes rendez-vous
-                </button>
-              </div>
-              
-              <!-- Contenu des onglets -->
-              <div class="tab-content">
-                <!-- Onglet Informations personnelles -->
-                <div v-if="activeTab === 'info'" class="personal-info-tab">
-                  <form @submit.prevent="updateProfile" class="profile-form">
-                    <div class="form-row">
-                      <div class="form-group">
-                        <label for="nom">Nom</label>
-                        <input 
-                          type="text" 
-                          id="nom" 
-                          v-model="formData.nom" 
-                          required
-                        />
-                      </div>
-                      <div class="form-group">
-                        <label for="prenom">Prénom</label>
-                        <input 
-                          type="text" 
-                          id="prenom" 
-                          v-model="formData.prenom" 
-                          required
-                        />
-                      </div>
-                    </div>
-                    
-                    <div class="form-group">
-                      <label for="email">Email</label>
-                      <input 
-                        type="email" 
-                        id="email" 
-                        v-model="formData.email" 
-                        required
-                      />
-                    </div>
-                    
-                    <div class="form-group">
-                      <label for="telephone">Téléphone</label>
-                      <input 
-                        type="tel" 
-                        id="telephone" 
-                        v-model="formData.telephone" 
-                        required
-                      />
-                    </div>
-                    
-                    <div class="form-group">
-                      <label for="adresse">Adresse</label>
-                      <input 
-                        type="text" 
-                        id="adresse" 
-                        v-model="formData.adresse" 
-                        required
-                      />
-                    </div>
-                    
-                    <div class="form-group">
-                      <label for="secteurActivite">Secteur d'activité</label>
-                      <input 
-                        type="text" 
-                        id="secteurActivite" 
-                        v-model="formData.secteurActivite" 
-                        required
-                      />
-                    </div>
-                    
-                    <div class="form-group">
-                      <label for="numRegistreCommerce">Numéro de registre de commerce</label>
-                      <input 
-                        type="text" 
-                        id="numRegistreCommerce" 
-                        v-model="formData.numRegistreCommerce" 
-                        required
-                        readonly
-                      />
-                      <small class="form-hint">Le numéro de registre de commerce ne peut pas être modifié</small>
-                    </div>
-                    
-                    <div class="password-section">
-                      <h3>Changer le mot de passe</h3>
-                      <div class="form-group">
-                        <label for="currentPassword">Mot de passe actuel</label>
-                        <input 
-                          type="password" 
-                          id="currentPassword" 
-                          v-model="passwordData.currentPassword"
-                        />
-                      </div>
-                      
-                      <div class="form-row">
-                        <div class="form-group">
-                          <label for="newPassword">Nouveau mot de passe</label>
-                          <input 
-                            type="password" 
-                            id="newPassword" 
-                            v-model="passwordData.newPassword"
-                          />
-                        </div>
-                        <div class="form-group">
-                          <label for="confirmPassword">Confirmer le mot de passe</label>
-                          <input 
-                            type="password" 
-                            id="confirmPassword" 
-                            v-model="passwordData.confirmPassword"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div class="form-actions">
-                      <button 
-                        type="submit" 
-                        class="btn-primary"
-                        :disabled="isSubmitting"
-                      >
-                        {{ isSubmitting ? 'Enregistrement...' : 'Enregistrer les modifications' }}
-                      </button>
-                    </div>
-                  </form>
-                </div>
-                
-                <!-- Onglet Mes rendez-vous -->
-                <div v-if="activeTab === 'rendezVous'" class="appointments-tab">
-                  <div class="appointments-header">
-                    <div class="appointments-filter">
-                      <button 
-                        class="filter-btn" 
-                        :class="{ 'active': appointmentsFilter === 'all' }"
-                        @click="appointmentsFilter = 'all'"
-                      >
-                        Tous
-                      </button>
-                      <button 
-                        class="filter-btn" 
-                        :class="{ 'active': appointmentsFilter === 'upcoming' }"
-                        @click="appointmentsFilter = 'upcoming'"
-                      >
-                        À venir
-                      </button>
-                      <button 
-                        class="filter-btn" 
-                        :class="{ 'active': appointmentsFilter === 'past' }"
-                        @click="appointmentsFilter = 'past'"
-                      >
-                        Passés
-                      </button>
-                    </div>
-                    
-                    <button 
-                      @click="refreshAppointments" 
-                      class="refresh-btn"
-                      title="Actualiser les rendez-vous"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
-                      </svg>
-                      Actualiser
-                    </button>
-                  </div>
-                  
-                  <div v-if="filteredAppointments.length === 0" class="no-appointments">
-                    <div class="empty-state">
-                      <svg width="100" height="100" viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,19H5V5H19V19M17,12H12V7H10V12H7V14H10V17H12V14H17V12Z" />
-                      </svg>
-                      <p>Vous n'avez pas encore de rendez-vous {{ appointmentsFilter === 'upcoming' ? 'à venir' : appointmentsFilter === 'past' ? 'passés' : '' }}</p>
-                      <router-link to="/rendez-vous" class="btn-secondary">Prendre rendez-vous</router-link>
-                    </div>
-                  </div>
-                  
-                  <div v-else class="appointments-list">
-                    <div 
-                      v-for="appointment in filteredAppointments" 
-                      :key="appointment.id"
-                      class="appointment-card"
-                      :class="{
-                        'status-confirmed': appointment.status === 'confirmé',
-                        'status-pending': appointment.status === 'en_attente',
-                        'status-cancelled': appointment.status === 'annulé'
-                      }"
-                    >
-                      <div class="appointment-date">
-                        <div class="date-indicator">
-                          <span class="day">{{ getDayFromDate(appointment.date) }}</span>
-                          <span class="month">{{ getMonthFromDate(appointment.date) }}</span>
-                        </div>
-                        <span class="time">{{ appointment.heure }}</span>
-                      </div>
-                      
-                      <div class="appointment-details">
-                        <h4>{{ appointment.service.nom }}</h4>
-                        <div class="status-badge" :class="`status-${appointment.status}`">
-                          {{ getStatusText(appointment.status) }}
-                        </div>
-                        <p v-if="appointment.notes" class="appointment-notes">{{ appointment.notes }}</p>
-                      </div>
-                      
-                      <div class="appointment-actions">
-                        <button 
-                          v-if="isUpcoming(appointment)"
-                          class="action-btn cancel-btn"
-                          @click="cancelAppointment(appointment.id)"
-                          :disabled="appointment.status === 'annulé'"
-                        >
-                          Annuler
-                        </button>
-                        <button
-                          v-if="isUpcoming(appointment) && appointment.status === 'en_attente'"
-                          class="action-btn reschedule-btn"
-                          @click="navigateToReschedule(appointment.id)"
-                        >
-                          Reprogrammer
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div class="avatar-inner avatar-initials" v-else>
+              {{ userInitials }}
             </div>
+            <div class="online-indicator"></div>
           </div>
-        </div>
-        
-        <!-- Messages de notification -->
-        <div v-if="successMessage" class="success-message">
-          {{ successMessage }}
-        </div>
-        
-        <div v-if="errorMessage" class="error-message">
-          {{ errorMessage }}
+          <div class="profile-info">
+            <h1 class="profile-name">{{ user?.prenom }} {{ user?.nom }}</h1>
+            <p class="profile-email">{{ user?.email }}</p>
+            <p class="profile-member-since">Client depuis {{ formattedJoinDate }}</p>
+          </div>
         </div>
       </div>
     </section>
+    
+    <!-- Section principale avec onglets -->
+    <section class="main-content-section">
+      <div class="container">
+        <div class="profile-card">
+          <!-- Navigation onglets -->
+          <div class="tabs-navigation">
+            <button 
+              class="tab-button" 
+              :class="{ 'active': activeTab === 'info' }" 
+              @click="activeTab = 'info'"
+            >
+              <i class="fas fa-user"></i>
+              Informations personnelles
+            </button>
+            <button 
+              class="tab-button" 
+              :class="{ 'active': activeTab === 'rendezVous' }" 
+              @click="activeTab = 'rendezVous'"
+            >
+              <i class="fas fa-calendar"></i>
+              Mes rendez-vous
+            </button>
+          </div>
+          
+          <!-- Contenu des onglets -->
+          <div class="tab-content-area">
+            <!-- Onglet Informations personnelles -->
+            <div v-if="activeTab === 'info'" class="info-tab-content">
+              <form @submit.prevent="updateProfile" class="modern-profile-form">
+                <!-- Informations de base -->
+                <div class="form-section">
+                  <div class="form-row">
+                    <div class="input-group">
+                      <label class="input-label">
+                        <i class="fas fa-user"></i>
+                        Nom
+                      </label>
+                      <input 
+                        type="text" 
+                        v-model="formData.nom" 
+                        class="modern-form-input"
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <div class="form-row">
+                    <div class="input-group">
+                      <label class="input-label">Prénom</label>
+                      <input 
+                        type="text" 
+                        v-model="formData.prenom" 
+                        class="modern-form-input"
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <div class="form-row">
+                    <div class="input-group">
+                      <label class="input-label">
+                        <i class="fas fa-envelope"></i>
+                        Email
+                      </label>
+                      <input 
+                        type="email" 
+                        v-model="formData.email" 
+                        class="modern-form-input"
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <div class="form-row">
+                    <div class="input-group">
+                      <label class="input-label">
+                        <i class="fas fa-phone"></i>
+                        Téléphone
+                      </label>
+                      <input 
+                        type="tel" 
+                        v-model="formData.telephone" 
+                        class="modern-form-input"
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <div class="form-row">
+                    <div class="input-group">
+                      <label class="input-label">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Adresse
+                      </label>
+                      <input 
+                        type="text" 
+                        v-model="formData.adresse" 
+                        class="modern-form-input"
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <div class="form-row">
+                    <div class="input-group">
+                      <label class="input-label">
+                        <i class="fas fa-briefcase"></i>
+                        Secteur d'activité
+                      </label>
+                      <input 
+                        type="text" 
+                        v-model="formData.secteurActivite" 
+                        class="modern-form-input"
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <div class="form-row">
+                    <div class="input-group">
+                      <label class="input-label">
+                        <i class="fas fa-certificate"></i>
+                        Numéro de registre de commerce
+                      </label>
+                      <input 
+                        type="text" 
+                        v-model="formData.numRegistreCommerce" 
+                        class="modern-form-input readonly-input"
+                        readonly
+                        required
+                      />
+                      <small class="input-hint">Le numéro de registre de commerce ne peut pas être modifié</small>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Section changement de mot de passe -->
+                <div class="password-change-section">
+                  <h3 class="section-title">Changer le mot de passe</h3>
+                  
+                  <div class="form-row">
+                    <div class="input-group">
+                      <label class="input-label">Mot de passe actuel</label>
+                      <div class="password-input-wrapper">
+                        <input 
+                          :type="showCurrentPassword ? 'text' : 'password'"
+                          v-model="passwordData.currentPassword" 
+                          class="modern-form-input password-input"
+                          placeholder="Entrez votre mot de passe actuel"
+                        />
+                        <button 
+                          type="button" 
+                          class="password-toggle"
+                          @click="showCurrentPassword = !showCurrentPassword"
+                        >
+                          <i :class="showCurrentPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="form-row">
+                    <div class="input-group">
+                      <label class="input-label">Nouveau mot de passe</label>
+                      <div class="password-input-wrapper">
+                        <input 
+                          :type="showNewPassword ? 'text' : 'password'"
+                          v-model="passwordData.newPassword" 
+                          class="modern-form-input password-input"
+                          placeholder="Entrez un nouveau mot de passe"
+                        />
+                        <button 
+                          type="button" 
+                          class="password-toggle"
+                          @click="showNewPassword = !showNewPassword"
+                        >
+                          <i :class="showNewPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="form-row">
+                    <div class="input-group">
+                      <label class="input-label">Confirmer le mot de passe</label>
+                      <div class="password-input-wrapper">
+                        <input 
+                          :type="showConfirmPassword ? 'text' : 'password'"
+                          v-model="passwordData.confirmPassword" 
+                          class="modern-form-input password-input"
+                          placeholder="Confirmez votre nouveau mot de passe"
+                        />
+                        <button 
+                          type="button" 
+                          class="password-toggle"
+                          @click="showConfirmPassword = !showConfirmPassword"
+                        >
+                          <i :class="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Bouton de sauvegarde -->
+                <div class="form-actions">
+                  <button 
+                    type="submit" 
+                    class="save-button"
+                    :disabled="isSubmitting"
+                  >
+                    <i class="fas fa-save"></i>
+                    {{ isSubmitting ? 'Enregistrement...' : 'Enregistrer les modifications' }}
+                  </button>
+                </div>
+              </form>
+            </div>
+            
+            <!-- Onglet Mes rendez-vous -->
+            <div v-if="activeTab === 'rendezVous'" class="appointments-tab-content">
+              <div class="appointments-header">
+                <div class="appointments-filters">
+                  <button 
+                    class="filter-btn" 
+                    :class="{ 'active': appointmentsFilter === 'all' }"
+                    @click="appointmentsFilter = 'all'"
+                  >
+                    Tous
+                  </button>
+                  <button 
+                    class="filter-btn" 
+                    :class="{ 'active': appointmentsFilter === 'upcoming' }"
+                    @click="appointmentsFilter = 'upcoming'"
+                  >
+                    À venir
+                  </button>
+                  <button 
+                    class="filter-btn" 
+                    :class="{ 'active': appointmentsFilter === 'past' }"
+                    @click="appointmentsFilter = 'past'"
+                  >
+                    Passés
+                  </button>
+                </div>
+                
+                <button 
+                  @click="refreshAppointments" 
+                  class="refresh-button"
+                >
+                  <i class="fas fa-sync-alt"></i>
+                  Actualiser
+                </button>
+              </div>
+              
+              <div v-if="filteredAppointments.length === 0" class="empty-appointments">
+                <div class="empty-icon">
+                  <i class="fas fa-calendar-plus"></i>
+                </div>
+                <h3>Aucun rendez-vous</h3>
+                <p>Vous n'avez pas encore de rendez-vous {{ appointmentsFilter === 'upcoming' ? 'à venir' : appointmentsFilter === 'past' ? 'passés' : '' }}.</p>
+                <router-link to="/rendez-vous" class="new-appointment-btn">
+                  <i class="fas fa-plus"></i>
+                  Prendre rendez-vous
+                </router-link>
+              </div>
+              
+              <div v-else class="appointments-grid">
+                <div 
+                  v-for="appointment in filteredAppointments" 
+                  :key="appointment.id"
+                  class="appointment-item"
+                  :class="`status-${appointment.status}`"
+                >
+                  <div class="appointment-date-block">
+                    <span class="date-day">{{ getDayFromDate(appointment.date) }}</span>
+                    <span class="date-month">{{ getMonthFromDate(appointment.date) }}</span>
+                  </div>
+                  
+                  <div class="appointment-info">
+                    <h4>{{ appointment.service.nom }}</h4>
+                    <div class="appointment-time">
+                      <i class="fas fa-clock"></i>
+                      {{ appointment.heure }}
+                    </div>
+                    <div class="appointment-status" :class="`status-${appointment.status}`">
+                      {{ getStatusText(appointment.status) }}
+                    </div>
+                    <p v-if="appointment.notes" class="appointment-notes">{{ appointment.notes }}</p>
+                  </div>
+                  
+                  <div class="appointment-actions" v-if="isUpcoming(appointment)">
+                    <button 
+                      v-if="appointment.status !== 'annulé'"
+                      class="action-btn cancel"
+                      @click="cancelAppointment(appointment.id)"
+                    >
+                      <i class="fas fa-times"></i>
+                    </button>
+                    <button
+                      v-if="appointment.status === 'en_attente'"
+                      class="action-btn edit"
+                      @click="navigateToReschedule(appointment.id)"
+                    >
+                      <i class="fas fa-edit"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Messages de notification -->
+    <transition name="notification">
+      <div v-if="successMessage" class="notification success">
+        <i class="fas fa-check-circle"></i>
+        <span>{{ successMessage }}</span>
+        <button @click="successMessage = ''" class="close-notification">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </transition>
+    
+    <transition name="notification">
+      <div v-if="errorMessage" class="notification error">
+        <i class="fas fa-exclamation-circle"></i>
+        <span>{{ errorMessage }}</span>
+        <button @click="errorMessage = ''" class="close-notification">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </transition>
     
     <TheFooter />
   </div>
@@ -315,6 +383,11 @@ const profilePhoto = ref(null)
 const isSubmitting = ref(false)
 const successMessage = ref('')
 const errorMessage = ref('')
+
+// États pour afficher/masquer les mots de passe
+const showCurrentPassword = ref(false)
+const showNewPassword = ref(false)
+const showConfirmPassword = ref(false)
 
 // Données du formulaire
 const formData = ref({
@@ -653,445 +726,557 @@ onMounted(() => {
 <style scoped>
 .profile-page {
   min-height: 100vh;
-  margin-top: 80px;
+  margin-top: 120px;
   display: flex;
   flex-direction: column;
-  background-color: #f5f7fa;
+  background: #f8fafc;
 }
 
-.profile-section {
-  flex: 1;
-  padding: 4rem 0;
-}
-
-.container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
+/* Section héro avec dégradé */
+.hero-gradient-section {
   position: relative;
-}
-
-.profile-container {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  height: 320px;
   overflow: hidden;
-  margin-bottom: 2rem;
+  margin-bottom: -80px;
 }
 
-.profile-header {
-  padding: 2rem;
-  border-bottom: 1px solid #eee;
-  position: relative;
-}
-
-.profile-header::before {
-  content: '';
+.hero-gradient-bg {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 5px;
-  background: linear-gradient(90deg, #4CAF50, #2196F3);
+  bottom: 0;
+  background: linear-gradient(135deg, #00E676 0%, #00BCD4 50%, #9C27B0 100%);
+  opacity: 0.9;
 }
 
-.profile-header h1 {
-  font-size: 1.8rem;
-  color: #333;
-  margin: 0;
-}
-
-.profile-content {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-/* Sidebar avec photo de profil */
-.profile-sidebar {
-  width: 100%;
-  max-width: 300px;
-  padding: 2rem;
-  border-right: 1px solid #eee;
-}
-
-.profile-photo-container {
+.profile-hero-content {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.profile-photo {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  overflow: hidden;
-  margin-bottom: 1rem;
-  background-color: #e0e0e0;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  position: relative;
-}
-
-.profile-photo img {
-  width: 100%;
   height: 100%;
-  object-fit: cover;
-}
-
-.profile-photo-placeholder {
-  background: linear-gradient(135deg, #4CAF50, #2196F3);
-  color: white;
-  font-size: 3rem;
-  font-weight: 500;
-}
-
-.photo-upload {
-  margin-top: 1rem;
-}
-
-.upload-btn {
-  display: inline-block;
-  padding: 0.6rem 1rem;
-  background-color: #f1f1f1;
-  color: #333;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.2s;
-}
-
-.upload-btn:hover {
-  background-color: #e0e0e0;
-}
-
-.user-info-summary {
-  text-align: center;
-}
-
-.user-info-summary h3 {
-  margin: 0 0 0.5rem;
-  font-size: 1.3rem;
-  color: #333;
-}
-
-.user-info-summary p {
-  margin: 0 0 0.5rem;
-  color: #666;
-}
-
-.text-muted {
-  color: #999;
-  font-size: 0.9rem;
-}
-
-/* Section des onglets */
-.profile-tabs-content {
-  flex: 1;
   padding: 2rem;
 }
 
-.profile-tabs {
-  display: flex;
-  border-bottom: 1px solid #eee;
-  margin-bottom: 2rem;
+.profile-avatar-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 40%;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 1.5rem;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
-.tab-btn {
-  padding: 0.8rem 1.5rem;
+.avatar-inner {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.avatar-initials {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.online-indicator {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #4CAF50;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.profile-info {
+  text-align: center;
+  color: white;
+}
+
+.profile-name {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: white;
+  margin: 0 0 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profile-email {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 0.3rem;
+}
+
+.profile-member-since {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+}
+
+/* Section principale */
+.main-content-section {
+  flex: 1;
+  padding: 0 0 4rem;
+  position: relative;
+  z-index: 1;
+  margin-top: 120px;
+}
+
+.profile-card {
+  background: white;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  margin: 0 auto;
+  max-width: 1000px;
+  min-height: 600px;
+}
+
+/* Navigation onglets */
+.tabs-navigation {
+  display: flex;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0 2rem;
+}
+
+.tab-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.2rem 2rem;
   background: none;
   border: none;
-  border-bottom: 2px solid transparent;
+  border-bottom: 3px solid transparent;
   font-size: 1rem;
-  color: #666;
+  color: #64748b;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  position: relative;
 }
 
-.tab-btn.active {
-  color: #2196F3;
-  border-bottom-color: #2196F3;
+.tab-button.active {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+  background: white;
   font-weight: 600;
 }
 
-.tab-btn:hover:not(.active) {
-  color: #333;
-  background-color: #f9f9f9;
+.tab-button:hover:not(.active) {
+  color: #475569;
+  background: rgba(59, 130, 246, 0.05);
 }
 
-/* Formulaire de profil */
-.profile-form {
+.tab-button i {
+  font-size: 1rem;
+}
+
+/* Contenu des onglets */
+.tab-content-area {
+  padding: 3rem 2rem;
+  background: white;
+  min-height: 500px;
+}
+
+.info-tab-content {
   max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Formulaire moderne */
+.modern-profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .form-row {
   display: flex;
   gap: 1.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
 }
 
-.form-row .form-group {
+.input-group {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
+.input-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-weight: 600;
-  color: #333;
+  color: #374151;
+  font-size: 0.95rem;
+  margin: 0;
 }
 
-.form-group input {
-  width: 100%;
-  padding: 0.8rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+.input-label i {
+  color: #6b7280;
   font-size: 1rem;
 }
 
-.form-group input:focus {
-  outline: none;
-  border-color: #2196F3;
-  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+.modern-form-input {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: #fafbfc;
+  color: #374151;
 }
 
-.form-group input[readonly] {
-  background-color: #f9f9f9;
+.modern-form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  transform: translateY(-1px);
+}
+
+.readonly-input {
+  background: #f1f5f9 !important;
+  color: #64748b !important;
   cursor: not-allowed;
 }
 
-.form-hint {
+.input-hint {
   font-size: 0.8rem;
-  color: #999;
-  margin-top: 0.3rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
 }
 
-.password-section {
-  margin-top: 2.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #eee;
-}
-
-.password-section h3 {
-  font-size: 1.2rem;
-  margin-bottom: 1.5rem;
-  color: #333;
-}
-
-.form-actions {
+/* Section mot de passe */
+.password-change-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 2rem;
   margin-top: 2rem;
 }
 
-.btn-primary {
-  padding: 0.8rem 2rem;
-  background: linear-gradient(45deg, #4CAF50, #2196F3);
+.section-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-title::before {
+  content: '🔒';
+  font-size: 1.2rem;
+}
+
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input {
+  padding-right: 3rem !important;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.password-toggle:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* Bouton de sauvegarde */
+.form-actions {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.save-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
 }
 
-.btn-primary:hover {
+.save-button:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(33, 150, 243, 0.2);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+  background: linear-gradient(135deg, #2563eb, #1e40af);
 }
 
-.btn-primary:disabled {
+.save-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
   transform: none;
-  box-shadow: none;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
 }
 
 /* Onglet rendez-vous */
+.appointments-tab-content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
 .appointments-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
-.appointments-filter {
+.appointments-filters {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
+  background: #f1f5f9;
+  padding: 0.3rem;
+  border-radius: 12px;
 }
 
 .filter-btn {
-  padding: 0.6rem 1.2rem;
-  background-color: #f1f1f1;
+  padding: 0.7rem 1.2rem;
+  background: transparent;
   border: none;
-  border-radius: 20px;
-  color: #666;
+  border-radius: 10px;
+  color: #64748b;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 0.9rem;
 }
 
 .filter-btn.active {
-  background-color: #2196F3;
+  background: #3b82f6;
   color: white;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
 }
 
 .filter-btn:hover:not(.active) {
-  background-color: #e0e0e0;
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
 }
 
-.refresh-btn {
+.refresh-button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.6rem 1rem;
-  background-color: #4CAF50;
+  padding: 0.8rem 1.2rem;
+  background: #10b981;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 0.9rem;
-  transition: all 0.2s;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
 }
 
-.refresh-btn:hover {
-  background-color: #45a049;
+.refresh-button:hover {
+  background: #059669;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
-.no-appointments {
-  padding: 3rem 0;
+/* État vide */
+.empty-appointments {
   text-align: center;
+  padding: 4rem 2rem;
 }
 
-.empty-state {
-  display: flex;
-  flex-direction: column;
+.empty-icon {
+  font-size: 4rem;
+  color: #d1d5db;
+  margin-bottom: 1rem;
+}
+
+.empty-appointments h3 {
+  font-size: 1.5rem;
+  color: #374151;
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+}
+
+.empty-appointments p {
+  color: #6b7280;
+  margin: 0 0 2rem;
+  font-size: 1rem;
+}
+
+.new-appointment-btn {
+  display: inline-flex;
   align-items: center;
-  gap: 1rem;
-  color: #999;
-}
-
-.empty-state svg {
-  opacity: 0.3;
-  width: 60px;
-  height: 60px;
-}
-
-.btn-secondary {
-  display: inline-block;
-  padding: 0.8rem 1.5rem;
-  background-color: #2196F3;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   text-decoration: none;
   font-weight: 600;
-  transition: all 0.3s;
-  margin-top: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
 }
 
-.btn-secondary:hover {
-  background-color: #1976d2;
+.new-appointment-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(33, 150, 243, 0.2);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
 }
 
-.appointments-list {
+/* Grille des rendez-vous */
+.appointments-grid {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
-.appointment-card {
+.appointment-item {
   display: flex;
-  border: 1px solid #eee;
-  border-radius: 8px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  background-color: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.appointment-date {
+.appointment-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-color: #d1d5db;
+}
+
+.appointment-date-block {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #f9f9f9;
+  background: #f8fafc;
   padding: 1.5rem;
   min-width: 100px;
-  border-right: 1px solid #eee;
+  border-right: 1px solid #e5e7eb;
 }
 
-.date-indicator {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-.day {
+.date-day {
   font-size: 1.8rem;
   font-weight: 700;
-  color: #333;
+  color: #1f2937;
+  line-height: 1;
 }
 
-.month {
-  font-size: 0.9rem;
-  color: #666;
+.date-month {
+  font-size: 0.8rem;
+  color: #6b7280;
   text-transform: uppercase;
+  font-weight: 600;
+  margin-top: 0.25rem;
 }
 
-.time {
-  font-size: 0.9rem;
-  color: #666;
+.appointment-info {
+  flex: 1;
+  padding: 1.5rem;
+}
+
+.appointment-info h4 {
+  margin: 0 0 0.8rem;
+  font-size: 1.2rem;
+  color: #1f2937;
   font-weight: 600;
 }
 
-.appointment-details {
-  flex: 1;
-  padding: 1.5rem;
-  position: relative;
+.appointment-time {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 0.8rem;
 }
 
-.appointment-details h4 {
-  margin: 0 0 0.8rem;
-  font-size: 1.2rem;
-  color: #333;
-}
-
-.status-badge {
+.appointment-status {
   display: inline-block;
-  padding: 0.3rem 0.8rem;
+  padding: 0.4rem 1rem;
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
 }
 
 .status-en_attente {
-  background-color: #ffecb3;
-  color: #ff8f00;
+  background: #fef3c7;
+  color: #92400e;
 }
 
 .status-confirmé {
-  background-color: #c8e6c9;
-  color: #388e3c;
+  background: #d1fae5;
+  color: #065f46;
 }
 
 .status-annulé {
-  background-color: #ffcdd2;
-  color: #d32f2f;
+  background: #fee2e2;
+  color: #991b1b;
 }
 
 .appointment-notes {
   margin: 0;
-  color: #666;
+  color: #6b7280;
   font-size: 0.9rem;
+  font-style: italic;
 }
 
 .appointment-actions {
@@ -1099,142 +1284,229 @@ onMounted(() => {
   flex-direction: column;
   justify-content: center;
   padding: 1.5rem;
-  gap: 0.8rem;
+  gap: 0.5rem;
 }
 
 .action-btn {
-  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
   border: none;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-weight: 600;
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  font-size: 1rem;
 }
 
-.cancel-btn {
-  background-color: #f44336;
-  color: white;
+.action-btn.cancel {
+  background: #fee2e2;
+  color: #dc2626;
 }
 
-.cancel-btn:hover:not(:disabled) {
-  background-color: #d32f2f;
+.action-btn.cancel:hover {
+  background: #fecaca;
+  transform: scale(1.1);
 }
 
-.reschedule-btn {
-  background-color: #2196F3;
-  color: white;
+.action-btn.edit {
+  background: #dbeafe;
+  color: #2563eb;
 }
 
-.reschedule-btn:hover {
-  background-color: #1976d2;
+.action-btn.edit:hover {
+  background: #bfdbfe;
+  transform: scale(1.1);
 }
 
-.action-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Messages de notification */
-.success-message, .error-message {
+/* Notifications */
+.notification {
   position: fixed;
-  top: 100px;
+  top: 120px;
   right: 20px;
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  font-weight: 600;
-  animation: slideIn 0.3s ease-out forwards;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   z-index: 1000;
-  max-width: 320px;
+  max-width: 400px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
-.success-message {
-  background-color: #4caf50;
-  color: white;
-  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+.notification.success {
+  border-left: 4px solid #10b981;
 }
 
-.error-message {
-  background-color: #f44336;
-  color: white;
-  box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
+.notification.error {
+  border-left: 4px solid #ef4444;
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+.notification.success i {
+  color: #10b981;
+}
+
+.notification.error i {
+  color: #ef4444;
+}
+
+.notification span {
+  flex: 1;
+  color: #374151;
+  font-weight: 500;
+}
+
+.close-notification {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.close-notification:hover {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+/* Animations */
+.notification-enter-active, .notification-leave-active {
+  transition: all 0.3s ease;
+}
+
+.notification-enter-from {
+  opacity: 0;
+  transform: translateX(100px);
+}
+
+.notification-leave-to {
+  opacity: 0;
+  transform: translateX(100px);
 }
 
 /* Responsive Design */
 @media (max-width: 992px) {
-  .profile-content {
+  .hero-gradient-section {
+    height: 280px;
+    margin-bottom: -60px;
+  }
+  
+  .profile-avatar-circle {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .avatar-initials {
+    font-size: 2rem;
+  }
+  
+  .profile-name {
+    font-size: 1.5rem;
+  }
+  
+  .tabs-navigation {
     flex-direction: column;
+    padding: 1rem;
+    gap: 0.5rem;
   }
   
-  .profile-sidebar {
-    max-width: 100%;
-    border-right: none;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    align-items: center;
-    gap: 2rem;
+  .tab-button {
+    border-bottom: none;
+    border-radius: 10px;
+    padding: 1rem;
   }
   
-  .profile-photo-container {
-    margin-bottom: 0;
+  .tab-button.active {
+    background: #3b82f6;
+    color: white;
   }
   
-  .user-info-summary {
-    text-align: left;
+  .tab-content-area {
+    padding: 2rem 1.5rem;
   }
 }
 
 @media (max-width: 768px) {
-  .profile-section {
-    padding: 2rem 0;
+  .hero-gradient-section {
+    height: 250px;
+    margin-bottom: -40px;
   }
   
-  .profile-sidebar {
-    flex-direction: column;
-    align-items: center;
+  .main-content-section {
+    padding: 0 0 2rem;
   }
   
-  .user-info-summary {
-    text-align: center;
+  .profile-card {
+    border-radius: 16px 16px 0 0;
+    margin: 0 1rem;
   }
   
   .form-row {
     flex-direction: column;
-    gap: 0;
-    margin-bottom: 0;
+    gap: 1rem;
   }
   
-  .appointment-card {
+  .appointments-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  
+  .appointments-filters {
+    justify-content: center;
+  }
+  
+  .appointment-item {
     flex-direction: column;
   }
   
-  .appointment-date {
+  .appointment-date-block {
     flex-direction: row;
     justify-content: space-between;
     border-right: none;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .date-indicator {
-    flex-direction: row;
-    gap: 0.5rem;
-    margin-bottom: 0;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 1rem 1.5rem;
   }
   
   .appointment-actions {
     flex-direction: row;
+    justify-content: center;
     padding: 1rem 1.5rem;
+  }
+  
+  .action-btn {
+    width: 50px;
+    height: 45px;
+  }
+  
+  .notification {
+    right: 1rem;
+    left: 1rem;
+    max-width: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .tab-content-area {
+    padding: 1.5rem 1rem;
+  }
+  
+  .password-change-section {
+    padding: 1.5rem;
+  }
+  
+  .save-button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .form-actions {
+    justify-content: stretch;
   }
 }
 </style> 
