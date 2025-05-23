@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { ServiceModule } from './service/service.module';
 import { RendezVousModule } from './rendez-vous/rendez-vous.module';
 import { PlageHoraireModule } from './plage-horaire/plage-horaire.module';
+import { FormationModule } from './formation/formation.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { PlageHoraireModule } from './plage-horaire/plage-horaire.module';
     AuthModule,
     ServiceModule,
     RendezVousModule,
-    PlageHoraireModule
+    PlageHoraireModule,
+    FormationModule
   ],
   controllers: [AppController],
   providers: [AppService],
