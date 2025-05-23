@@ -49,6 +49,12 @@ const router = createRouter({
       meta: { requiresAuth: true } // Marquer cette route comme nécessitant une authentification
     },
     {
+      path: '/admin',
+      name: 'admin',
+      component: () => import('../views/AdminView.vue'),
+      meta: { requiresAuth: true } // Marquer cette route comme nécessitant une authentification
+    },
+    {
       path: '/profile',
       name: 'profile',
       component: () => import('../views/ProfileView.vue'),

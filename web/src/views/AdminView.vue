@@ -1,0 +1,859 @@
+<template>
+  <div class="admin-page">
+    <TheHeader />
+    
+    <!-- Section héro admin -->
+    <section class="admin-hero">
+      <div class="admin-hero-bg"></div>
+      <div class="container">
+        <div class="admin-hero-content">
+          <h1>🔧 Administration</h1>
+          <p>Gestion des rendez-vous et du système</p>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Section principale -->
+    <section class="admin-main">
+      <div class="container">
+        <!-- Statistiques -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-content">
+              <h3>{{ rendezVous.length }}</h3>
+              <p>Total rendez-vous</p>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-content">
+              <h3>{{ rendezVousEnAttente.length }}</h3>
+              <p>En attente</p>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-content">
+              <h3>{{ rendezVousConfirmes.length }}</h3>
+              <p>Confirmés</p>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon">❌</div>
+            <div class="stat-content">
+              <h3>{{ rendezVousAnnules.length }}</h3>
+              <p>Annulés</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Filtres -->
+        <div class="admin-filters">
+          <h2>Gestion des Rendez-vous</h2>
+          
+          <div class="filter-buttons">
+            <button 
+              class="filter-btn"
+              :class="{ 'active': filterStatus === 'all' }"
+              @click="filterStatus = 'all'"
+            >
+              Tous ({{ rendezVous.length }})
+            </button>
+            <button 
+              class="filter-btn pending"
+              :class="{ 'active': filterStatus === 'en_attente' }"
+              @click="filterStatus = 'en_attente'"
+            >
+              En attente ({{ rendezVousEnAttente.length }})
+            </button>
+            <button 
+              class="filter-btn confirmed"
+              :class="{ 'active': filterStatus === 'confirmé' }"
+              @click="filterStatus = 'confirmé'"
+            >
+              Confirmés ({{ rendezVousConfirmes.length }})
+            </button>
+            <button 
+              class="filter-btn cancelled"
+              :class="{ 'active': filterStatus === 'annulé' }"
+              @click="filterStatus = 'annulé'"
+            >
+              Annulés ({{ rendezVousAnnules.length }})
+            </button>
+          </div>
+          
+          <button @click="refreshData" class="refresh-btn">
+            <i class="fas fa-sync-alt"></i>
+            Actualiser
+          </button>
+        </div>
+        
+        <!-- Liste des rendez-vous -->
+        <div class="appointments-list">
+          <div v-if="filteredRendezVous.length === 0" class="no-appointments">
+            <div class="empty-icon">📭</div>
+            <h3>Aucun rendez-vous</h3>
+            <p>Aucun rendez-vous trouvé pour le filtre sélectionné.</p>
+          </div>
+          
+          <div v-else class="appointments-grid">
+            <div 
+              v-for="appointment in filteredRendezVous" 
+              :key="appointment.id"
+              class="appointment-admin-card"
+              :class="`status-${appointment.status}`"
+            >
+              <!-- En-tête de la carte -->
+              <div class="appointment-header">
+                <div class="appointment-date">
+                  <span class="date">{{ formatDate(appointment.date) }}</span>
+                  <span class="time">{{ appointment.heure }}</span>
+                </div>
+                <div class="appointment-status" :class="`status-${appointment.status}`">
+                  {{ getStatusText(appointment.status) }}
+                </div>
+              </div>
+              
+              <!-- Contenu principal -->
+              <div class="appointment-body">
+                <div class="client-info">
+                  <h4>{{ appointment.user.prenom }} {{ appointment.user.nom }}</h4>
+                  <div class="contact-info">
+                    <p><i class="fas fa-envelope"></i> {{ appointment.user.email }}</p>
+                    <p><i class="fas fa-phone"></i> {{ appointment.user.telephone }}</p>
+                    <p><i class="fas fa-building"></i> {{ appointment.user.secteurActivite }}</p>
+                  </div>
+                </div>
+                
+                <div class="service-info">
+                  <h5>{{ appointment.service.nom }}</h5>
+                  <p class="service-duration">
+                    <i class="fas fa-clock"></i>
+                    {{ appointment.service.duree }} minutes
+                  </p>
+                </div>
+                
+                <div v-if="appointment.notes" class="notes">
+                  <p><strong>Notes :</strong> {{ appointment.notes }}</p>
+                </div>
+              </div>
+              
+              <!-- Actions admin -->
+              <div class="appointment-actions" v-if="appointment.status === 'en_attente'">
+                <button 
+                  @click="updateAppointmentStatus(appointment.id, 'confirmé')"
+                  class="action-btn confirm-btn"
+                  :disabled="updatingAppointment === appointment.id"
+                >
+                  <i class="fas fa-check"></i>
+                  Confirmer
+                </button>
+                
+                <button 
+                  @click="updateAppointmentStatus(appointment.id, 'annulé')"
+                  class="action-btn reject-btn"
+                  :disabled="updatingAppointment === appointment.id"
+                >
+                  <i class="fas fa-times"></i>
+                  Refuser
+                </button>
+              </div>
+              
+              <div class="appointment-meta">
+                <p class="created-at">
+                  <i class="fas fa-calendar-plus"></i>
+                  Demandé le {{ formatDate(appointment.createdAt) }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Messages de notification -->
+    <transition name="notification">
+      <div v-if="successMessage" class="notification success">
+        <i class="fas fa-check-circle"></i>
+        <span>{{ successMessage }}</span>
+        <button @click="successMessage = ''" class="close-notification">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </transition>
+    
+    <transition name="notification">
+      <div v-if="errorMessage" class="notification error">
+        <i class="fas fa-exclamation-circle"></i>
+        <span>{{ errorMessage }}</span>
+        <button @click="errorMessage = ''" class="close-notification">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </transition>
+    
+    <TheFooter />
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import TheHeader from '@/components/TheHeader.vue'
+import TheFooter from '@/components/TheFooter.vue'
+import axios from 'axios'
+
+// Configuration globale d'axios
+axios.defaults.withCredentials = true
+
+const router = useRouter()
+const rendezVous = ref([])
+const filterStatus = ref('all')
+const updatingAppointment = ref(null)
+const successMessage = ref('')
+const errorMessage = ref('')
+
+// Computed pour filtrer les rendez-vous
+const filteredRendezVous = computed(() => {
+  if (filterStatus.value === 'all') {
+    return rendezVous.value
+  }
+  return rendezVous.value.filter(rv => rv.status === filterStatus.value)
+})
+
+const rendezVousEnAttente = computed(() => 
+  rendezVous.value.filter(rv => rv.status === 'en_attente')
+)
+
+const rendezVousConfirmes = computed(() => 
+  rendezVous.value.filter(rv => rv.status === 'confirmé')
+)
+
+const rendezVousAnnules = computed(() => 
+  rendezVous.value.filter(rv => rv.status === 'annulé')
+)
+
+// Fonctions utilitaires
+const formatDate = (dateString) => {
+  const date = new Date(dateString)
+  return new Intl.DateTimeFormat('fr-FR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  }).format(date)
+}
+
+const getStatusText = (status) => {
+  switch (status) {
+    case 'en_attente': return 'En attente'
+    case 'confirmé': return 'Confirmé'
+    case 'annulé': return 'Annulé'
+    default: return status
+  }
+}
+
+// Vérification des droits admin
+const checkAdminAccess = async () => {
+  try {
+    const response = await axios.post('http://localhost:3000/auth/current-user', {}, {
+      withCredentials: true
+    })
+    
+    if (!response.data.isLoggedIn) {
+      router.push('/login?message=Vous devez être connecté pour accéder à cette page')
+      return false
+    }
+    
+    if (response.data.user.role !== 'administrateur') {
+      router.push('/?message=Accès refusé. Vous devez être administrateur pour accéder à cette page')
+      return false
+    }
+    
+    return true
+  } catch (error) {
+    console.error('Erreur lors de la vérification des droits:', error)
+    router.push('/login')
+    return false
+  }
+}
+
+// Récupérer tous les rendez-vous
+const fetchAllAppointments = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/rendez-vous/admin/all', {
+      withCredentials: true
+    })
+    rendezVous.value = response.data
+    console.log('Rendez-vous récupérés:', response.data)
+  } catch (error) {
+    console.error('Erreur lors de la récupération des rendez-vous:', error)
+    if (error.response?.status === 403) {
+      errorMessage.value = 'Accès refusé. Vous devez être administrateur.'
+    } else {
+      errorMessage.value = 'Impossible de charger les rendez-vous.'
+    }
+  }
+}
+
+// Mettre à jour le statut d'un rendez-vous
+const updateAppointmentStatus = async (appointmentId, newStatus) => {
+  updatingAppointment.value = appointmentId
+  
+  try {
+    const response = await axios.patch(
+      `http://localhost:3000/rendez-vous/${appointmentId}`,
+      { status: newStatus },
+      { withCredentials: true }
+    )
+    
+    // Mettre à jour la liste locale
+    const index = rendezVous.value.findIndex(rv => rv.id === appointmentId)
+    if (index !== -1) {
+      rendezVous.value[index] = response.data
+    }
+    
+    const actionText = newStatus === 'confirmé' ? 'confirmé' : 'refusé'
+    successMessage.value = `Rendez-vous ${actionText} avec succès.`
+    
+    setTimeout(() => {
+      successMessage.value = ''
+    }, 3000)
+    
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour:', error)
+    errorMessage.value = 'Impossible de mettre à jour le rendez-vous.'
+    
+    setTimeout(() => {
+      errorMessage.value = ''
+    }, 3000)
+  } finally {
+    updatingAppointment.value = null
+  }
+}
+
+// Actualiser les données
+const refreshData = async () => {
+  await fetchAllAppointments()
+}
+
+// Initialisation
+onMounted(async () => {
+  const hasAccess = await checkAdminAccess()
+  if (hasAccess) {
+    await fetchAllAppointments()
+  }
+})
+</script>
+
+<style scoped>
+.admin-page {
+  min-height: 100vh;
+  margin-top: 120px;
+  background: #f8fafc;
+}
+
+/* Section héro admin */
+.admin-hero {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.admin-hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.admin-hero-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: white;
+  text-align: center;
+}
+
+.admin-hero h1 {
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.admin-hero p {
+  font-size: 1.2rem;
+  margin: 0;
+  opacity: 0.9;
+}
+
+/* Section principale */
+.admin-main {
+  padding: 0 0 4rem;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Statistiques */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.stat-icon {
+  font-size: 2rem;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-content h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+  color: #1f2937;
+}
+
+.stat-content p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+/* Filtres */
+.admin-filters {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.admin-filters h2 {
+  margin: 0 0 1.5rem;
+  color: #1f2937;
+  font-size: 1.5rem;
+}
+
+.filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-btn {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 25px;
+  background: white;
+  color: #6b7280;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.filter-btn.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+.filter-btn.pending.active {
+  background: #f59e0b;
+  border-color: #f59e0b;
+}
+
+.filter-btn.confirmed.active {
+  background: #10b981;
+  border-color: #10b981;
+}
+
+.filter-btn.cancelled.active {
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.refresh-btn:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+/* Liste des rendez-vous */
+.appointments-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.appointment-admin-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.appointment-admin-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.appointment-admin-card.status-en_attente {
+  border-left-color: #f59e0b;
+}
+
+.appointment-admin-card.status-confirmé {
+  border-left-color: #10b981;
+}
+
+.appointment-admin-card.status-annulé {
+  border-left-color: #ef4444;
+}
+
+.appointment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 1.5rem 0;
+}
+
+.appointment-date {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.appointment-date .date {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 1.1rem;
+}
+
+.appointment-date .time {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.appointment-status {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.appointment-status.status-en_attente {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.appointment-status.status-confirmé {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.appointment-status.status-annulé {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.appointment-body {
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1.5rem;
+}
+
+.client-info h4 {
+  margin: 0 0 1rem;
+  color: #1f2937;
+  font-size: 1.2rem;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.contact-info p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.contact-info i {
+  width: 14px;
+  color: #9ca3af;
+}
+
+.service-info h5 {
+  margin: 0 0 0.5rem;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.service-duration {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.notes {
+  grid-column: 1 / -1;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.notes p {
+  margin: 0;
+  color: #4b5563;
+  font-size: 0.9rem;
+}
+
+.appointment-actions {
+  display: flex;
+  gap: 1rem;
+  padding: 0 1.5rem 1.5rem;
+}
+
+.action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.confirm-btn {
+  background: #10b981;
+  color: white;
+}
+
+.confirm-btn:hover:not(:disabled) {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.reject-btn {
+  background: #ef4444;
+  color: white;
+}
+
+.reject-btn:hover:not(:disabled) {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.appointment-meta {
+  padding: 0 1.5rem 1.5rem;
+  border-top: 1px solid #f3f4f6;
+  margin-top: 1rem;
+}
+
+.created-at {
+  margin: 1rem 0 0;
+  color: #9ca3af;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* État vide */
+.no-appointments {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 12px;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.no-appointments h3 {
+  margin: 0 0 0.5rem;
+  color: #1f2937;
+  font-size: 1.5rem;
+}
+
+.no-appointments p {
+  margin: 0;
+  color: #6b7280;
+}
+
+/* Notifications */
+.notification {
+  position: fixed;
+  top: 120px;
+  right: 20px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  max-width: 400px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.notification.success {
+  border-left: 4px solid #10b981;
+}
+
+.notification.error {
+  border-left: 4px solid #ef4444;
+}
+
+.notification.success i {
+  color: #10b981;
+}
+
+.notification.error i {
+  color: #ef4444;
+}
+
+.notification span {
+  flex: 1;
+  color: #374151;
+  font-weight: 500;
+}
+
+.close-notification {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.close-notification:hover {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+/* Animations */
+.notification-enter-active, .notification-leave-active {
+  transition: all 0.3s ease;
+}
+
+.notification-enter-from {
+  opacity: 0;
+  transform: translateX(100px);
+}
+
+.notification-leave-to {
+  opacity: 0;
+  transform: translateX(100px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-hero h1 {
+    font-size: 2rem;
+  }
+  
+  .appointment-body {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .appointment-actions {
+    flex-direction: column;
+  }
+  
+  .filter-buttons {
+    flex-direction: column;
+  }
+  
+  .filter-btn {
+    justify-self: stretch;
+  }
+  
+  .container {
+    padding: 0 1rem;
+  }
+}
+</style> 

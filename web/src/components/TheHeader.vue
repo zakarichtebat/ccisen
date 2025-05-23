@@ -20,11 +20,70 @@
         
         <!-- Menu utilisateur affiché seulement si connecté -->
         <div v-if="user" class="user-menu">
-          <span class="user-name animate-slide-down">{{ user.nom }} {{ user.prenom }}</span>
-          <div class="user-dropdown">
-            <router-link to="/profile" class="profile-link">Mon profil</router-link>
-            <button @click="handleLogout" class="logout-btn animate-slide-up">Déconnexion</button>
+          <div class="user-trigger" @click="toggleDropdown">
+            <div class="user-avatar">
+              <span class="avatar-initials">{{ getUserInitials() }}</span>
+            </div>
+            <span class="user-name">{{ user.nom }} {{ user.prenom }}</span>
+            <i class="fas fa-chevron-down dropdown-arrow" :class="{ 'rotated': isDropdownOpen }"></i>
           </div>
+          
+          <!-- Menu déroulant -->
+          <div v-if="isDropdownOpen" class="dropdown-menu" @click.stop>
+            <!-- En-tête du dropdown -->
+            <div class="dropdown-header">
+              <div class="header-avatar">
+                <span class="header-avatar-initials">{{ getUserInitials() }}</span>
+              </div>
+              <div class="header-info">
+                <h4>{{ user.prenom }} {{ user.nom }}</h4>
+                <span class="user-role">{{ getUserRole() }}</span>
+              </div>
+            </div>
+            
+            <!-- Options du menu -->
+            <div class="dropdown-options">
+              <router-link to="/profile" class="dropdown-item" @click="closeDropdown">
+                <i class="fas fa-user"></i>
+                <span>Mon Profil</span>
+              </router-link>
+              
+              <router-link to="/settings" class="dropdown-item" @click="closeDropdown">
+                <i class="fas fa-cog"></i>
+                <span>Paramètres</span>
+              </router-link>
+              
+              <router-link v-if="user && user.role === 'administrateur'" to="/admin" class="dropdown-item" @click="closeDropdown">
+                <i class="fas fa-shield-alt"></i>
+                <span>Administration</span>
+              </router-link>
+              
+              <router-link to="/dashboard" class="dropdown-item" @click="closeDropdown">
+                <i class="fas fa-chart-bar"></i>
+                <span>Tableau de bord</span>
+              </router-link>
+              
+              <router-link to="/notifications" class="dropdown-item" @click="closeDropdown">
+                <i class="fas fa-bell"></i>
+                <span>Notifications</span>
+              </router-link>
+              
+              <router-link to="/support" class="dropdown-item" @click="closeDropdown">
+                <i class="fas fa-question-circle"></i>
+                <span>Aide & Support</span>
+              </router-link>
+              
+              <div class="dropdown-divider"></div>
+              
+              <button @click="handleLogout" class="dropdown-item logout-item">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Déconnexion</span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Overlay pour fermer le dropdown -->
+          <div v-if="isDropdownOpen" class="dropdown-overlay" @click="closeDropdown"></div>
         </div>
         
         <!-- Boutons d'authentification si non connecté -->
@@ -48,6 +107,7 @@
 // Importation des composants et fonctionnalités nécessaires
 import { ref, onMounted, onUnmounted } from 'vue'  // Pour la réactivité et les hooks du cycle de vie
 import { useRouter } from 'vue-router'             // Pour la navigation entre les pages
+import axios from 'axios'                          // Pour les requêtes HTTP
 
 // Initialisation du router pour la navigation
 const router = useRouter()
@@ -55,17 +115,41 @@ const router = useRouter()
 // Variables réactives
 const user = ref(null)           // Stocke les informations de l'utilisateur connecté
 const isScrolled = ref(false)    // Indique si la page a été défilée
+const isDropdownOpen = ref(false) // Indique si le dropdown est ouvert
+
+/**
+ * Récupère les informations utilisateur depuis l'API
+ */
+const fetchUserData = async () => {
+  try {
+    const response = await axios.post('http://localhost:3000/auth/current-user', {}, {
+      withCredentials: true
+    })
+    
+    if (response.data.isLoggedIn && response.data.user) {
+      user.value = response.data.user
+      // Mettre à jour le localStorage avec les données complètes
+      localStorage.setItem('user', JSON.stringify(response.data.user))
+      console.log('Données utilisateur mises à jour:', response.data.user)
+    }
+  } catch (error) {
+    console.error('Erreur lors de la récupération des données utilisateur:', error)
+  }
+}
 
 /**
  * Hook exécuté au montage du composant
  * Récupère les informations utilisateur du localStorage et configure les écouteurs d'événements
  */
-onMounted(() => {
+onMounted(async () => {
   // Récupération des données utilisateur du localStorage
   const storedUser = localStorage.getItem('user')
   if (storedUser) {
     user.value = JSON.parse(storedUser)
   }
+  
+  // Récupérer les données à jour depuis l'API
+  await fetchUserData()
   
   // Ajout d'un écouteur pour détecter le défilement de la page
   window.addEventListener('scroll', handleScroll)
@@ -101,6 +185,43 @@ const handleLogout = () => {
   
   // Redirection vers la page de connexion
   router.push('/login')
+}
+
+/**
+ * Gère l'ouverture et la fermeture du dropdown
+ */
+const toggleDropdown = () => {
+  isDropdownOpen.value = !isDropdownOpen.value
+}
+
+/**
+ * Gère la fermeture du dropdown
+ */
+const closeDropdown = () => {
+  isDropdownOpen.value = false
+}
+
+/**
+ * Retourne les initiales de l'utilisateur
+ */
+const getUserInitials = () => {
+  if (user.value) {
+    const name = user.value.nom.toUpperCase()
+    const prenom = user.value.prenom.toUpperCase()
+    return name.charAt(0) + prenom.charAt(0)
+  }
+  return ''
+}
+
+/**
+ * Retourne le rôle de l'utilisateur
+ */
+const getUserRole = () => {
+  if (user.value && user.value.role) {
+    // Capitaliser la première lettre du rôle
+    return user.value.role.charAt(0).toUpperCase() + user.value.role.slice(1).toLowerCase()
+  }
+  return 'Utilisateur'
 }
 </script>
 
@@ -209,24 +330,40 @@ const handleLogout = () => {
   gap: 1rem;
 }
 
-.user-dropdown {
+.user-trigger {
   display: flex;
+  align-items: center;
   gap: 0.8rem;
-}
-
-.profile-link {
+  cursor: pointer;
   padding: 0.5rem 1rem;
-  background-color: rgba(33, 150, 243, 0.1);
-  color: #2196F3;
-  border-radius: 20px;
-  text-decoration: none;
-  font-weight: 500;
+  border-radius: 25px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
   transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.profile-link:hover {
-  background-color: rgba(33, 150, 243, 0.2);
-  transform: translateY(-2px);
+.user-trigger:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.user-avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-initials {
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .user-name {
@@ -242,26 +379,156 @@ const handleLogout = () => {
   background-color: rgba(76, 175, 80, 0.2);
 }
 
-/* Styles pour le bouton de déconnexion */
-.logout-btn {
-  padding: 0.5rem 1rem;
-  background-color: #dc3545;
+.dropdown-arrow {
+  color: #6b7280;
+  font-size: 0.8rem;
+  transition: transform 0.3s ease;
+}
+
+.dropdown-arrow.rotated {
+  transform: rotate(180deg);
+}
+
+/* Menu déroulant */
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  width: 280px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  z-index: 1001;
+  animation: dropdownSlide 0.3s ease-out;
+  border: 1px solid #e5e7eb;
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* En-tête du dropdown */
+.dropdown-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.header-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.header-avatar-initials {
   color: white;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  font-weight: 700;
+  font-size: 1.2rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.header-info h4 {
+  margin: 0 0 0.2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.user-role {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+
+/* Options du menu */
+.dropdown-options {
+  padding: 0.5rem 0;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  text-decoration: none;
+  color: #374151;
   font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  border: none;
+  background: none;
+  width: 100%;
+  cursor: pointer;
 }
 
-.logout-btn:hover {
-  background-color: #c82333;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+.dropdown-item:hover {
+  background: #f8fafc;
+  color: #1f2937;
 }
 
-.logout-btn:active {
-  transform: translateY(0);
+.dropdown-item i {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+.dropdown-item:hover i {
+  color: #4f46e5;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 0.5rem 0;
+}
+
+.logout-item {
+  color: #dc2626 !important;
+}
+
+.logout-item:hover {
+  background: #fef2f2 !important;
+  color: #b91c1c !important;
+}
+
+.logout-item i {
+  color: #dc2626 !important;
+}
+
+.logout-item:hover i {
+  color: #b91c1c !important;
+}
+
+/* Overlay */
+.dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  z-index: 1000;
 }
 
 /* Styles pour les boutons d'authentification */
