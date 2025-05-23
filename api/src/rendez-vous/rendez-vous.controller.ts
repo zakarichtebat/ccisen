@@ -86,6 +86,28 @@ export class RendezVousController {
     return this.rendezVousService.findAll();
   }
 
+  @Get('admin/all')
+  @ApiOperation({ summary: 'Get all appointments for admin (with user and service details)' })
+  @ApiResponse({ status: 200, description: 'Return all appointments with details.' })
+  async findAllForAdmin(@Req() req: any) {
+    console.log('Requête admin reçue pour récupérer tous les rendez-vous');
+    try {
+      const result = await this.rendezVousService.findAllWithDetails();
+      console.log(`${result.length} rendez-vous trouvés`);
+      return result;
+    } catch (error) {
+      console.error('Erreur lors de la récupération des rendez-vous:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: `Erreur lors de la récupération des rendez-vous: ${errorMessage}`,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a rendez-vous by id' })
   @ApiResponse({ status: 200, description: 'Return the rendez-vous.' })

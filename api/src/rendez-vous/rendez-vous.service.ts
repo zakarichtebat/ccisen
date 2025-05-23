@@ -75,6 +75,34 @@ export class RendezVousService {
     });
   }
 
+  async findAllWithDetails() {
+    return this.prisma.rendezVous.findMany({
+      include: {
+        user: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+            email: true,
+            telephone: true,
+            secteurActivite: true,
+            adresse: true,
+            role: true,
+          }
+        },
+        service: true,
+      },
+      orderBy: [
+        {
+          date: 'asc',
+        },
+        {
+          heure: 'asc',
+        }
+      ],
+    });
+  }
+
   async findByUser(userId: number) {
     return this.prisma.rendezVous.findMany({
       where: { userId },
