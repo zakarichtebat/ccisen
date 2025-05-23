@@ -87,7 +87,7 @@
           </div>
           
           <button @click="refreshData" class="refresh-btn">
-            <i class="fas fa-sync-alt"></i>
+            <i class="fas fa-sync-alt spinning"></i>
             Actualiser
           </button>
         </div>
@@ -149,7 +149,7 @@
                   class="action-btn confirm-btn"
                   :disabled="updatingAppointment === appointment.id"
                 >
-                  <i class="fas fa-check"></i>
+                  <i class="fas fa-check-circle"></i>
                   Confirmer
                 </button>
                 
@@ -158,14 +158,14 @@
                   class="action-btn reject-btn"
                   :disabled="updatingAppointment === appointment.id"
                 >
-                  <i class="fas fa-times"></i>
+                  <i class="fas fa-times-circle"></i>
                   Refuser
                 </button>
               </div>
               
               <div class="appointment-meta">
                 <p class="created-at">
-                  <i class="fas fa-calendar-plus"></i>
+                  <i class="fas fa-calendar-alt"></i>
                   Demandé le {{ formatDate(appointment.createdAt) }}
                 </p>
               </div>
@@ -815,6 +815,15 @@ onMounted(async () => {
 }
 
 /* Animations */
+.spinning {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 .notification-enter-active, .notification-leave-active {
   transition: all 0.3s ease;
 }
