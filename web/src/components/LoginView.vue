@@ -61,6 +61,12 @@ const password = ref('')         // Stocke la valeur du champ mot de passe
 const error = ref('')            // Stocke les messages d'erreur
 const loading = ref(false)       // Indique si une requête est en cours
 
+// Afficher le message de redirection si présent dans la query
+const redirectMessage = router.currentRoute.value.query.message
+if (redirectMessage) {
+  error.value = redirectMessage
+}
+
 /**
  * Gère la soumission du formulaire de connexion
  * Envoie les identifiants au serveur et traite la réponse
@@ -81,8 +87,9 @@ const handleLogin = async () => {
     localStorage.setItem('token', response.data.access_token)
     localStorage.setItem('user', JSON.stringify(response.data.user))
 
-    // Redirection vers la page d'accueil
-    router.push('/')
+    // Redirection vers la page d'origine ou vers l'accueil
+    const redirectPath = router.currentRoute.value.query.redirect || '/'
+    router.push(redirectPath)
   } catch (err) {
     // Gestion des erreurs d'authentification
     error.value = err.response?.data?.message || 'Une erreur est survenue'
