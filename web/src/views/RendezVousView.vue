@@ -145,7 +145,15 @@
               </ul>
               <p>Si le problème persiste, n'hésitez pas à nous contacter directement par téléphone au <a href="tel:+212536603857">+212 536 603 857</a>.</p>
             </div>
-            <button @click="errorMessage = ''" class="btn-retry">Réessayer</button>
+            <div class="error-actions">
+              <button @click="errorMessage = ''" class="btn-retry">Fermer</button>
+              <button @click="reloadData" class="btn-reload">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                </svg>
+                Recharger les données
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -411,10 +419,14 @@ const fetchPlagesHoraires = async () => {
 // Récupérer les rendez-vous existants
 const fetchExistingRendezVous = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/rendez-vous')
+    console.log('Tentative de récupération des rendez-vous...')
+    const response = await axios.get('http://localhost:3000/rendez-vous', {
+      withCredentials: true // Important pour envoyer les cookies
+    })
     existingRendezVous.value = response.data
+    console.log('Rendez-vous récupérés avec succès:', response.data)
   } catch (error) {
-    console.error('Erreur lors de la récupération des rendez-vous existants:', error)
+    errorMessage.value = handleApiError(error, 'de la récupération des rendez-vous')
   }
 }
 
@@ -503,6 +515,7 @@ onMounted(() => {
   fetchServices()
   fetchPlagesHoraires()
   fetchExistingRendezVous()
+  fetchCurrentUserAndAppointments()
 })
 
 watch(() => formData.value.date, () => {
@@ -511,6 +524,141 @@ watch(() => formData.value.date, () => {
     formData.value.heure = ''
   }
 })
+
+const fetchUserAppointments = async (userId) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/rendez-vous?userId=${userId}`, {
+      withCredentials: true
+    });
+    console.log('Rendez-vous utilisateur récupérés:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des rendez-vous:', error);
+    throw error;
+  }
+}
+
+const fetchAllAppointments = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/rendez-vous', {
+      withCredentials: true
+    });
+    console.log('Tous les rendez-vous récupérés:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des rendez-vous:', error);
+    throw error;
+  }
+}
+
+const cancelAppointment = async (appointmentId) => {
+  try {
+    const response = await axios.patch(`http://localhost:3000/rendez-vous/${appointmentId}`, {
+      status: 'annulé'
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de l\'annulation du rendez-vous:', error);
+    throw error;
+  }
+}
+
+// Fonction pour filtrer les rendez-vous à venir
+const getUpcomingAppointments = (appointments) => {
+  const now = new Date();
+  return appointments.filter(appointment => {
+    const appointmentDate = new Date(appointment.date);
+    appointmentDate.setHours(parseInt(appointment.heure.split(':')[0]), parseInt(appointment.heure.split(':')[1]));
+    return appointmentDate > now;
+  }).sort((a, b) => new Date(a.date) - new Date(b.date));
+}
+
+// Fonction pour filtrer les rendez-vous passés
+const getPastAppointments = (appointments) => {
+  const now = new Date();
+  return appointments.filter(appointment => {
+    const appointmentDate = new Date(appointment.date);
+    appointmentDate.setHours(parseInt(appointment.heure.split(':')[0]), parseInt(appointment.heure.split(':')[1]));
+    return appointmentDate <= now;
+  }).sort((a, b) => new Date(b.date) - new Date(a.date));
+}
+
+// Récupérer l'utilisateur actuel et ses rendez-vous
+const fetchCurrentUserAndAppointments = async () => {
+  try {
+    // Vérifier si l'utilisateur est connecté
+    const userResponse = await axios.post('http://localhost:3000/auth/current-user', {}, {
+      withCredentials: true
+    });
+    
+    if (userResponse.data.isLoggedIn) {
+      const userId = userResponse.data.user.id;
+      console.log('Utilisateur connecté avec ID:', userId);
+      
+      // Récupérer les rendez-vous de l'utilisateur
+      try {
+        const appointmentsResponse = await axios.get(`http://localhost:3000/rendez-vous?userId=${userId}`, {
+          withCredentials: true
+        });
+        
+        console.log('Rendez-vous personnels:', appointmentsResponse.data);
+        
+        // Vous pouvez stocker ces rendez-vous dans une variable réactive si nécessaire
+        // userAppointments.value = appointmentsResponse.data;
+      } catch (appointmentError) {
+        errorMessage.value = handleApiError(appointmentError, 'de la récupération de vos rendez-vous')
+      }
+    }
+  } catch (error) {
+    errorMessage.value = handleApiError(error, 'de la vérification de l\'utilisateur')
+  }
+}
+
+// Utilitaire pour gérer les erreurs d'API
+const handleApiError = (error, context = 'opération') => {
+  console.error(`Erreur lors de ${context}:`, error)
+  
+  if (error.response) {
+    // La requête a été faite et le serveur a répondu avec un code d'erreur
+    console.error('Détails erreur serveur:', error.response.status, error.response.data)
+    
+    if (error.response.status === 401) {
+      return 'Vous devez être connecté pour effectuer cette action. Veuillez vous connecter.'
+    } else if (error.response.status === 403) {
+      return 'Vous n\'avez pas les droits nécessaires pour effectuer cette action.'
+    } else if (error.response.status === 404) {
+      return 'La ressource demandée n\'existe pas.'
+    } else {
+      return `Erreur ${error.response.status}: ${error.response.data.error || `Erreur lors de ${context}`}`
+    }
+  } else if (error.request) {
+    // La requête a été faite mais aucune réponse n'a été reçue
+    console.error('Aucune réponse reçue du serveur:', error.request)
+    return 'Le serveur ne répond pas. Veuillez vérifier votre connexion ou réessayer plus tard.'
+  } else {
+    // Une erreur s'est produite lors de la configuration de la requête
+    console.error('Erreur de configuration de la requête:', error.message)
+    return 'Erreur lors de la tentative de connexion au serveur.'
+  }
+}
+
+// Ajouter cette fonction pour recharger toutes les données
+const reloadData = () => {
+  console.log('Rechargement des données...')
+  errorMessage.value = ''
+  
+  // Recharger les services
+  fetchServices()
+  
+  // Recharger les plages horaires
+  fetchPlagesHoraires()
+  
+  // Recharger les rendez-vous
+  fetchExistingRendezVous()
+  
+  // Recharger les données utilisateur
+  fetchCurrentUserAndAppointments()
+}
 </script>
 
 <style scoped>

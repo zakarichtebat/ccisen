@@ -21,7 +21,10 @@
         <!-- Menu utilisateur affiché seulement si connecté -->
         <div v-if="user" class="user-menu">
           <span class="user-name animate-slide-down">{{ user.nom }} {{ user.prenom }}</span>
-          <button @click="handleLogout" class="logout-btn animate-slide-up">Déconnexion</button>
+          <div class="user-dropdown">
+            <router-link to="/profile" class="profile-link">Mon profil</router-link>
+            <button @click="handleLogout" class="logout-btn animate-slide-up">Déconnexion</button>
+          </div>
         </div>
         
         <!-- Boutons d'authentification si non connecté -->
@@ -200,9 +203,30 @@ const handleLogout = () => {
 
 /* Styles pour le menu utilisateur */
 .user-menu {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+.user-dropdown {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.profile-link {
+  padding: 0.5rem 1rem;
+  background-color: rgba(33, 150, 243, 0.1);
+  color: #2196F3;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.profile-link:hover {
+  background-color: rgba(33, 150, 243, 0.2);
+  transform: translateY(-2px);
 }
 
 .user-name {
