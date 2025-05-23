@@ -47,6 +47,14 @@
               <i class="fas fa-calendar"></i>
               Mes rendez-vous
             </button>
+            <button 
+              class="tab-button" 
+              :class="{ 'active': activeTab === 'inscriptions' }" 
+              @click="activeTab = 'inscriptions'"
+            >
+              <i class="fas fa-graduation-cap"></i>
+              Mes inscriptions ({{ userInscriptions.length }})
+            </button>
           </div>
           
           <!-- Contenu des onglets -->
@@ -334,6 +342,139 @@
                 </div>
               </div>
             </div>
+            
+            <!-- Onglet Mes Inscriptions -->
+            <div v-if="activeTab === 'inscriptions'" class="inscriptions-tab-content">
+              <div class="inscriptions-header">
+                <div class="inscriptions-stats">
+                  <div class="stat-box">
+                    <span class="stat-number">{{ userInscriptions.length }}</span>
+                    <span class="stat-label">Total</span>
+                  </div>
+                  <div class="stat-box">
+                    <span class="stat-number">{{ inscriptionsEnAttente.length }}</span>
+                    <span class="stat-label">En attente</span>
+                  </div>
+                  <div class="stat-box">
+                    <span class="stat-number">{{ inscriptionsConfirmees.length }}</span>
+                    <span class="stat-label">Confirmées</span>
+                  </div>
+                  <div class="stat-box">
+                    <span class="stat-number">{{ inscriptionsAnnulees.length }}</span>
+                    <span class="stat-label">Annulées</span>
+                  </div>
+                </div>
+                
+                <div class="inscriptions-filters">
+                  <button 
+                    class="filter-btn" 
+                    :class="{ 'active': inscriptionsFilter === 'all' }"
+                    @click="inscriptionsFilter = 'all'"
+                  >
+                    Toutes
+                  </button>
+                  <button 
+                    class="filter-btn" 
+                    :class="{ 'active': inscriptionsFilter === 'en_attente' }"
+                    @click="inscriptionsFilter = 'en_attente'"
+                  >
+                    En attente
+                  </button>
+                  <button 
+                    class="filter-btn" 
+                    :class="{ 'active': inscriptionsFilter === 'confirmé' }"
+                    @click="inscriptionsFilter = 'confirmé'"
+                  >
+                    Confirmées
+                  </button>
+                  <button 
+                    class="filter-btn" 
+                    :class="{ 'active': inscriptionsFilter === 'annulé' }"
+                    @click="inscriptionsFilter = 'annulé'"
+                  >
+                    Annulées
+                  </button>
+                </div>
+                
+                <button 
+                  @click="refreshInscriptions" 
+                  class="refresh-button"
+                >
+                  <i class="fas fa-sync-alt"></i>
+                  Actualiser
+                </button>
+              </div>
+              
+              <div v-if="filteredInscriptions.length === 0" class="empty-inscriptions">
+                <div class="empty-icon">
+                  <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h3>Aucune inscription</h3>
+                <p>Vous n'avez pas encore d'inscription {{ getFilterText(inscriptionsFilter) }}.</p>
+                <router-link to="/formations" class="new-inscription-btn">
+                  <i class="fas fa-plus"></i>
+                  Voir les formations
+                </router-link>
+              </div>
+              
+              <div v-else class="inscriptions-grid">
+                <div 
+                  v-for="inscription in filteredInscriptions" 
+                  :key="inscription.id"
+                  class="inscription-item"
+                  :class="`status-${inscription.statut}`"
+                >
+                  <div class="inscription-status-badge" :class="`status-${inscription.statut}`">
+                    {{ getInscriptionStatusText(inscription.statut) }}
+                  </div>
+                  
+                  <div class="inscription-content">
+                    <div class="formation-info">
+                      <h4>{{ inscription.formation.titre }}</h4>
+                      <p class="formation-description">{{ inscription.formation.description }}</p>
+                      
+                      <div class="formation-details">
+                        <div class="detail-row">
+                          <i class="fas fa-calendar-alt"></i>
+                          <span>{{ formatDate(inscription.formation.dateDebut) }} - {{ formatDate(inscription.formation.dateFin) }}</span>
+                        </div>
+                        
+                        <div class="detail-row">
+                          <i class="fas fa-clock"></i>
+                          <span>{{ inscription.formation.heureDebut }} - {{ inscription.formation.heureFin }}</span>
+                        </div>
+                        
+                        <div class="detail-row">
+                          <i class="fas fa-map-marker-alt"></i>
+                          <span>{{ inscription.formation.lieu }}</span>
+                        </div>
+                        
+                        <div class="detail-row">
+                          <i class="fas fa-euro-sign"></i>
+                          <span>{{ inscription.formation.prix === 0 ? 'Gratuit' : inscription.formation.prix + '€' }}</span>
+                        </div>
+                      </div>
+                      
+                      <div v-if="inscription.notes" class="inscription-notes">
+                        <strong>Mes notes :</strong> {{ inscription.notes }}
+                      </div>
+                    </div>
+                    
+                    <div class="inscription-meta">
+                      <div class="inscription-date">
+                        <i class="fas fa-calendar-plus"></i>
+                        <span>Inscrit le {{ formatDate(inscription.dateInscription) }}</span>
+                      </div>
+                      
+                      <div class="formation-status" v-if="inscription.formation.statut !== 'active'">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Formation {{ inscription.formation.statut }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -377,8 +518,10 @@ axios.defaults.withCredentials = true;
 const router = useRouter()
 const user = ref(null)
 const rendezVousList = ref([])
+const userInscriptions = ref([])
 const activeTab = ref('info')
 const appointmentsFilter = ref('upcoming')
+const inscriptionsFilter = ref('all')
 const profilePhoto = ref(null)
 const isSubmitting = ref(false)
 const successMessage = ref('')
@@ -504,6 +647,8 @@ const fetchUserData = async () => {
       
       // Récupérer les rendez-vous après avoir récupéré les données utilisateur
       await fetchUserAppointments();
+      // Récupérer les inscriptions après avoir récupéré les données utilisateur
+      await fetchUserInscriptions();
     } else {
       // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
       console.log('Utilisateur non connecté, redirection vers /login');
@@ -537,6 +682,63 @@ const fetchUserAppointments = async () => {
       errorMessage.value = 'Impossible de charger vos rendez-vous. Veuillez réessayer plus tard.';
     }
   }
+}
+
+// Récupérer les inscriptions de l'utilisateur
+const fetchUserInscriptions = async () => {
+  try {
+    if (!user.value) {
+      console.log('Utilisateur non connecté, impossible de récupérer les inscriptions');
+      return;
+    }
+    
+    console.log('Récupération des inscriptions pour l\'utilisateur ID:', user.value.id);
+    const response = await axios.get('http://localhost:3000/formations/user/inscriptions', {
+      withCredentials: true
+    });
+    userInscriptions.value = response.data;
+    console.log('Inscriptions récupérées:', response.data);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des inscriptions:', error);
+    if (error.response && error.response.status === 401) {
+      errorMessage.value = 'Vous devez être connecté pour voir vos inscriptions.';
+    } else {
+      errorMessage.value = 'Impossible de charger vos inscriptions. Veuillez réessayer plus tard.';
+    }
+  }
+}
+
+// Actualiser les inscriptions
+const refreshInscriptions = async () => {
+  await fetchUserInscriptions();
+}
+
+// Fonctions utilitaires pour les inscriptions
+const getInscriptionStatusText = (status) => {
+  switch (status) {
+    case 'en_attente': return 'En attente';
+    case 'confirmé': return 'Confirmée';
+    case 'annulé': return 'Annulée';
+    default: return status;
+  }
+}
+
+const getFilterText = (filter) => {
+  switch (filter) {
+    case 'en_attente': return 'en attente';
+    case 'confirmé': return 'confirmées';
+    case 'annulé': return 'annulées';
+    default: return '';
+  }
+}
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat('fr-FR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  }).format(date);
 }
 
 // Mettre à jour le profil utilisateur
@@ -717,6 +919,32 @@ const refreshAppointments = async () => {
     console.log('Impossible d\'actualiser les rendez-vous: utilisateur non connecté');
   }
 }
+
+// Filtrer les inscriptions selon le filtre actif
+const filteredInscriptions = computed(() => {
+  if (!userInscriptions.value.length) return [];
+  
+  if (inscriptionsFilter.value === 'all') {
+    return [...userInscriptions.value].sort((a, b) => new Date(b.dateInscription) - new Date(a.dateInscription));
+  }
+  
+  return userInscriptions.value
+    .filter(inscription => inscription.statut === inscriptionsFilter.value)
+    .sort((a, b) => new Date(b.dateInscription) - new Date(a.dateInscription));
+})
+
+// Computed pour les statistiques des inscriptions
+const inscriptionsEnAttente = computed(() => 
+  userInscriptions.value.filter(inscription => inscription.statut === 'en_attente')
+)
+
+const inscriptionsConfirmees = computed(() => 
+  userInscriptions.value.filter(inscription => inscription.statut === 'confirmé')
+)
+
+const inscriptionsAnnulees = computed(() => 
+  userInscriptions.value.filter(inscription => inscription.statut === 'annulé')
+)
 
 onMounted(() => {
   fetchUserData();
@@ -1325,13 +1553,13 @@ onMounted(() => {
   position: fixed;
   top: 120px;
   right: 20px;
+  max-width: 400px;
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 1rem 1.5rem;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   z-index: 1000;
-  max-width: 400px;
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -1387,6 +1615,238 @@ onMounted(() => {
 .notification-leave-to {
   opacity: 0;
   transform: translateX(100px);
+}
+
+/* Styles pour les inscriptions */
+.inscriptions-tab-content {
+  padding: 0;
+}
+
+.inscriptions-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+  border-bottom: 1px solid #f3f4f6;
+  background: #fafbfc;
+}
+
+.inscriptions-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 1rem;
+}
+
+.stat-box {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  transition: transform 0.2s ease;
+}
+
+.stat-box:hover {
+  transform: translateY(-2px);
+}
+
+.stat-number {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.inscriptions-filters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.empty-inscriptions {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.empty-inscriptions .empty-icon {
+  font-size: 4rem;
+  color: #d1d5db;
+  margin-bottom: 1rem;
+}
+
+.empty-inscriptions h3 {
+  margin: 0 0 0.5rem;
+  color: #374151;
+  font-size: 1.25rem;
+}
+
+.empty-inscriptions p {
+  color: #6b7280;
+  margin: 0 0 1.5rem;
+}
+
+.new-inscription-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #3b82f6;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.new-inscription-btn:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.inscriptions-grid {
+  padding: 2rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.inscription-item {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.inscription-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.inscription-item.status-en_attente {
+  border-left: 4px solid #f59e0b;
+}
+
+.inscription-item.status-confirmé {
+  border-left: 4px solid #10b981;
+}
+
+.inscription-item.status-annulé {
+  border-left: 4px solid #ef4444;
+}
+
+.inscription-status-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.inscription-status-badge.status-en_attente {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.inscription-status-badge.status-confirmé {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.inscription-status-badge.status-annulé {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.inscription-content {
+  padding: 1.5rem;
+}
+
+.formation-info h4 {
+  margin: 0 0 0.5rem;
+  color: #1f2937;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding-right: 6rem; /* Pour laisser de la place au badge de statut */
+}
+
+.formation-description {
+  color: #6b7280;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0 0 1rem;
+}
+
+.formation-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #374151;
+  font-size: 0.85rem;
+}
+
+.detail-row i {
+  width: 14px;
+  color: #9ca3af;
+}
+
+.inscription-notes {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+  border-left: 3px solid #3b82f6;
+}
+
+.inscription-notes strong {
+  color: #374151;
+  font-size: 0.85rem;
+}
+
+.inscription-meta {
+  border-top: 1px solid #f3f4f6;
+  padding-top: 1rem;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.inscription-date,
+.formation-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  font-size: 0.8rem;
+}
+
+.inscription-date i,
+.formation-status i {
+  color: #9ca3af;
 }
 
 /* Responsive Design */
@@ -1457,6 +1917,21 @@ onMounted(() => {
     gap: 1rem;
   }
   
+  .inscriptions-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    padding: 1.5rem;
+  }
+  
+  .inscriptions-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .inscriptions-filters {
+    justify-content: center;
+  }
+  
   .appointments-filters {
     justify-content: center;
   }
@@ -1488,6 +1963,19 @@ onMounted(() => {
     right: 1rem;
     left: 1rem;
     max-width: none;
+  }
+  
+  .inscriptions-grid {
+    padding: 1.5rem;
+  }
+  
+  .formation-details {
+    grid-template-columns: 1fr;
+  }
+  
+  .inscription-meta {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 
