@@ -40,7 +40,7 @@ const router = createRouter({
     {
       path: '/about',
       name: 'about',
-      component: () => import('../views/HomeView.vue') // Temporairement redirigé vers home
+      component: () => import('../views/AboutView.vue')
     },
     {
       path: '/actualites',

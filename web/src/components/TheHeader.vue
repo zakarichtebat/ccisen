@@ -16,7 +16,7 @@
         <router-link to="/services" class="nav-link">Services</router-link>
         <router-link to="/formations" class="nav-link">Formations</router-link>
         <router-link to="/about" class="nav-link">À propos</router-link>
-        <router-link to="/actualites" class="nav-link">Actualités</router-link>
+   
         <router-link to="/contact" class="nav-link">Contact</router-link>
         
         <!-- Menu utilisateur affiché seulement si connecté -->
