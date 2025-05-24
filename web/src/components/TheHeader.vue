@@ -48,21 +48,14 @@
                 <i class="fas fa-user"></i>
                 <span>Mon Profil</span>
               </router-link>
-              
-              <router-link to="/settings" class="dropdown-item" @click="closeDropdown">
-                <i class="fas fa-cog"></i>
-                <span>Paramètres</span>
-              </router-link>
+             
               
               <router-link v-if="user && user.role === 'administrateur'" to="/admin" class="dropdown-item" @click="closeDropdown">
                 <i class="fas fa-shield-alt"></i>
                 <span>Administration</span>
               </router-link>
               
-              <router-link to="/dashboard" class="dropdown-item" @click="closeDropdown">
-                <i class="fas fa-chart-bar"></i>
-                <span>Tableau de bord</span>
-              </router-link>
+             
               
               <router-link to="/notifications" class="dropdown-item" @click="closeDropdown">
                 <i class="fas fa-bell"></i>
