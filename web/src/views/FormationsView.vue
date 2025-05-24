@@ -2,13 +2,33 @@
   <div class="formations-page">
     <TheHeader />
     
-    <!-- Section héro -->
+    <!-- Section héro moderne -->
     <section class="formations-hero">
-      <div class="formations-hero-bg"></div>
+      <div class="hero-bg">
+        <div class="floating-shapes">
+          <div class="shape shape-1"></div>
+          <div class="shape shape-2"></div>
+          <div class="shape shape-3"></div>
+        </div>
+      </div>
       <div class="container">
-        <div class="formations-hero-content">
-          <h1>🎓 Formations Disponibles</h1>
-          <p>Développez vos compétences avec nos formations professionnelles</p>
+        <div class="hero-content">
+          <h1>🎓 Formations Professionnelles</h1>
+          <p>Développez vos compétences avec nos formations d'excellence</p>
+          <div class="hero-stats">
+            <div class="stat-item">
+              <span class="stat-number">{{ formations.length }}</span>
+              <span class="stat-label">Formations</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">{{ totalInscriptions }}</span>
+              <span class="stat-label">Participants</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">{{ totalLikes }}</span>
+              <span class="stat-label">Likes</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -25,32 +45,52 @@
         
         <!-- État vide -->
         <div v-else-if="formations.length === 0" class="no-formations">
-          <div class="empty-icon">📚</div>
+          <div class="empty-illustration">
+            <div class="empty-icon">📚</div>
+            <div class="empty-circles">
+              <div class="circle circle-1"></div>
+              <div class="circle circle-2"></div>
+              <div class="circle circle-3"></div>
+            </div>
+          </div>
           <h3>Aucune formation disponible</h3>
           <p>Aucune formation n'est actuellement proposée. Revenez bientôt !</p>
         </div>
         
-        <!-- Liste des formations -->
+        <!-- Liste des formations avec design amélioré -->
         <div v-else class="formations-grid">
           <div 
             v-for="formation in formations" 
             :key="formation.id"
             class="formation-card"
+            @click="openFormationDetails(formation)"
           >
-            <!-- Image/Icône de la formation -->
-            <div class="formation-image">
-              <i class="fas fa-graduation-cap"></i>
+            <!-- Image de la formation -->
+            <div class="formation-image-container">
+              <img 
+                :src="getFormationImage(formation)" 
+                :alt="formation.titre"
+                class="formation-image"
+                @error="onImageError"
+              />
+              <div class="image-overlay">
+                <div class="overlay-content">
+                  <i class="fas fa-play-circle play-icon"></i>
+                  <span>Voir les détails</span>
+                </div>
+              </div>
+              <div class="formation-category">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Formation</span>
+              </div>
             </div>
             
             <!-- Contenu de la formation -->
             <div class="formation-content">
               <div class="formation-header">
                 <h3>{{ formation.titre }}</h3>
-                <div class="formation-price" v-if="formation.prix > 0">
-                  {{ formation.prix }}€
-                </div>
-                <div class="formation-price free" v-else>
-                  Gratuit
+                <div class="formation-price" :class="{ 'free': formation.prix === 0 }">
+                  {{ formation.prix === 0 ? 'Gratuit' : formation.prix + '€' }}
                 </div>
               </div>
               
@@ -59,7 +99,7 @@
               <div class="formation-details">
                 <div class="detail-item">
                   <i class="fas fa-calendar-alt"></i>
-                  <span>Du {{ formatDate(formation.dateDebut) }} au {{ formatDate(formation.dateFin) }}</span>
+                  <span>{{ formatDateRange(formation.dateDebut, formation.dateFin) }}</span>
                 </div>
                 
                 <div class="detail-item">
@@ -84,6 +124,9 @@
                   class="progress-bar" 
                   :style="{ width: (formation.inscriptions.length / formation.maxParticipants * 100) + '%' }"
                 ></div>
+                <span class="progress-text">
+                  {{ Math.round((formation.inscriptions.length / formation.maxParticipants) * 100) }}% complet
+                </span>
               </div>
               
               <!-- Statut de la formation -->
@@ -95,12 +138,105 @@
                   {{ getStatusText(formation) }}
                 </span>
               </div>
+              
+              <!-- Section likes et commentaires -->
+              <div class="engagement-section">
+                <div class="engagement-stats">
+                  <button 
+                    @click.stop="toggleLike(formation.id)"
+                    class="like-btn"
+                    :class="{ 'liked': isLiked(formation.id) }"
+                  >
+                    <i :class="isLiked(formation.id) ? 'fas fa-heart' : 'far fa-heart'"></i>
+                    <span>{{ formation.likes?.length || 0 }}</span>
+                  </button>
+                  
+                  <button 
+                    @click.stop="toggleComments(formation.id)"
+                    class="comment-btn"
+                    :class="{ 'active': showComments[formation.id] }"
+                  >
+                    <i class="far fa-comment"></i>
+                    <span>{{ formation.comments?.length || 0 }}</span>
+                  </button>
+                  
+                  <button @click.stop="shareFormation(formation)" class="share-btn">
+                    <i class="fas fa-share-alt"></i>
+                    <span>Partager</span>
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Section commentaires -->
+              <transition name="comments">
+                <div v-if="showComments[formation.id]" class="comments-section">
+                  <div class="comments-header">
+                    <h4>Commentaires</h4>
+                    <span class="comments-count">{{ formation.comments?.length || 0 }}</span>
+                  </div>
+                  
+                  <!-- Liste des commentaires -->
+                  <div class="comments-list">
+                    <div 
+                      v-for="comment in formation.comments" 
+                      :key="comment.id"
+                      class="comment-item"
+                    >
+                      <div class="comment-avatar">
+                        <img :src="getAvatarUrl(comment.user)" :alt="comment.user.nom" />
+                      </div>
+                      <div class="comment-content">
+                        <div class="comment-header">
+                          <span class="comment-author">{{ comment.user.nom }} {{ comment.user.prenom }}</span>
+                          <span class="comment-date">{{ formatCommentDate(comment.createdAt) }}</span>
+                        </div>
+                        <p class="comment-text">{{ comment.content }}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Formulaire d'ajout de commentaire -->
+                  <div class="add-comment">
+                    <div class="comment-form">
+                      <div class="user-avatar">
+                        <img :src="currentUserAvatar" alt="Votre avatar" />
+                      </div>
+                      <div class="comment-input-container">
+                        <!-- Champ nom pour utilisateurs anonymes -->
+                        <div v-if="!isAuthenticated" class="anonymous-name-input">
+                          <input
+                            v-model="anonymousNames[formation.id]"
+                            placeholder="Votre nom (optionnel)"
+                            class="name-input"
+                            maxlength="50"
+                          />
+                        </div>
+                        
+                        <textarea
+                          v-model="newComments[formation.id]"
+                          placeholder="Ajoutez un commentaire..."
+                          class="comment-input"
+                          rows="2"
+                          @keydown.enter.prevent="addComment(formation.id)"
+                        ></textarea>
+                        <button 
+                          @click="addComment(formation.id)"
+                          class="send-comment-btn"
+                          :disabled="!newComments[formation.id]?.trim()"
+                        >
+                          <i class="fas fa-paper-plane"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </transition>
             </div>
             
             <!-- Actions -->
             <div class="formation-actions">
               <button 
-                @click="inscrireFormation(formation.id)"
+                @click.stop="inscrireFormation(formation.id)"
                 :disabled="!canSubscribe(formation) || subscribing === formation.id"
                 class="subscribe-btn"
                 :class="{ 'disabled': !canSubscribe(formation) }"
@@ -119,6 +255,77 @@
         </div>
       </div>
     </section>
+    
+    <!-- Modal détails formation -->
+    <transition name="modal">
+      <div v-if="selectedFormation" class="modal-overlay" @click.self="closeModal">
+        <div class="modal-content formation-modal">
+          <div class="modal-header">
+            <h3>{{ selectedFormation.titre }}</h3>
+            <button @click="closeModal" class="close-modal">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          
+          <div class="modal-body">
+            <div class="formation-modal-image">
+              <img :src="getFormationImage(selectedFormation)" :alt="selectedFormation.titre" />
+            </div>
+            
+            <div class="formation-modal-details">
+              <p>{{ selectedFormation.description }}</p>
+              
+              <div class="modal-formation-info">
+                <div class="info-grid">
+                  <div class="info-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <div>
+                      <strong>Dates</strong>
+                      <span>{{ formatDateRange(selectedFormation.dateDebut, selectedFormation.dateFin) }}</span>
+                    </div>
+                  </div>
+                  
+                  <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                      <strong>Horaires</strong>
+                      <span>{{ selectedFormation.heureDebut }} - {{ selectedFormation.heureFin }}</span>
+                    </div>
+                  </div>
+                  
+                  <div class="info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div>
+                      <strong>Lieu</strong>
+                      <span>{{ selectedFormation.lieu }}</span>
+                    </div>
+                  </div>
+                  
+                  <div class="info-item">
+                    <i class="fas fa-euro-sign"></i>
+                    <div>
+                      <strong>Prix</strong>
+                      <span>{{ selectedFormation.prix === 0 ? 'Gratuit' : selectedFormation.prix + '€' }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="modal-actions">
+            <button @click="closeModal" class="cancel-btn">Fermer</button>
+            <button 
+              @click="inscrireFormation(selectedFormation.id)"
+              :disabled="!canSubscribe(selectedFormation)"
+              class="subscribe-btn"
+            >
+              S'inscrire
+            </button>
+          </div>
+        </div>
+      </div>
+    </transition>
     
     <!-- Messages de notification -->
     <transition name="notification">
@@ -146,7 +353,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import TheHeader from '@/components/TheHeader.vue'
 import TheFooter from '@/components/TheFooter.vue'
@@ -158,10 +365,40 @@ axios.defaults.withCredentials = true
 const router = useRouter()
 const formations = ref([])
 const userInscriptions = ref([])
+const userLikes = ref([])
 const loading = ref(true)
 const subscribing = ref(null)
 const successMessage = ref('')
 const errorMessage = ref('')
+const selectedFormation = ref(null)
+const showComments = ref({})
+const newComments = ref({})
+const isAuthenticated = ref(false)
+const currentUser = ref(null)
+const anonymousNames = ref({})
+
+// Images par défaut pour les formations
+const formationImages = [
+  'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+]
+
+// Computed properties
+const totalInscriptions = computed(() => {
+  return formations.value.reduce((total, formation) => total + formation.inscriptions.length, 0)
+})
+
+const totalLikes = computed(() => {
+  return formations.value.reduce((total, formation) => total + (formation.likes?.length || 0), 0)
+})
+
+const currentUserAvatar = computed(() => {
+  return currentUser.value?.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
+})
 
 // Fonctions utilitaires
 const formatDate = (dateString) => {
@@ -171,6 +408,36 @@ const formatDate = (dateString) => {
     month: 'long',
     year: 'numeric'
   }).format(date)
+}
+
+const formatDateRange = (dateDebut, dateFin) => {
+  const debut = formatDate(dateDebut)
+  const fin = formatDate(dateFin)
+  return debut === fin ? debut : `${debut} - ${fin}`
+}
+
+const formatCommentDate = (dateString) => {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffTime = Math.abs(now - date)
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  
+  if (diffDays === 1) return 'Hier'
+  if (diffDays < 7) return `Il y a ${diffDays} jours`
+  return formatDate(dateString)
+}
+
+const getFormationImage = (formation) => {
+  // Utiliser l'image de la formation ou une image par défaut basée sur l'ID
+  return formation.image || formationImages[formation.id % formationImages.length]
+}
+
+const getAvatarUrl = (user) => {
+  return user.avatar || `https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80`
+}
+
+const onImageError = (event) => {
+  event.target.src = formationImages[0] // Image par défaut
 }
 
 const getStatusText = (formation) => {
@@ -194,21 +461,9 @@ const getStatusClass = (formation) => {
 }
 
 const canSubscribe = (formation) => {
-  // Vérifier si pas complet
-  if (formation.inscriptions.length >= formation.maxParticipants) {
-    return false
-  }
-  
-  // Vérifier si pas déjà commencé
-  if (new Date(formation.dateDebut) <= new Date()) {
-    return false
-  }
-  
-  // Vérifier si pas déjà inscrit
-  if (isAlreadySubscribed(formation.id)) {
-    return false
-  }
-  
+  if (formation.inscriptions.length >= formation.maxParticipants) return false
+  if (new Date(formation.dateDebut) <= new Date()) return false
+  if (isAlreadySubscribed(formation.id)) return false
   return true
 }
 
@@ -218,15 +473,28 @@ const isAlreadySubscribed = (formationId) => {
   )
 }
 
-// Récupérer les formations actives
+const isLiked = (formationId) => {
+  if (isAuthenticated.value) {
+    return userLikes.value.includes(formationId)
+  } else {
+    // Pour les utilisateurs anonymes, vérifier le localStorage
+    const likedFormations = JSON.parse(localStorage.getItem('likedFormations') || '[]')
+    return likedFormations.includes(formationId)
+  }
+}
+
+// Fonctions pour les formations
 const fetchFormations = async () => {
   try {
     loading.value = true
     const response = await axios.get('http://localhost:3000/formations/active', {
       withCredentials: true
     })
+    
+    // Utiliser les vraies données avec likes et commentaires du serveur
     formations.value = response.data
-    console.log('Formations récupérées:', response.data)
+    
+    console.log('Formations récupérées:', formations.value)
   } catch (error) {
     console.error('Erreur lors de la récupération des formations:', error)
     errorMessage.value = 'Impossible de charger les formations.'
@@ -235,18 +503,162 @@ const fetchFormations = async () => {
   }
 }
 
-// Récupérer les inscriptions de l'utilisateur
 const fetchUserInscriptions = async () => {
   try {
     const response = await axios.get('http://localhost:3000/formations/user/inscriptions', {
       withCredentials: true
     })
     userInscriptions.value = response.data
-    console.log('Inscriptions utilisateur:', response.data)
+    isAuthenticated.value = true
   } catch (error) {
-    // L'utilisateur n'est peut-être pas connecté, ce n'est pas grave
-    console.log('Utilisateur non connecté ou aucune inscription')
+    console.log('Utilisateur non connecté')
+    isAuthenticated.value = false
   }
+}
+
+const fetchCurrentUser = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/auth/me', {
+      withCredentials: true
+    })
+    currentUser.value = response.data
+  } catch (error) {
+    console.log('Utilisateur non connecté')
+  }
+}
+
+const fetchUserLikes = async () => {
+  if (!isAuthenticated.value) return
+  
+  try {
+    const response = await axios.get('http://localhost:3000/formations/user/likes', {
+      withCredentials: true
+    })
+    userLikes.value = response.data
+  } catch (error) {
+    console.log('Erreur lors de la récupération des likes utilisateur')
+  }
+}
+
+// Fonctions pour les likes et commentaires
+const toggleLike = async (formationId) => {
+  try {
+    const response = await axios.post(`http://localhost:3000/formations/${formationId}/like`, {}, {
+      withCredentials: true
+    })
+    
+    // Mettre à jour les données localement
+    const formation = formations.value.find(f => f.id === formationId)
+    if (formation) {
+      if (response.data.liked) {
+        // Ajouter le like
+        formation.likes = formation.likes || []
+        formation.likes.push({
+          id: Date.now(),
+          userId: currentUser.value?.id || 'anonymous',
+          formationId: formationId,
+          user: currentUser.value || { nom: 'Utilisateur', prenom: 'Anonyme' }
+        })
+        userLikes.value.push(formationId)
+        
+        // Stocker dans localStorage pour les utilisateurs anonymes
+        if (!isAuthenticated.value) {
+          const likedFormations = JSON.parse(localStorage.getItem('likedFormations') || '[]')
+          likedFormations.push(formationId)
+          localStorage.setItem('likedFormations', JSON.stringify(likedFormations))
+        }
+      } else {
+        // Retirer le like
+        formation.likes = formation.likes.filter(like => 
+          isAuthenticated.value ? like.userId !== currentUser.value?.id : like.userId === 'anonymous'
+        )
+        userLikes.value = userLikes.value.filter(id => id !== formationId)
+        
+        // Retirer du localStorage pour les utilisateurs anonymes
+        if (!isAuthenticated.value) {
+          const likedFormations = JSON.parse(localStorage.getItem('likedFormations') || '[]')
+          const updatedLikes = likedFormations.filter(id => id !== formationId)
+          localStorage.setItem('likedFormations', JSON.stringify(updatedLikes))
+        }
+      }
+    }
+    
+  } catch (error) {
+    console.error('Erreur lors du like:', error)
+    errorMessage.value = 'Erreur lors du like'
+    setTimeout(() => { errorMessage.value = '' }, 3000)
+  }
+}
+
+const toggleComments = (formationId) => {
+  showComments.value[formationId] = !showComments.value[formationId]
+}
+
+const addComment = async (formationId) => {
+  const content = newComments.value[formationId]?.trim()
+  if (!content) return
+  
+  try {
+    const commentData = {
+      content: content
+    }
+    
+    // Ajouter le nom de l'auteur pour les utilisateurs anonymes
+    if (!isAuthenticated.value && anonymousNames.value[formationId]) {
+      commentData.authorName = anonymousNames.value[formationId]
+    }
+    
+    const response = await axios.post(`http://localhost:3000/formations/${formationId}/comment`, commentData, {
+      withCredentials: true
+    })
+    
+    // Ajouter le commentaire à la liste locale
+    const formation = formations.value.find(f => f.id === formationId)
+    if (formation) {
+      if (!formation.comments) formation.comments = []
+      formation.comments.unshift(response.data)
+    }
+    
+    newComments.value[formationId] = ''
+    if (!isAuthenticated.value) {
+      anonymousNames.value[formationId] = ''
+    }
+    
+    successMessage.value = 'Commentaire ajouté avec succès!'
+    setTimeout(() => { successMessage.value = '' }, 3000)
+    
+  } catch (error) {
+    console.error('Erreur lors de l\'ajout du commentaire:', error)
+    errorMessage.value = error.response?.data?.error || 'Impossible d\'ajouter le commentaire.'
+    setTimeout(() => { errorMessage.value = '' }, 3000)
+  }
+}
+
+const shareFormation = async (formation) => {
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: formation.titre,
+        text: formation.description,
+        url: window.location.href
+      })
+    } catch (error) {
+      console.log('Partage annulé')
+    }
+  } else {
+    // Fallback: copier le lien
+    navigator.clipboard.writeText(window.location.href)
+    successMessage.value = 'Lien copié dans le presse-papier!'
+    setTimeout(() => { successMessage.value = '' }, 3000)
+  }
+}
+
+const openFormationDetails = (formation) => {
+  selectedFormation.value = formation
+}
+
+const closeModal = () => {
+  selectedFormation.value = null
 }
 
 // S'inscrire à une formation
@@ -262,7 +674,6 @@ const inscrireFormation = async (formationId) => {
     
     successMessage.value = 'Inscription réussie ! Vous recevrez une confirmation par email.'
     
-    // Actualiser les données
     await fetchFormations()
     await fetchUserInscriptions()
     
@@ -291,6 +702,14 @@ const inscrireFormation = async (formationId) => {
 onMounted(async () => {
   await fetchFormations()
   await fetchUserInscriptions()
+  await fetchCurrentUser()
+  await fetchUserLikes()
+  
+  // Charger les likes des utilisateurs anonymes depuis localStorage
+  if (!isAuthenticated.value) {
+    const likedFormations = JSON.parse(localStorage.getItem('likedFormations') || '[]')
+    userLikes.value = likedFormations
+  }
 })
 </script>
 
@@ -298,27 +717,71 @@ onMounted(async () => {
 .formations-page {
   min-height: 100vh;
   margin-top: 125px;
-  background: #f8fafc;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
-/* Section héro */
+/* Section héro moderne */
 .formations-hero {
   position: relative;
-  height: 200px;
+  height: 300px;
   overflow: hidden;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
-.formations-hero-bg {
+.hero-bg {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.formations-hero-content {
+.floating-shapes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.shape {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  animation: float 6s ease-in-out infinite;
+}
+
+.shape-1 {
+  width: 80px;
+  height: 80px;
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.shape-2 {
+  width: 120px;
+  height: 120px;
+  top: 60%;
+  right: 15%;
+  animation-delay: 2s;
+}
+
+.shape-3 {
+  width: 60px;
+  height: 60px;
+  top: 40%;
+  left: 70%;
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+.hero-content {
   position: relative;
   z-index: 2;
   display: flex;
@@ -328,19 +791,47 @@ onMounted(async () => {
   height: 100%;
   color: white;
   text-align: center;
+  padding: 2rem;
 }
 
-.formations-hero h1 {
+.hero-content h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  animation: slideInDown 1s ease-out;
+}
+
+.hero-content p {
+  font-size: 1.3rem;
+  margin: 0 0 2rem;
+  opacity: 0.95;
+  animation: slideInUp 1s ease-out 0.3s both;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 3rem;
+  animation: fadeInUp 1s ease-out 0.6s both;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  display: block;
   font-size: 2.5rem;
-  font-weight: 600;
-  margin: 0 0 0.5rem;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #fbbf24;
 }
 
-.formations-hero p {
-  font-size: 1.2rem;
-  margin: 0;
-  opacity: 0.9;
+.stat-label {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 /* Section principale */
@@ -361,10 +852,10 @@ onMounted(async () => {
 }
 
 .loading-spinner {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border: 4px solid #e5e7eb;
-  border-left: 4px solid #3b82f6;
+  border-left: 4px solid #667eea;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 1rem;
@@ -380,58 +871,161 @@ onMounted(async () => {
   text-align: center;
   padding: 4rem 2rem;
   background: white;
-  border-radius: 12px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.empty-illustration {
+  position: relative;
+  margin-bottom: 2rem;
 }
 
 .empty-icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-  opacity: 0.5;
+  font-size: 5rem;
+  opacity: 0.3;
+  animation: bounce 2s infinite;
+}
+
+.empty-circles {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid #667eea;
+  opacity: 0.3;
+}
+
+.circle-1 {
+  width: 100px;
+  height: 100px;
+  animation: pulse 2s infinite;
+}
+
+.circle-2 {
+  width: 150px;
+  height: 150px;
+  animation: pulse 2s infinite 0.5s;
+}
+
+.circle-3 {
+  width: 200px;
+  height: 200px;
+  animation: pulse 2s infinite 1s;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-30px); }
+  60% { transform: translateY(-15px); }
+}
+
+@keyframes pulse {
+  0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.7; }
+  50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.3; }
+  100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.7; }
 }
 
 .no-formations h3 {
   margin: 0 0 0.5rem;
   color: #1f2937;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
 }
 
 .no-formations p {
   margin: 0;
   color: #6b7280;
+  font-size: 1.1rem;
 }
 
 /* Grille des formations */
 .formations-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 2.5rem;
 }
 
 .formation-card {
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  animation: slideInUp 0.6s ease-out;
 }
 
 .formation-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.formation-card:hover .image-overlay {
+  opacity: 1;
+}
+
+.formation-image-container {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
 }
 
 .formation-image {
-  height: 120px;
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.formation-card:hover .formation-image {
+  transform: scale(1.1);
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9));
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.overlay-content {
   color: white;
+  text-align: center;
+  font-weight: 600;
+}
+
+.play-icon {
   font-size: 3rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.formation-category {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 500;
+  backdrop-filter: blur(10px);
 }
 
 .formation-content {
-  padding: 1.5rem;
+  padding: 2rem;
 }
 
 .formation-header {
@@ -444,93 +1038,357 @@ onMounted(async () => {
 .formation-header h3 {
   margin: 0;
   color: #1f2937;
-  font-size: 1.25rem;
+  font-size: 1.4rem;
+  font-weight: 600;
   flex: 1;
+  line-height: 1.3;
 }
 
 .formation-price {
-  background: #3b82f6;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
   font-size: 0.9rem;
   font-weight: 600;
   margin-left: 1rem;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
 .formation-price.free {
-  background: #10b981;
+  background: linear-gradient(135deg, #10b981, #059669);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
 }
 
 .formation-description {
   color: #6b7280;
   margin: 0 0 1.5rem;
-  line-height: 1.6;
+  line-height: 1.7;
+  font-size: 1rem;
 }
 
 .formation-details {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .detail-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
   color: #4b5563;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  padding: 0.5rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.detail-item:hover {
+  background: #e2e8f0;
+  transform: translateX(4px);
 }
 
 .detail-item i {
-  width: 16px;
-  color: #3b82f6;
+  width: 18px;
+  color: #667eea;
+  font-size: 1.1rem;
 }
 
 .participants-progress {
+  position: relative;
   width: 100%;
-  height: 8px;
+  height: 12px;
   background: #e5e7eb;
-  border-radius: 4px;
+  border-radius: 6px;
   overflow: hidden;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .progress-bar {
   height: 100%;
-  background: #3b82f6;
-  transition: width 0.3s ease;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 6px;
+}
+
+.progress-text {
+  position: absolute;
+  top: -25px;
+  right: 0;
+  color: #6b7280;
+  font-size: 0.85rem;
+  font-weight: 500;
 }
 
 .formation-status {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .status-badge {
-  padding: 0.25rem 0.75rem;
+  padding: 0.5rem 1rem;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .status-badge.available {
-  background: #d1fae5;
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
   color: #065f46;
 }
 
 .status-badge.full {
-  background: #fee2e2;
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
   color: #991b1b;
 }
 
 .status-badge.ongoing {
-  background: #fef3c7;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
   color: #92400e;
 }
 
+/* Section engagement */
+.engagement-section {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.engagement-stats {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.like-btn, .comment-btn, .share-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.like-btn:hover, .comment-btn:hover, .share-btn:hover {
+  background: #f3f4f6;
+  color: #374151;
+  transform: translateY(-2px);
+}
+
+.like-btn.liked {
+  color: #ef4444;
+  background: #fef2f2;
+}
+
+.like-btn.liked:hover {
+  background: #fee2e2;
+}
+
+.comment-btn.active {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+/* Section commentaires */
+.comments-section {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  animation: slideInUp 0.3s ease-out;
+}
+
+.comments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.comments-header h4 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.comments-count {
+  background: #667eea;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.comments-list {
+  margin-bottom: 1.5rem;
+}
+
+.comment-item {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.comment-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.comment-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.comment-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.comment-content {
+  flex: 1;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.comment-author {
+  color: #1f2937;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.comment-date {
+  color: #9ca3af;
+  font-size: 0.8rem;
+}
+
+.comment-text {
+  color: #4b5563;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.add-comment {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1rem;
+}
+
+.comment-form {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.comment-input-container {
+  flex: 1;
+  position: relative;
+}
+
+.comment-input {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  resize: vertical;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.comment-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.send-comment-btn {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.send-comment-btn:hover:not(:disabled) {
+  background: #5a67d8;
+  transform: translateY(-1px);
+}
+
+.send-comment-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.login-to-comment {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+  background: white;
+  border-radius: 12px;
+}
+
+.login-to-comment a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-to-comment a:hover {
+  text-decoration: underline;
+}
+
+/* Actions des formations */
 .formation-actions {
-  padding: 0 1.5rem 1.5rem;
+  padding: 0 2rem 2rem;
 }
 
 .subscribe-btn {
@@ -538,65 +1396,243 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: #3b82f6;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   border: none;
-  border-radius: 8px;
-  font-weight: 500;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .subscribe-btn:hover:not(.disabled) {
-  background: #2563eb;
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #5a67d8, #6b46c1);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
 }
 
 .subscribe-btn.disabled {
   background: #9ca3af;
   cursor: not-allowed;
   transform: none;
+  box-shadow: none;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 2rem;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background: white;
+  border-radius: 20px;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+  animation: modalSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem 2rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.close-modal {
+  background: #f3f4f6;
+  border: none;
+  color: #6b7280;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.75rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-modal:hover {
+  background: #e5e7eb;
+  color: #374151;
+  transform: rotate(90deg);
+}
+
+.modal-body {
+  padding: 2rem;
+}
+
+.formation-modal-image {
+  width: 100%;
+  height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.formation-modal-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.formation-modal-details p {
+  color: #4b5563;
+  line-height: 1.7;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.info-item:hover {
+  background: #e2e8f0;
+  transform: translateY(-2px);
+}
+
+.info-item i {
+  color: #667eea;
+  font-size: 1.25rem;
+  width: 20px;
+}
+
+.info-item div {
+  flex: 1;
+}
+
+.info-item strong {
+  display: block;
+  color: #1f2937;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.info-item span {
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  padding: 1rem 2rem 2rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.cancel-btn {
+  padding: 0.75rem 2rem;
+  background: #f3f4f6;
+  color: #374151;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background: #e5e7eb;
+  transform: translateY(-1px);
 }
 
 /* Notifications */
 .notification {
   position: fixed;
-  top: 140px;
+  top: 150px;
   right: 20px;
   background: white;
   border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 1rem 1.5rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
   max-width: 400px;
   display: flex;
   align-items: center;
   gap: 1rem;
+  backdrop-filter: blur(10px);
 }
 
 .notification.success {
   border-left: 4px solid #10b981;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), white);
 }
 
 .notification.error {
   border-left: 4px solid #ef4444;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), white);
 }
 
 .notification.success i {
   color: #10b981;
+  font-size: 1.25rem;
 }
 
 .notification.error i {
   color: #ef4444;
+  font-size: 1.25rem;
 }
 
 .notification span {
   flex: 1;
   color: #374151;
   font-weight: 500;
+  line-height: 1.5;
 }
 
 .close-notification {
@@ -604,8 +1640,8 @@ onMounted(async () => {
   border: none;
   color: #9ca3af;
   cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 4px;
+  padding: 0.5rem;
+  border-radius: 8px;
   transition: all 0.2s ease;
 }
 
@@ -615,42 +1651,203 @@ onMounted(async () => {
 }
 
 /* Animations */
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .notification-enter-active, .notification-leave-active {
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .notification-enter-from {
   opacity: 0;
-  transform: translateX(100px);
+  transform: translateX(100px) scale(0.8);
 }
 
 .notification-leave-to {
   opacity: 0;
-  transform: translateX(100px);
+  transform: translateX(100px) scale(0.8);
+}
+
+.comments-enter-active, .comments-leave-active {
+  transition: all 0.3s ease;
+}
+
+.comments-enter-from {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.comments-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.modal-enter-active, .modal-leave-active {
+  transition: all 0.3s ease;
+}
+
+.modal-enter-from, .modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-from .modal-content,
+.modal-leave-to .modal-content {
+  transform: scale(0.8) translateY(50px);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .formations-hero h1 {
-    font-size: 2rem;
+  .hero-content h1 {
+    font-size: 2.5rem;
+  }
+  
+  .hero-stats {
+    flex-direction: column;
+    gap: 1rem;
   }
   
   .formations-grid {
     grid-template-columns: 1fr;
+    gap: 2rem;
   }
   
   .formation-header {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1rem;
+    align-items: flex-start;
   }
   
   .formation-price {
     margin-left: 0;
-    align-self: flex-start;
   }
   
   .container {
     padding: 0 1rem;
   }
+  
+  .engagement-stats {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .like-btn, .comment-btn, .share-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .modal-content {
+    margin: 1rem;
+    max-height: calc(100vh - 2rem);
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+  }
+  
+  .cancel-btn, .subscribe-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .formations-hero {
+    height: 250px;
+  }
+  
+  .hero-content {
+    padding: 1rem;
+  }
+  
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+  
+  .formation-content {
+    padding: 1.5rem;
+  }
+  
+  .formation-actions {
+    padding: 0 1.5rem 1.5rem;
+  }
+  
+  .stat-number {
+    font-size: 2rem;
+  }
+  
+  .comment-form {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .comment-input-container {
+    position: relative;
+  }
+  
+  .send-comment-btn {
+    position: static;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+}
+
+/* Section commentaires */
+.anonymous-name-input {
+  margin-bottom: 0.75rem;
+}
+
+.name-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  background: white;
+}
+
+.name-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.name-input::placeholder {
+  color: #9ca3af;
+  font-style: italic;
 }
 </style> 

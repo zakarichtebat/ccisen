@@ -274,18 +274,182 @@ export class FormationController {
     }
   }
 
-  @Patch('inscription/:inscriptionId/annuler')
+  @Delete('inscriptions/:inscriptionId/annuler')
   @ApiOperation({ summary: 'Cancel an inscription (Admin only)' })
   async annulerInscription(@Param('inscriptionId') inscriptionId: string) {
     try {
-      // TODO: Vérifier les droits admin
+      // TODO: Vérifier les droits admin ou propriétaire
       return await this.formationService.annulerInscription(+inscriptionId);
     } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
       throw new HttpException(
         {
           status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
-          error: `Erreur lors de l'annulation: ${errorMessage}`,
+          error: `Erreur lors de l'annulation de l'inscription: ${errorMessage}`,
+        },
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  // Endpoints pour les likes
+  @Post(':id/like')
+  @ApiOperation({ summary: 'Like/Unlike a formation' })
+  async toggleLike(@Param('id') id: string, @Req() req: Request) {
+    try {
+      let userId = req.cookies['userId'];
+      
+      // Si l'utilisateur n'est pas connecté, créer un utilisateur anonyme temporaire
+      if (!userId) {
+        const anonymousId = await this.formationService.createAnonymousUser(req);
+        userId = anonymousId;
+      }
+
+      return await this.formationService.toggleLike(+id, +userId);
+    } catch (error: any) {
+      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+      throw new HttpException(
+        {
+          status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+          error: `Erreur lors du like: ${errorMessage}`,
+        },
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @Get(':id/likes')
+  @ApiOperation({ summary: 'Get likes for a formation' })
+  async getLikes(@Param('id') id: string) {
+    try {
+      return await this.formationService.getLikes(+id);
+    } catch (error: any) {
+      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+      throw new HttpException(
+        {
+          status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+          error: `Erreur lors de la récupération des likes: ${errorMessage}`,
+        },
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @Get('user/likes')
+  @ApiOperation({ summary: 'Get user liked formations' })
+  async getUserLikes(@Req() req: Request) {
+    try {
+      const userId = req.cookies['userId'];
+      
+      if (!userId) {
+        throw new HttpException(
+          {
+            status: HttpStatus.UNAUTHORIZED,
+            error: 'Utilisateur non connecté',
+          },
+          HttpStatus.UNAUTHORIZED
+        );
+      }
+
+      return await this.formationService.getUserLikes(+userId);
+    } catch (error: any) {
+      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+      throw new HttpException(
+        {
+          status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+          error: `Erreur lors de la récupération des likes utilisateur: ${errorMessage}`,
+        },
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  // Endpoints pour les commentaires
+  @Post(':id/comment')
+  @ApiOperation({ summary: 'Add a comment to a formation' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        content: { type: 'string', example: 'Excellente formation, très enrichissante!' },
+        authorName: { type: 'string', example: 'Nom de l\'auteur (optionnel)' }
+      },
+      required: ['content']
+    }
+  })
+  async addComment(@Param('id') id: string, @Body() body: { content: string; authorName?: string }, @Req() req: Request) {
+    try {
+      let userId = req.cookies['userId'];
+      
+      // Si l'utilisateur n'est pas connecté, créer un utilisateur anonyme temporaire
+      if (!userId) {
+        const anonymousId = await this.formationService.createAnonymousUser(req, body.authorName);
+        userId = anonymousId;
+      }
+
+      if (!body.content?.trim()) {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Le contenu du commentaire est requis',
+          },
+          HttpStatus.BAD_REQUEST
+        );
+      }
+
+      return await this.formationService.addComment(+id, +userId, body.content.trim());
+    } catch (error: any) {
+      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+      throw new HttpException(
+        {
+          status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+          error: `Erreur lors de l'ajout du commentaire: ${errorMessage}`,
+        },
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @Get(':id/comments')
+  @ApiOperation({ summary: 'Get comments for a formation' })
+  async getComments(@Param('id') id: string) {
+    try {
+      return await this.formationService.getComments(+id);
+    } catch (error: any) {
+      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+      throw new HttpException(
+        {
+          status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+          error: `Erreur lors de la récupération des commentaires: ${errorMessage}`,
+        },
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @Delete('comments/:commentId')
+  @ApiOperation({ summary: 'Delete a comment (Admin or comment owner)' })
+  async deleteComment(@Param('commentId') commentId: string, @Req() req: Request) {
+    try {
+      const userId = req.cookies['userId'];
+      
+      if (!userId) {
+        throw new HttpException(
+          {
+            status: HttpStatus.UNAUTHORIZED,
+            error: 'Utilisateur non connecté',
+          },
+          HttpStatus.UNAUTHORIZED
+        );
+      }
+
+      return await this.formationService.deleteComment(+commentId, +userId);
+    } catch (error: any) {
+      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+      throw new HttpException(
+        {
+          status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+          error: `Erreur lors de la suppression du commentaire: ${errorMessage}`,
         },
         error.status || HttpStatus.INTERNAL_SERVER_ERROR
       );

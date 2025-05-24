@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Request } from 'express';
 
 @Injectable()
 export class FormationService {
@@ -87,6 +88,32 @@ export class FormationService {
               }
             }
           }
+        },
+        likes: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                nom: true,
+                prenom: true
+              }
+            }
+          }
+        },
+        comments: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                nom: true,
+                prenom: true
+              }
+            }
+          },
+          orderBy: {
+            createdAt: 'desc'
+          },
+          take: 10 // Limiter à 10 commentaires les plus récents
         }
       },
       orderBy: {
@@ -274,14 +301,12 @@ export class FormationService {
           select: {
             id: true,
             titre: true,
-            description: true,
             dateDebut: true,
             dateFin: true,
             heureDebut: true,
             heureFin: true,
             lieu: true,
-            prix: true,
-            statut: true
+            prix: true
           }
         }
       },
@@ -289,5 +314,251 @@ export class FormationService {
         dateInscription: 'desc'
       }
     });
+  }
+
+  // Méthodes pour les likes
+  async toggleLike(formationId: number, userId: number) {
+    // Vérifier que la formation existe
+    await this.findOne(formationId);
+
+    // Vérifier si l'utilisateur a déjà liké cette formation
+    const existingLike = await this.prisma.like.findUnique({
+      where: {
+        userId_formationId: {
+          userId,
+          formationId
+        }
+      }
+    });
+
+    if (existingLike) {
+      // Retirer le like
+      await this.prisma.like.delete({
+        where: {
+          userId_formationId: {
+            userId,
+            formationId
+          }
+        }
+      });
+      return { message: 'Like retiré', liked: false };
+    } else {
+      // Ajouter le like
+      await this.prisma.like.create({
+        data: {
+          userId,
+          formationId
+        }
+      });
+      return { message: 'Formation likée', liked: true };
+    }
+  }
+
+  async getLikes(formationId: number) {
+    // Vérifier que la formation existe
+    await this.findOne(formationId);
+
+    const likes = await this.prisma.like.findMany({
+      where: { formationId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
+    return {
+      count: likes.length,
+      likes: likes
+    };
+  }
+
+  async getUserLikes(userId: number) {
+    const likes = await this.prisma.like.findMany({
+      where: { userId },
+      select: {
+        formationId: true
+      }
+    });
+
+    return likes.map(like => like.formationId);
+  }
+
+  // Méthodes pour les commentaires
+  async addComment(formationId: number, userId: number, content: string) {
+    // Vérifier que la formation existe
+    await this.findOne(formationId);
+
+    const comment = await this.prisma.comment.create({
+      data: {
+        content,
+        userId,
+        formationId
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true
+          }
+        }
+      }
+    });
+
+    return comment;
+  }
+
+  async getComments(formationId: number) {
+    // Vérifier que la formation existe
+    await this.findOne(formationId);
+
+    const comments = await this.prisma.comment.findMany({
+      where: { formationId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
+    return comments;
+  }
+
+  async deleteComment(commentId: number, userId: number) {
+    const comment = await this.prisma.comment.findUnique({
+      where: { id: commentId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            role: true
+          }
+        }
+      }
+    });
+
+    if (!comment) {
+      throw new NotFoundException(`Commentaire avec l'ID ${commentId} non trouvé`);
+    }
+
+    // Vérifier que l'utilisateur est le propriétaire du commentaire ou admin
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { role: true }
+    });
+
+    if (comment.userId !== userId && user?.role !== 'admin') {
+      throw new BadRequestException('Vous n\'avez pas le droit de supprimer ce commentaire');
+    }
+
+    await this.prisma.comment.delete({
+      where: { id: commentId }
+    });
+
+    return { message: 'Commentaire supprimé avec succès' };
+  }
+
+  // Méthode modifiée pour inclure les likes et commentaires
+  async findActiveWithEngagement() {
+    return this.prisma.formation.findMany({
+      where: {
+        statut: 'active',
+        dateDebut: {
+          gte: new Date()
+        }
+      },
+      include: {
+        inscriptions: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                nom: true,
+                prenom: true,
+                email: true
+              }
+            }
+          }
+        },
+        likes: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                nom: true,
+                prenom: true
+              }
+            }
+          }
+        },
+        comments: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                nom: true,
+                prenom: true
+              }
+            }
+          },
+          orderBy: {
+            createdAt: 'desc'
+          }
+        }
+      },
+      orderBy: {
+        dateDebut: 'asc'
+      }
+    });
+  }
+
+  // Méthode pour créer un utilisateur anonyme temporaire
+  async createAnonymousUser(req: Request, authorName?: string) {
+    const ip = req.ip || req.connection.remoteAddress || 'unknown';
+    const userAgent = req.headers['user-agent'] || 'unknown';
+    
+    // Créer un hash unique basé sur IP et User-Agent
+    const anonymousId = `anon_${Buffer.from(ip + userAgent).toString('base64').slice(0, 16)}`;
+    
+    // Vérifier si cet utilisateur anonyme existe déjà
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: `${anonymousId}@anonymous.temp` }
+    });
+    
+    if (existingUser) {
+      return existingUser.id;
+    }
+    
+    // Créer un nouvel utilisateur anonyme
+    const anonymousUser = await this.prisma.user.create({
+      data: {
+        nom: authorName || 'Utilisateur',
+        prenom: 'Anonyme',
+        email: `${anonymousId}@anonymous.temp`,
+        motDePasse: 'anonymous_temp_password',
+        numRegistreCommerce: `ANON_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        secteurActivite: 'Non spécifié',
+        telephone: 'Non renseigné',
+        adresse: 'Non renseignée',
+        role: 'anonymous'
+      }
+    });
+    
+    return anonymousUser.id;
   }
 }
