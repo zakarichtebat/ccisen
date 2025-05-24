@@ -8,6 +8,7 @@ import { ServiceModule } from './service/service.module';
 import { RendezVousModule } from './rendez-vous/rendez-vous.module';
 import { PlageHoraireModule } from './plage-horaire/plage-horaire.module';
 import { FormationModule } from './formation/formation.module';
+import { ContactModule } from './contact/contact.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { FormationModule } from './formation/formation.module';
     ServiceModule,
     RendezVousModule,
     PlageHoraireModule,
-    FormationModule
+    FormationModule,
+    ContactModule
   ],
   controllers: [AppController],
   providers: [AppService],

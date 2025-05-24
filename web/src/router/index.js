@@ -50,7 +50,7 @@ const router = createRouter({
     {
       path: '/contact',
       name: 'contact',
-      component: () => import('../views/HomeView.vue') // Temporairement redirigé vers home
+      component: () => import('../views/ContactView.vue')
     },
     {
       path: '/faq',
