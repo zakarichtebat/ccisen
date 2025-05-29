@@ -91,10 +91,15 @@
                   type="button"
                   v-for="time in availableTimeSlots" 
                   :key="time"
-                  :class="['time-slot', formData.heure === time ? 'selected' : '']"
+                  :class="[
+                    'time-slot', 
+                    getTimeSlotClass(time),
+                    { 'selected': formData.heure === time }
+                  ]"
                   @click="selectTimeSlot(time)"
                 >
                   {{ time }}
+                  <span class="time-period">{{ getTimePeriodLabel(time) }}</span>
                 </button>
                 <div v-if="availableTimeSlots.length === 0" class="no-slots-message">
                   Aucun créneau disponible pour cette date. Veuillez sélectionner une autre date.
@@ -164,7 +169,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, reactive, watch } from 'vue'
+import { ref, computed, onMounted, reactive, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import TheHeader from '@/components/TheHeader.vue'
 import TheFooter from '@/components/TheFooter.vue'
@@ -390,9 +395,34 @@ const selectTimeSlot = (time) => {
   formData.value.heure = time
 }
 
-// Afficher/masquer le calendrier
+// Classifier les créneaux horaires par période
+const getTimeSlotClass = (time) => {
+  const hour = parseInt(time.split(':')[0])
+  if (hour < 12) return 'morning'
+  if (hour < 17) return 'afternoon'
+  return 'evening'
+}
+
+// Obtenir le label de la période
+const getTimePeriodLabel = (time) => {
+  const hour = parseInt(time.split(':')[0])
+  if (hour < 12) return 'Matin'
+  if (hour < 17) return 'Après-midi'
+  return 'Soir'
+}
+
+// Afficher/masquer le calendrier avec animation
 const toggleCalendar = () => {
   showCalendar.value = !showCalendar.value
+  if (showCalendar.value) {
+    // Focus sur le calendrier après ouverture
+    nextTick(() => {
+      const calendar = document.querySelector('.calendar-inline')
+      if (calendar) {
+        calendar.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      }
+    })
+  }
 }
 
 // Récupérer la liste des services
@@ -767,7 +797,7 @@ input:hover, select:hover, textarea:hover {
   margin-top: 1.5rem;
 }
 
-/* Style du sélecteur de date */
+/* Style du sélecteur de date - Version Professionnelle */
 .date-picker-group {
   position: relative;
 }
@@ -776,217 +806,455 @@ input:hover, select:hover, textarea:hover {
   position: relative;
   display: flex;
   align-items: center;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #fff;
+  border: 2px solid #e3e8ef;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
   overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.date-picker-simple:hover {
+  border-color: #6366f1;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.1);
+  transform: translateY(-1px);
+}
+
+.date-picker-simple:focus-within {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1), 0 4px 16px rgba(99, 102, 241, 0.15);
 }
 
 .date-input {
   width: 100%;
-  padding: 12px 15px;
+  padding: 16px 20px;
   font-size: 16px;
+  font-weight: 500;
   border: none;
   background: transparent;
   cursor: pointer;
+  color: #1f2937;
+  letter-spacing: 0.025em;
+}
+
+.date-input::placeholder {
+  color: #9ca3af;
+  font-weight: 400;
 }
 
 .calendar-icon-btn {
   position: absolute;
-  right: 10px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  background: none;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   border: none;
-  color: #2196F3;
+  color: white;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px;
+  padding: 10px;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
 }
 
 .calendar-icon-btn:hover {
-  color: #0b7dda;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
 }
 
-/* Style du calendrier intégré */
+.calendar-icon-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+/* Style du calendrier intégré - Version Professionnelle */
 .calendar-inline {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  padding: 1rem;
-  margin-top: 0.8rem;
-  border: 1px solid #eee;
-  max-width: 100%;
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  border-radius: 20px;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.1),
+    0 8px 16px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  padding: 2rem;
+  margin-top: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+  animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.calendar-inline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899);
+  border-radius: 20px 20px 0 0;
 }
 
 .calendar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.2rem;
+  margin-bottom: 2rem;
+  padding: 0 0.5rem;
 }
 
 .current-month {
-  font-weight: 600;
-  color: #333;
-  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1f2937;
+  font-size: 1.5rem;
+  letter-spacing: 0.025em;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .month-nav {
-  background: none;
+  background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
   border: none;
-  color: #2196F3;
+  color: #4b5563;
   cursor: pointer;
-  width: 30px;
-  height: 30px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  transition: background-color 0.3s;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .month-nav:hover {
-  background-color: rgba(33, 150, 243, 0.1);
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.2);
+}
+
+.month-nav:active {
+  transform: scale(0.95);
 }
 
 .calendar-weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 0 0.5rem;
 }
 
 .weekday {
-  font-size: 0.85rem;
-  color: #666;
+  font-size: 0.875rem;
+  color: #6b7280;
   text-align: center;
-  padding: 0.5rem 0;
+  padding: 1rem 0;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .calendar-days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
+  gap: 6px;
+  padding: 0 0.5rem;
 }
 
 .day-cell {
-  height: 36px;
-  width: 36px;
+  height: 48px;
+  width: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: 12px;
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.2s;
-  margin: 3px auto;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin: 2px auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.day-cell::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.1));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.day-cell:hover::before {
+  opacity: 1;
 }
 
 .day-cell.other-month {
-  color: #ccc;
+  color: #d1d5db;
+  opacity: 0.5;
 }
 
 .day-cell.today {
   font-weight: 700;
-  color: #2196F3;
+  color: #6366f1;
+  background: linear-gradient(135deg, #ede9fe, #e0e7ff);
+  border: 2px solid #6366f1;
+  animation: pulse 2s infinite;
 }
 
 .day-cell.selected {
-  background-color: #2196F3;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: white;
-  font-weight: 600;
+  font-weight: 700;
+  transform: scale(1.1);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
 }
 
 .day-cell.available {
-  background-color: #e3f2fd;
-  color: #333;
+  background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+  color: #047857;
+  border: 1px solid #a7f3d0;
 }
 
 .day-cell.available:hover {
-  background-color: #bbdefb;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .day-cell.available.selected {
-  background-color: #2196F3;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: white;
+  border-color: #6366f1;
 }
 
 .day-cell.unavailable {
-  color: #ccc;
+  color: #d1d5db;
   cursor: not-allowed;
-  text-decoration: line-through;
-  opacity: 0.5;
+  background: #f9fafb;
+  opacity: 0.4;
+  position: relative;
 }
 
-/* Style des créneaux horaires */
+.day-cell.unavailable::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: #ef4444;
+  transform: translateY(-50%);
+}
+
+/* Style des créneaux horaires - Version Professionnelle */
 .time-slots-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-  gap: 0.8rem;
-  margin-top: 0.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(145deg, #f8fafc, #f1f5f9);
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
 }
 
 .time-slot {
-  background-color: #f1f3f5;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 0.8rem 0.5rem;
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem 0.75rem;
   text-align: center;
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.2s;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #475569;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.025em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.time-slot::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.5s ease;
+}
+
+.time-slot:hover::before {
+  left: 100%;
 }
 
 .time-slot:hover {
-  background-color: #e3f2fd;
-  border-color: #bbdefb;
+  background: linear-gradient(135deg, #ede9fe, #e0e7ff);
+  border-color: #6366f1;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
+  color: #6366f1;
 }
 
 .time-slot.selected {
-  background-color: #2196F3;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: white;
-  border-color: #2196F3;
-  font-weight: 600;
+  border-color: #6366f1;
+  font-weight: 700;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 12px 32px rgba(99, 102, 241, 0.3);
+}
+
+.time-slot.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.time-period {
+  display: block;
+  font-size: 0.7rem;
+  opacity: 0.7;
+  margin-top: 0.25rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.time-slot.selected .time-period {
+  opacity: 0.9;
 }
 
 .no-slots-message {
   grid-column: 1 / -1;
-  padding: 1rem;
+  padding: 2rem;
   text-align: center;
-  color: #f44336;
-  background-color: #ffebee;
-  border-radius: 8px;
-  font-size: 0.9rem;
-}
-
-.btn-primary {
-  width: 100%;
-  padding: 1.1rem;
-  background: linear-gradient(45deg, #4CAF50, #2196F3);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
+  color: #ef4444;
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  border: 2px dashed #fca5a5;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-weight: 500;
   position: relative;
   overflow: hidden;
-  letter-spacing: 0.5px;
 }
 
-.btn-primary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 7px 20px rgba(33, 150, 243, 0.3);
+.no-slots-message::before {
+  content: '⚠️';
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.5rem;
 }
 
-.btn-primary:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
+/* Animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(99, 102, 241, 0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Indicateurs visuels améliorés */
+.time-slot.morning {
+  border-left: 4px solid #f59e0b;
+}
+
+.time-slot.afternoon {
+  border-left: 4px solid #3b82f6;
+}
+
+.time-slot.evening {
+  border-left: 4px solid #8b5cf6;
+}
+
+/* Amélioration de l'accessibilité */
+.day-cell:focus,
+.time-slot:focus {
+  outline: 3px solid #6366f1;
+  outline-offset: 2px;
+}
+
+/* Responsive amélioré */
+@media (max-width: 768px) {
+  .calendar-inline {
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+  
+  .current-month {
+    font-size: 1.25rem;
+  }
+  
+  .day-cell {
+    height: 40px;
+    width: 40px;
+    font-size: 0.85rem;
+  }
+  
+  .time-slots-container {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+  
+  .time-slot {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .time-slots-container {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  }
+  
+  .calendar-days {
+    gap: 4px;
+  }
+  
+  .day-cell {
+    height: 36px;
+    width: 36px;
+    font-size: 0.8rem;
+  }
 }
 
 /* Messages de succès et d'erreur */
@@ -1135,37 +1403,84 @@ input:hover, select:hover, textarea:hover {
   }
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .form-container {
-    padding: 2rem;
-    border-radius: 8px;
-  }
-  
-  h1 {
-    font-size: 2rem;
-  }
-  
-  .time-slots-container {
-    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-  }
-  
-  .day-cell {
-    font-size: 0.8rem;
-  }
-  
-  .success-icon, .error-icon {
-    width: 50px;
-    height: 50px;
-    font-size: 1.8rem;
-  }
-  
-  .success-message h3, .error-message h3 {
-    font-size: 1.5rem;
-  }
-  
-  .confirmation-details, .error-help {
-    padding: 1.2rem;
-  }
+.btn-primary {
+  width: 100%;
+  padding: 1.2rem 2rem;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.025em;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+  text-transform: uppercase;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+  background: linear-gradient(135deg, #7c3aed, #6366f1);
+}
+
+.btn-primary:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  background: linear-gradient(135deg, #9ca3af, #6b7280);
+  box-shadow: none;
+}
+
+.btn-reload {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.9rem 2rem;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 1rem;
+  margin-left: 1rem;
+}
+
+.btn-reload:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+}
+
+.error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
 }
 </style> 
