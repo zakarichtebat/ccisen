@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,114 +7,267 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id                  Int           @id @default(autoincrement())
-  nom                 String
-  prenom              String
-  email               String        @unique
-  motDePasse          String
-  numRegistreCommerce String        @unique
-  secteurActivite     String
-  telephone           String
-  adresse             String
-  role                String        @default("client")
-  createdAt           DateTime      @default(now())
-  updatedAt           DateTime      @updatedAt
-  rendezVous          RendezVous[]
-  inscriptions        Inscription[]
-  likes               Like[]
-  comments            Comment[]
+model comment {
+  id          Int       @id @default(autoincrement())
+  content     String    @db.Text
+  userId      Int
+  formationId Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+  formation   formation @relation(fields: [formationId], references: [id], map: "Comment_formationId_fkey")
+  user        user      @relation(fields: [userId], references: [id], map: "Comment_userId_fkey")
+
+  @@index([formationId], map: "Comment_formationId_fkey")
+  @@index([userId], map: "Comment_userId_fkey")
 }
 
-model Service {
-  id          Int          @id @default(autoincrement())
-  nom         String
-  description String       @db.Text
-  duree       Int // Durée en minutes
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  rendezVous  RendezVous[]
+model configurationdocument {
+  id            Int      @id @default(autoincrement())
+  cle           String   @unique(map: "ConfigurationDocument_cle_key")
+  valeur        String   @db.Text
+  description   String?  @db.Text
+  modifiablePar String   @default("admin")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
 }
 
-model RendezVous {
-  id        Int      @id @default(autoincrement())
-  date      DateTime
-  heure     String // Format HH:MM
-  status    String   @default("en_attente") // en_attente, confirmé, annulé
-  notes     String?  @db.Text
-  userId    Int
-  serviceId Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model demandedocument {
+  id                                         Int                    @id @default(autoincrement())
+  userId                                     Int
+  typeDocumentId                             Int
+  nomDemandeur                               String
+  prenomDemandeur                            String
+  emailDemandeur                             String
+  numRegistreCommerce                        String
+  statut                                     String                 @default("en_attente")
+  motifRejet                                 String?                @db.Text
+  registreCommercePdf                        String?
+  photoIdentite                              String?
+  autresDocuments                            String?                @db.Text
+  notes                                      String?                @db.Text
+  commentairesClient                         String?                @db.Text
+  dateTraitement                             DateTime?
+  adminTraitantId                            Int?
+  createdAt                                  DateTime               @default(now())
+  updatedAt                                  DateTime
+  user_demandedocument_adminTraitantIdTouser user?                  @relation("demandedocument_adminTraitantIdTouser", fields: [adminTraitantId], references: [id], map: "DemandeDocument_adminTraitant_fkey")
+  typedocument                               typedocument           @relation(fields: [typeDocumentId], references: [id], map: "DemandeDocument_typeDocument_fkey")
+  user_demandedocument_userIdTouser          user                   @relation("demandedocument_userIdTouser", fields: [userId], references: [id], map: "DemandeDocument_userId_fkey")
+  documentgenere                             documentgenere[]
+  historiquestatut                           historiquestatut[]
+  notificationdocument                       notificationdocument[]
 
-  user    User    @relation(fields: [userId], references: [id])
-  service Service @relation(fields: [serviceId], references: [id])
+  @@index([adminTraitantId], map: "DemandeDocument_adminTraitant_fkey")
+  @@index([typeDocumentId], map: "DemandeDocument_typeDocument_fkey")
+  @@index([userId], map: "DemandeDocument_userId_fkey")
 }
 
-model PlageHoraire {
-  id         Int      @id @default(autoincrement())
-  jour       String // lundi, mardi, etc.
-  heureDebut String // Format HH:MM
-  heureFin   String // Format HH:MM
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+model documentgenere {
+  id                Int             @id @default(autoincrement())
+  demandeDocumentId Int
+  typeDocumentId    Int
+  userId            Int
+  numeroDocument    String          @unique(map: "DocumentGenere_numeroDocument_key")
+  nomFichier        String
+  cheminFichier     String
+  tailleFichier     Int?
+  statut            String          @default("genere")
+  dateGeneration    DateTime        @default(now())
+  dateEnvoi         DateTime?
+  dateTelecharge    DateTime?
+  nbTelecharge      Int             @default(0)
+  hashDocument      String?
+  signature         String?         @db.Text
+  qrCode            String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime
+  demandedocument   demandedocument @relation(fields: [demandeDocumentId], references: [id], map: "DocumentGenere_demandeDocument_fkey")
+  typedocument      typedocument    @relation(fields: [typeDocumentId], references: [id], map: "DocumentGenere_typeDocument_fkey")
+  user              user            @relation(fields: [userId], references: [id], map: "DocumentGenere_userId_fkey")
+
+  @@index([demandeDocumentId], map: "DocumentGenere_demandeDocument_fkey")
+  @@index([typeDocumentId], map: "DocumentGenere_typeDocument_fkey")
+  @@index([userId], map: "DocumentGenere_userId_fkey")
 }
 
-model Formation {
+model formation {
   id              Int           @id @default(autoincrement())
   titre           String
   description     String        @db.Text
   dateDebut       DateTime
   dateFin         DateTime
-  heureDebut      String // Format HH:MM
-  heureFin        String // Format HH:MM
+  heureDebut      String
+  heureFin        String
   lieu            String
   maxParticipants Int           @default(20)
   prix            Float         @default(0)
-  statut          String        @default("active") // active, inactive, complet
+  statut          String        @default("active")
   createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  inscriptions    Inscription[]
-  likes           Like[]
-  comments        Comment[]
+  updatedAt       DateTime
+  comment         comment[]
+  inscription     inscription[]
+  like            like[]
 }
 
-model Inscription {
-  id              Int      @id @default(autoincrement())
+model historiquestatut {
+  id                Int             @id @default(autoincrement())
+  demandeDocumentId Int
+  ancienStatut      String?
+  nouveauStatut     String
+  adminId           Int?
+  motif             String?         @db.Text
+  dateChangement    DateTime        @default(now())
+  user              user?           @relation(fields: [adminId], references: [id], map: "HistoriqueStatut_adminId_fkey")
+  demandedocument   demandedocument @relation(fields: [demandeDocumentId], references: [id], map: "HistoriqueStatut_demandeDocumentId_fkey")
+
+  @@index([adminId], map: "HistoriqueStatut_adminId_fkey")
+  @@index([demandeDocumentId], map: "HistoriqueStatut_demandeDocumentId_fkey")
+}
+
+model inscription {
+  id              Int       @id @default(autoincrement())
   userId          Int
   formationId     Int
-  statut          String   @default("en_attente") // en_attente, confirmé, annulé
-  dateInscription DateTime @default(now())
-  notes           String?  @db.Text
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  statut          String    @default("en_attente")
+  dateInscription DateTime  @default(now())
+  notes           String?   @db.Text
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime
+  formation       formation @relation(fields: [formationId], references: [id], map: "Inscription_formationId_fkey")
+  user            user      @relation(fields: [userId], references: [id], map: "Inscription_userId_fkey")
 
-  user      User      @relation(fields: [userId], references: [id])
-  formation Formation @relation(fields: [formationId], references: [id])
-
-  @@unique([userId, formationId])
+  @@unique([userId, formationId], map: "Inscription_userId_formationId_key")
+  @@index([formationId], map: "Inscription_formationId_fkey")
 }
 
-model Like {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  formationId Int
-  createdAt   DateTime @default(now())
+model journalaudit {
+  id               Int      @id @default(autoincrement())
+  userId           Int?
+  action           String
+  table            String
+  enregistrementId Int?
+  anciennesValeurs String?  @db.LongText
+  nouvellesValeurs String?  @db.LongText
+  adresseIP        String?
+  userAgent        String?  @db.Text
+  createdAt        DateTime @default(now())
+  user             user?    @relation(fields: [userId], references: [id], map: "JournalAudit_userId_fkey")
 
-  user      User      @relation(fields: [userId], references: [id])
-  formation Formation @relation(fields: [formationId], references: [id])
-
-  @@unique([userId, formationId])
+  @@index([userId], map: "JournalAudit_userId_fkey")
 }
 
-model Comment {
-  id          Int      @id @default(autoincrement())
-  content     String   @db.Text
+model like {
+  id          Int       @id @default(autoincrement())
   userId      Int
   formationId Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  formation   formation @relation(fields: [formationId], references: [id], map: "Like_formationId_fkey")
+  user        user      @relation(fields: [userId], references: [id], map: "Like_userId_fkey")
 
-  user      User      @relation(fields: [userId], references: [id])
-  formation Formation @relation(fields: [formationId], references: [id])
+  @@unique([userId, formationId], map: "Like_userId_formationId_key")
+  @@index([formationId], map: "Like_formationId_fkey")
+  @@index([userId], map: "Like_userId_fkey")
+}
+
+model notificationdocument {
+  id                Int             @id @default(autoincrement())
+  demandeDocumentId Int
+  userId            Int
+  titre             String
+  message           String          @db.Text
+  type              String
+  lu                Boolean         @default(false)
+  dateLecture       DateTime?
+  createdAt         DateTime        @default(now())
+  demandedocument   demandedocument @relation(fields: [demandeDocumentId], references: [id], map: "NotificationDocument_demandeDocumentId_fkey")
+  user              user            @relation(fields: [userId], references: [id], map: "NotificationDocument_userId_fkey")
+
+  @@index([demandeDocumentId], map: "NotificationDocument_demandeDocumentId_fkey")
+  @@index([userId], map: "NotificationDocument_userId_fkey")
+}
+
+model plagehoraire {
+  id         Int      @id @default(autoincrement())
+  jour       String
+  heureDebut String
+  heureFin   String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+}
+
+model rendezvous {
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  heure     String
+  status    String   @default("en_attente")
+  notes     String?  @db.Text
+  userId    Int
+  serviceId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  service   service  @relation(fields: [serviceId], references: [id], map: "RendezVous_serviceId_fkey")
+  user      user     @relation(fields: [userId], references: [id], map: "RendezVous_userId_fkey")
+
+  @@index([serviceId], map: "RendezVous_serviceId_fkey")
+  @@index([userId], map: "RendezVous_userId_fkey")
+}
+
+model service {
+  id          Int          @id @default(autoincrement())
+  nom         String
+  description String       @db.Text
+  duree       Int
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime
+  rendezvous  rendezvous[]
+}
+
+model templateemail {
+  id        Int      @id @default(autoincrement())
+  nom       String   @unique(map: "TemplateEmail_nom_key")
+  sujet     String
+  corps     String   @db.LongText
+  actif     Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model typedocument {
+  id              Int               @id @default(autoincrement())
+  nom             String
+  description     String            @db.Text
+  documentsRequis String            @db.Text
+  delaiTraitement Int
+  prix            Float             @default(0)
+  actif           Boolean           @default(true)
+  template        String?           @db.LongText
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  demandedocument demandedocument[]
+  documentgenere  documentgenere[]
+}
+
+model user {
+  id                                                    Int                    @id @default(autoincrement())
+  nom                                                   String
+  prenom                                                String
+  email                                                 String                 @unique(map: "User_email_key")
+  motDePasse                                            String
+  numRegistreCommerce                                   String                 @unique(map: "User_numRegistreCommerce_key")
+  secteurActivite                                       String
+  telephone                                             String
+  adresse                                               String
+  createdAt                                             DateTime               @default(now())
+  updatedAt                                             DateTime
+  role                                                  String                 @default("client")
+  comment                                               comment[]
+  demandedocument_demandedocument_adminTraitantIdTouser demandedocument[]      @relation("demandedocument_adminTraitantIdTouser")
+  demandedocument_demandedocument_userIdTouser          demandedocument[]      @relation("demandedocument_userIdTouser")
+  documentgenere                                        documentgenere[]
+  historiquestatut                                      historiquestatut[]
+  inscription                                           inscription[]
+  journalaudit                                          journalaudit[]
+  like                                                  like[]
+  notificationdocument                                  notificationdocument[]
+  rendezvous                                            rendezvous[]
 }

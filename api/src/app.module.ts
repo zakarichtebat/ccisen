@@ -9,6 +9,7 @@ import { RendezVousModule } from './rendez-vous/rendez-vous.module';
 import { PlageHoraireModule } from './plage-horaire/plage-horaire.module';
 import { FormationModule } from './formation/formation.module';
 import { ContactModule } from './contact/contact.module';
+import { DocumentModule } from './document/document.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { ContactModule } from './contact/contact.module';
     RendezVousModule,
     PlageHoraireModule,
     FormationModule,
-    ContactModule
+    ContactModule,
+    DocumentModule
   ],
   controllers: [AppController],
   providers: [AppService],
