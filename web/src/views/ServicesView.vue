@@ -193,7 +193,7 @@
               </ul>
               
               <div class="service-cta">
-                <router-link to="/rendez-vous" class="btn-service">S'inscrire à une formation</router-link>
+                <router-link to="/formations" class="btn-service">S'inscrire à une formation</router-link>
               </div>
             </div>
           </div>

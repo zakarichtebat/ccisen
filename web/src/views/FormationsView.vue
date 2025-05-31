@@ -140,97 +140,115 @@
               </div>
               
               <!-- Section likes et commentaires -->
-              <div class="engagement-section">
-                <div class="engagement-stats">
+              <div class="engagement-section" @click.stop>
+                <div class="engagement-stats" @click.stop>
                   <button 
                     @click.stop="toggleLike(formation.id)"
                     class="like-btn"
                     :class="{ 'liked': isLiked(formation.id) }"
                   >
-                    <i :class="isLiked(formation.id) ? 'fas fa-heart' : 'far fa-heart'"></i>
-                    <span>{{ formation.likes?.length || 0 }}</span>
+                    <i :class="isLiked(formation.id) ? 'fas fa-heart' : 'far fa-heart'" @click.stop></i>
+                    <span @click.stop>{{ formation.likes?.length || 0 }}</span>
                   </button>
                   
-                  <button 
-                    @click.stop="toggleComments(formation.id)"
-                    class="comment-btn"
-                    :class="{ 'active': showComments[formation.id] }"
-                  >
-                    <i class="far fa-comment"></i>
-                    <span>{{ formation.comments?.length || 0 }}</span>
-                  </button>
+                  <div class="comment-info" @click.stop>
+                    <i class="far fa-comment" @click.stop></i>
+                    <span @click.stop>{{ formation.comments?.length || 0 }} commentaires</span>
+                  </div>
                   
                   <button @click.stop="shareFormation(formation)" class="share-btn">
-                    <i class="fas fa-share-alt"></i>
-                    <span>Partager</span>
+                    <i class="fas fa-share-alt" @click.stop></i>
+                    <span @click.stop>Partager</span>
                   </button>
                 </div>
               </div>
-              
-              <!-- Section commentaires -->
-              <transition name="comments">
-                <div v-if="showComments[formation.id]" class="comments-section">
-                  <div class="comments-header">
-                    <h4>Commentaires</h4>
-                    <span class="comments-count">{{ formation.comments?.length || 0 }}</span>
-                  </div>
-                  
-                  <!-- Liste des commentaires -->
-                  <div class="comments-list">
-                    <div 
-                      v-for="comment in formation.comments" 
-                      :key="comment.id"
-                      class="comment-item"
-                    >
-                      <div class="comment-avatar">
-                        <img :src="getAvatarUrl(comment.user)" :alt="comment.user.nom" />
-                      </div>
-                      <div class="comment-content">
-                        <div class="comment-header">
-                          <span class="comment-author">{{ comment.user.nom }} {{ comment.user.prenom }}</span>
-                          <span class="comment-date">{{ formatCommentDate(comment.createdAt) }}</span>
-                        </div>
-                        <p class="comment-text">{{ comment.content }}</p>
-                      </div>
+            </div>
+            
+            <!-- Section commentaires complètement séparée -->
+            <div class="comments-wrapper" @click.stop @mousedown.stop @mouseup.stop>
+              <!-- Section commentaires (toujours visible et simplifiée) -->
+              <div class="comments-section" @click.stop @mousedown.stop @mouseup.stop>
+                <div class="comments-header" @click.stop @mousedown.stop @mouseup.stop>
+                  <h4 @click.stop @mousedown.stop @mouseup.stop>💬 Commentaires ({{ formation.comments?.length || 0 }})</h4>
+                </div>
+                
+                <!-- Formulaire d'ajout de commentaire (en haut) -->
+                <div class="add-comment" @click.stop @mousedown.stop @mouseup.stop>
+                  <div class="comment-form" @click.stop @mousedown.stop @mouseup.stop>
+                    <div class="user-avatar" @click.stop @mousedown.stop @mouseup.stop>
+                      <img :src="currentUserAvatar" alt="Votre avatar" @click.stop @mousedown.stop @mouseup.stop />
                     </div>
-                  </div>
-                  
-                  <!-- Formulaire d'ajout de commentaire -->
-                  <div class="add-comment">
-                    <div class="comment-form">
-                      <div class="user-avatar">
-                        <img :src="currentUserAvatar" alt="Votre avatar" />
+                    <div class="comment-input-container" @click.stop @mousedown.stop @mouseup.stop>
+                      <!-- Champ nom pour utilisateurs anonymes -->
+                      <div v-if="!isAuthenticated" class="anonymous-name-input" @click.stop @mousedown.stop @mouseup.stop>
+                        <input
+                          v-model="anonymousNames[formation.id]"
+                          placeholder="Votre nom (optionnel)"
+                          class="name-input"
+                          maxlength="50"
+                          @click.stop
+                          @focus.stop
+                          @mousedown.stop
+                          @mouseup.stop
+                        />
                       </div>
-                      <div class="comment-input-container">
-                        <!-- Champ nom pour utilisateurs anonymes -->
-                        <div v-if="!isAuthenticated" class="anonymous-name-input">
-                          <input
-                            v-model="anonymousNames[formation.id]"
-                            placeholder="Votre nom (optionnel)"
-                            class="name-input"
-                            maxlength="50"
-                          />
-                        </div>
-                        
+                      
+                      <div class="input-with-button" @click.stop @mousedown.stop @mouseup.stop>
                         <textarea
                           v-model="newComments[formation.id]"
-                          placeholder="Ajoutez un commentaire..."
+                          placeholder="Écrivez votre commentaire..."
                           class="comment-input"
                           rows="2"
                           @keydown.enter.prevent="addComment(formation.id)"
+                          @click.stop
+                          @focus.stop
+                          @mousedown.stop
+                          @mouseup.stop
                         ></textarea>
                         <button 
-                          @click="addComment(formation.id)"
+                          @click.stop="addComment(formation.id)"
+                          @mousedown.stop
+                          @mouseup.stop
                           class="send-comment-btn"
                           :disabled="!newComments[formation.id]?.trim()"
                         >
-                          <i class="fas fa-paper-plane"></i>
+                          <i class="fas fa-paper-plane" @click.stop @mousedown.stop @mouseup.stop></i>
+                          Publier
                         </button>
                       </div>
                     </div>
                   </div>
                 </div>
-              </transition>
+                
+                <!-- Liste des commentaires -->
+                <div v-if="formation.comments && formation.comments.length > 0" class="comments-list" @click.stop @mousedown.stop @mouseup.stop>
+                  <div 
+                    v-for="comment in formation.comments" 
+                    :key="comment.id"
+                    class="comment-item"
+                    @click.stop
+                    @mousedown.stop
+                    @mouseup.stop
+                  >
+                    <div class="comment-avatar" @click.stop @mousedown.stop @mouseup.stop>
+                      <img :src="getAvatarUrl(comment.user)" :alt="comment.user.nom" @click.stop @mousedown.stop @mouseup.stop />
+                    </div>
+                    <div class="comment-content" @click.stop @mousedown.stop @mouseup.stop>
+                      <div class="comment-header" @click.stop @mousedown.stop @mouseup.stop>
+                        <span class="comment-author" @click.stop @mousedown.stop @mouseup.stop>{{ comment.user.nom }} {{ comment.user.prenom }}</span>
+                        <span class="comment-date" @click.stop @mousedown.stop @mouseup.stop>{{ formatCommentDate(comment.createdAt) }}</span>
+                      </div>
+                      <p class="comment-text" @click.stop @mousedown.stop @mouseup.stop>{{ comment.content }}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Message quand pas de commentaires -->
+                <div v-else class="no-comments" @click.stop @mousedown.stop @mouseup.stop>
+                  <i class="far fa-comment-dots" @click.stop @mousedown.stop @mouseup.stop></i>
+                  <p @click.stop @mousedown.stop @mouseup.stop>Soyez le premier à commenter cette formation !</p>
+                </div>
+              </div>
             </div>
             
             <!-- Actions -->
@@ -371,7 +389,6 @@ const subscribing = ref(null)
 const successMessage = ref('')
 const errorMessage = ref('')
 const selectedFormation = ref(null)
-const showComments = ref({})
 const newComments = ref({})
 const isAuthenticated = ref(false)
 const currentUser = ref(null)
@@ -397,7 +414,7 @@ const totalLikes = computed(() => {
 })
 
 const currentUserAvatar = computed(() => {
-  return currentUser.value?.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
+  return getAvatarUrl(currentUser.value)
 })
 
 // Fonctions utilitaires
@@ -420,11 +437,53 @@ const formatCommentDate = (dateString) => {
   const date = new Date(dateString)
   const now = new Date()
   const diffTime = Math.abs(now - date)
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  const diffMinutes = Math.floor(diffTime / (1000 * 60))
+  const diffHours = Math.floor(diffTime / (1000 * 60 * 60))
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
   
-  if (diffDays === 1) return 'Hier'
-  if (diffDays < 7) return `Il y a ${diffDays} jours`
-  return formatDate(dateString)
+  // Moins d'une minute
+  if (diffMinutes < 1) return 'À l\'instant'
+  
+  // Moins d'une heure
+  if (diffMinutes < 60) return `Il y a ${diffMinutes} min`
+  
+  // Moins de 24h (aujourd'hui)
+  if (diffHours < 24 && date.getDate() === now.getDate()) {
+    return `Aujourd'hui à ${date.toLocaleTimeString('fr-FR', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    })}`
+  }
+  
+  // Hier
+  const yesterday = new Date(now)
+  yesterday.setDate(yesterday.getDate() - 1)
+  if (date.getDate() === yesterday.getDate() && 
+      date.getMonth() === yesterday.getMonth() && 
+      date.getFullYear() === yesterday.getFullYear()) {
+    return `Hier à ${date.toLocaleTimeString('fr-FR', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    })}`
+  }
+  
+  // Cette semaine
+  if (diffDays < 7) {
+    const dayNames = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi']
+    return `${dayNames[date.getDay()]} à ${date.toLocaleTimeString('fr-FR', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    })}`
+  }
+  
+  // Plus ancien
+  return date.toLocaleDateString('fr-FR', {
+    day: 'numeric',
+    month: 'short',
+    year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
+    hour: '2-digit',
+    minute: '2-digit'
+  })
 }
 
 const getFormationImage = (formation) => {
@@ -433,7 +492,18 @@ const getFormationImage = (formation) => {
 }
 
 const getAvatarUrl = (user) => {
-  return user.avatar || `https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80`
+  if (user?.avatar) {
+    return user.avatar
+  }
+  
+  // Avatar par défaut basé sur la première lettre du nom
+  if (user?.nom && user?.prenom) {
+    const initials = `${user.prenom.charAt(0)}${user.nom.charAt(0)}`.toUpperCase()
+    return `https://ui-avatars.com/api/?name=${initials}&background=667eea&color=fff&size=150&font-size=0.6`
+  }
+  
+  // Avatar par défaut
+  return 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
 }
 
 const onImageError = (event) => {
@@ -522,8 +592,12 @@ const fetchCurrentUser = async () => {
       withCredentials: true
     })
     currentUser.value = response.data
+    isAuthenticated.value = true
+    console.log('Utilisateur connecté:', currentUser.value)
   } catch (error) {
     console.log('Utilisateur non connecté')
+    currentUser.value = null
+    isAuthenticated.value = false
   }
 }
 
@@ -588,10 +662,6 @@ const toggleLike = async (formationId) => {
     errorMessage.value = 'Erreur lors du like'
     setTimeout(() => { errorMessage.value = '' }, 3000)
   }
-}
-
-const toggleComments = (formationId) => {
-  showComments.value[formationId] = !showComments.value[formationId]
 }
 
 const addComment = async (formationId) => {
@@ -1180,7 +1250,7 @@ onMounted(async () => {
   font-weight: 500;
 }
 
-.like-btn:hover, .comment-btn:hover, .share-btn:hover {
+.like-btn:hover, .share-btn:hover {
   background: #f3f4f6;
   color: #374151;
   transform: translateY(-2px);
@@ -1195,28 +1265,41 @@ onMounted(async () => {
   background: #fee2e2;
 }
 
-.comment-btn.active {
-  background: #eff6ff;
-  color: #2563eb;
+.comment-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+}
+
+.comment-info i {
+  color: #667eea;
 }
 
 /* Section commentaires */
-.comments-section {
+.comments-wrapper {
   margin-top: 1.5rem;
+  padding: 0 2rem 2rem;
+  pointer-events: auto;
+  position: relative;
+  z-index: 10;
+}
+
+.comments-section {
   padding: 1.5rem;
   background: #f8fafc;
   border-radius: 12px;
   border: 1px solid #e2e8f0;
-  animation: slideInUp 0.3s ease-out;
+  pointer-events: auto;
 }
 
 .comments-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e2e8f0;
 }
 
 .comments-header h4 {
@@ -1226,80 +1309,8 @@ onMounted(async () => {
   font-weight: 600;
 }
 
-.comments-count {
-  background: #667eea;
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 500;
-}
-
-.comments-list {
-  margin-bottom: 1.5rem;
-}
-
-.comment-item {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  padding: 1rem;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-}
-
-.comment-item:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
-}
-
-.comment-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.comment-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.comment-content {
-  flex: 1;
-}
-
-.comment-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-.comment-author {
-  color: #1f2937;
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-
-.comment-date {
-  color: #9ca3af;
-  font-size: 0.8rem;
-}
-
-.comment-text {
-  color: #4b5563;
-  line-height: 1.6;
-  margin: 0;
-}
-
 .add-comment {
-  border-top: 1px solid #e2e8f0;
-  padding-top: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .comment-form {
@@ -1324,11 +1335,16 @@ onMounted(async () => {
 
 .comment-input-container {
   flex: 1;
-  position: relative;
+}
+
+.input-with-button {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
 }
 
 .comment-input {
-  width: 100%;
+  flex: 1;
   padding: 1rem;
   border: 2px solid #e5e7eb;
   border-radius: 12px;
@@ -1336,6 +1352,7 @@ onMounted(async () => {
   resize: vertical;
   transition: all 0.3s ease;
   font-family: inherit;
+  min-height: 80px;
 }
 
 .comment-input:focus {
@@ -1345,45 +1362,123 @@ onMounted(async () => {
 }
 
 .send-comment-btn {
-  position: absolute;
-  bottom: 0.75rem;
-  right: 0.75rem;
   background: #667eea;
   color: white;
   border: none;
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  height: fit-content;
+  font-size: 0.9rem;
 }
 
 .send-comment-btn:hover:not(:disabled) {
   background: #5a67d8;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .send-comment-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
-.login-to-comment {
-  text-align: center;
-  padding: 2rem;
-  color: #6b7280;
+.comments-list {
+  margin-top: 1.5rem;
+}
+
+.comment-item {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
   background: white;
   border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  border: 1px solid #f1f5f9;
 }
 
-.login-to-comment a {
-  color: #667eea;
-  text-decoration: none;
+.comment-item:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  border-color: #e2e8f0;
+}
+
+.comment-item:last-child {
+  margin-bottom: 0;
+}
+
+.comment-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.comment-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.comment-content {
+  flex: 1;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.comment-author {
+  color: #1f2937;
   font-weight: 600;
+  font-size: 0.95rem;
 }
 
-.login-to-comment a:hover {
-  text-decoration: underline;
+.comment-date {
+  color: #9ca3af;
+  font-size: 0.8rem;
+}
+
+.comment-text {
+  color: #4b5563;
+  line-height: 1.6;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.no-comments {
+  text-align: center;
+  padding: 2rem;
+  color: #9ca3af;
+  background: white;
+  border-radius: 12px;
+  border: 2px dashed #e5e7eb;
+}
+
+.no-comments i {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+  display: block;
+  color: #d1d5db;
+}
+
+.no-comments p {
+  margin: 0;
+  font-style: italic;
+  font-size: 0.95rem;
 }
 
 /* Actions des formations */
@@ -1760,7 +1855,23 @@ onMounted(async () => {
     gap: 0.5rem;
   }
   
-  .like-btn, .comment-btn, .share-btn {
+  .like-btn, .share-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .comment-info {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .input-with-button {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  
+  .send-comment-btn {
     width: 100%;
     justify-content: center;
   }
@@ -1813,14 +1924,21 @@ onMounted(async () => {
     gap: 1rem;
   }
   
-  .comment-input-container {
-    position: relative;
+  .comments-section {
+    padding: 1rem;
   }
   
-  .send-comment-btn {
-    position: static;
-    width: 100%;
-    margin-top: 0.5rem;
+  .comment-item {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .comment-avatar {
+    align-self: flex-start;
+  }
+  
+  .comment-input {
+    min-height: 60px;
   }
 }
 
