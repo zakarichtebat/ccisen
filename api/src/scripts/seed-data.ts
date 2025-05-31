@@ -19,28 +19,32 @@ async function seedData() {
           data: {
             nom: 'Consultation juridique',
             description: 'Conseil juridique pour votre entreprise',
-            duree: 60
+            duree: 60,
+            updatedAt: new Date()
           }
         }),
         prisma.service.create({
           data: {
             nom: 'Aide à la création d\'entreprise',
             description: 'Accompagnement dans la création de votre société',
-            duree: 90
+            duree: 90,
+            updatedAt: new Date()
           }
         }),
         prisma.service.create({
           data: {
             nom: 'Formation commerciale',
             description: 'Formation pour développer vos compétences commerciales',
-            duree: 120
+            duree: 120,
+            updatedAt: new Date()
           }
         }),
         prisma.service.create({
           data: {
             nom: 'Audit comptable',
             description: 'Audit de vos comptes et conseils financiers',
-            duree: 180
+            duree: 180,
+            updatedAt: new Date()
           }
         })
       ]);
@@ -61,7 +65,7 @@ async function seedData() {
     }
 
     // Vérifier s'il y a déjà des rendez-vous
-    const existingAppointments = await prisma.rendezVous.findMany();
+    const existingAppointments = await prisma.rendezvous.findMany();
     
     if (existingAppointments.length === 0) {
       console.log('📅 Création des rendez-vous de démonstration...');
@@ -93,14 +97,15 @@ async function seedData() {
       ];
 
       for (let i = 0; i < Math.min(dates.length, users.length, services.length); i++) {
-        const appointment = await prisma.rendezVous.create({
+        const appointment = await prisma.rendezvous.create({
           data: {
             date: dates[i],
             heure: heures[i % heures.length],
             status: statuses[i % statuses.length],
             notes: notes[i],
             userId: users[i % users.length].id,
-            serviceId: services[i % services.length].id
+            serviceId: services[i % services.length].id,
+            updatedAt: new Date()
           }
         });
         
@@ -109,14 +114,15 @@ async function seedData() {
       
       // Créer quelques rendez-vous supplémentaires avec d'autres utilisateurs
       for (let i = 0; i < 3; i++) {
-        const appointment = await prisma.rendezVous.create({
+        const appointment = await prisma.rendezvous.create({
           data: {
             date: dates[(i + 3) % dates.length],
             heure: heures[(i + 2) % heures.length],
             status: ['en_attente', 'confirmé', 'annulé'][i],
             notes: `Rendez-vous supplémentaire ${i + 1}`,
             userId: users[Math.min(i + 1, users.length - 1)].id,
-            serviceId: services[(i + 1) % services.length].id
+            serviceId: services[(i + 1) % services.length].id,
+            updatedAt: new Date()
           }
         });
         
@@ -129,7 +135,7 @@ async function seedData() {
     }
 
     // Afficher un résumé
-    const summary = await prisma.rendezVous.findMany({
+    const summary = await prisma.rendezvous.findMany({
       include: {
         user: {
           select: {

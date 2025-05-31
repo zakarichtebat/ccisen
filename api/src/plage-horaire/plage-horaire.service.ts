@@ -10,15 +10,17 @@ export class PlageHoraireService {
     heureDebut: string;
     heureFin: string;
   }) {
-    return this.prisma.plageHoraire.create({ data });
+    return this.prisma.plagehoraire.create({ 
+      data: { ...data, updatedAt: new Date() } 
+    });
   }
 
   async findAll() {
-    return this.prisma.plageHoraire.findMany();
+    return this.prisma.plagehoraire.findMany();
   }
 
   async findOne(id: number) {
-    return this.prisma.plageHoraire.findUnique({ where: { id } });
+    return this.prisma.plagehoraire.findUnique({ where: { id } });
   }
 
   async update(id: number, data: {
@@ -26,13 +28,13 @@ export class PlageHoraireService {
     heureDebut?: string;
     heureFin?: string;
   }) {
-    return this.prisma.plageHoraire.update({
+    return this.prisma.plagehoraire.update({
       where: { id },
-      data
+      data: { ...data, updatedAt: new Date() }
     });
   }
 
   async remove(id: number) {
-    return this.prisma.plageHoraire.delete({ where: { id } });
+    return this.prisma.plagehoraire.delete({ where: { id } });
   }
 } 

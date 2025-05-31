@@ -11,7 +11,7 @@ export class DocumentService {
   // ===== TYPES DE DOCUMENTS =====
 
   async createTypeDocument(data: CreateTypeDocumentDto) {
-    return this.prisma.typeDocument.create({
+    return this.prisma.typedocument.create({
       data: {
         nom: data.nom,
         description: data.description,
@@ -19,20 +19,21 @@ export class DocumentService {
         delaiTraitement: data.delaiTraitement,
         prix: data.prix,
         actif: data.actif ?? true,
-        template: data.template
+        template: data.template,
+        updatedAt: new Date()
       }
     });
   }
 
   async findAllTypesDocuments() {
-    return this.prisma.typeDocument.findMany({
+    return this.prisma.typedocument.findMany({
       where: { actif: true },
       orderBy: { nom: 'asc' }
     });
   }
 
   async findTypeDocumentById(id: number) {
-    const typeDocument = await this.prisma.typeDocument.findUnique({
+    const typeDocument = await this.prisma.typedocument.findUnique({
       where: { id }
     });
 
@@ -46,16 +47,16 @@ export class DocumentService {
   async updateTypeDocument(id: number, data: Partial<CreateTypeDocumentDto>) {
     await this.findTypeDocumentById(id);
 
-    return this.prisma.typeDocument.update({
+    return this.prisma.typedocument.update({
       where: { id },
-      data
+      data: { ...data, updatedAt: new Date() }
     });
   }
 
   async deleteTypeDocument(id: number) {
     await this.findTypeDocumentById(id);
 
-    return this.prisma.typeDocument.update({
+    return this.prisma.typedocument.update({
       where: { id },
       data: { actif: false }
     });
@@ -70,7 +71,7 @@ export class DocumentService {
     // Utiliser un userId par défaut pour les tests
     const userId = 1;
 
-    const demande = await this.prisma.demandeDocument.create({
+    const demande = await this.prisma.demandedocument.create({
       data: {
         userId,
         typeDocumentId: data.typeDocumentId,
@@ -81,18 +82,19 @@ export class DocumentService {
         registreCommercePdf: data.registreCommercePdf,
         photoIdentite: data.photoIdentite,
         autresDocuments: data.autresDocuments,
-        commentairesClient: data.commentairesClient
+        commentairesClient: data.commentairesClient,
+        updatedAt: new Date()
       },
       include: {
-        typeDocument: true,
-        user: {
+        typedocument: true,
+        user_demandedocument_userIdTouser: {
           select: { id: true, nom: true, prenom: true, email: true }
         }
       }
     });
 
     // Créer l'historique initial
-    await this.prisma.historiqueStatut.create({
+    await this.prisma.historiquestatut.create({
       data: {
         demandeDocumentId: demande.id,
         ancienStatut: null,
@@ -102,12 +104,12 @@ export class DocumentService {
     });
 
     // Créer notification pour le client
-    await this.prisma.notificationDocument.create({
+    await this.prisma.notificationdocument.create({
       data: {
         demandeDocumentId: demande.id,
         userId: userId,
         titre: 'Demande reçue',
-        message: `Votre demande de ${demande.typeDocument.nom} a été reçue et est en cours de traitement.`,
+        message: `Votre demande de ${demande.typedocument.nom} a été reçue et est en cours de traitement.`,
         type: 'info'
       }
     });
@@ -116,19 +118,19 @@ export class DocumentService {
   }
 
   async findAllDemandesDocuments(role?: string) {
-    return this.prisma.demandeDocument.findMany({
+    return this.prisma.demandedocument.findMany({
       include: {
-        typeDocument: {
+        typedocument: {
           select: { nom: true, prix: true, delaiTraitement: true }
         },
-        user: {
+        user_demandedocument_userIdTouser: {
           select: { id: true, nom: true, prenom: true, email: true }
         },
-        documentsGeneres: true,
+        documentgenere: true,
         _count: {
           select: {
-            historiqueStatuts: true,
-            notifications: true
+            historiquestatut: true,
+            notificationdocument: true
           }
         }
       },
@@ -137,18 +139,18 @@ export class DocumentService {
   }
 
   async findDemandesDocumentsByUser(userId: number) {
-    return this.prisma.demandeDocument.findMany({
+    return this.prisma.demandedocument.findMany({
       where: { userId },
       include: {
-        typeDocument: {
+        typedocument: {
           select: { nom: true, prix: true, delaiTraitement: true }
         },
-        documentsGeneres: true,
-        historiqueStatuts: {
+        documentgenere: true,
+        historiquestatut: {
           orderBy: { dateChangement: 'desc' },
           take: 1
         },
-        notifications: {
+        notificationdocument: {
           where: { lu: false }
         }
       },
@@ -157,23 +159,23 @@ export class DocumentService {
   }
 
   async findDemandeDocumentById(id: number) {
-    const demande = await this.prisma.demandeDocument.findUnique({
+    const demande = await this.prisma.demandedocument.findUnique({
       where: { id },
       include: {
-        typeDocument: true,
-        user: {
+        typedocument: true,
+        user_demandedocument_userIdTouser: {
           select: { id: true, nom: true, prenom: true, email: true }
         },
-        documentsGeneres: true,
-        historiqueStatuts: {
+        documentgenere: true,
+        historiquestatut: {
           include: {
-            admin: {
+            user: {
               select: { nom: true, prenom: true }
             }
           },
           orderBy: { dateChangement: 'desc' }
         },
-        notifications: {
+        notificationdocument: {
           orderBy: { createdAt: 'desc' }
         }
       }
@@ -191,16 +193,17 @@ export class DocumentService {
     const ancienStatut = demande.statut;
     const adminId = 1; // Valeur par défaut
 
-    const demandeUpdated = await this.prisma.demandeDocument.update({
+    const demandeUpdated = await this.prisma.demandedocument.update({
       where: { id },
       data: {
         ...data,
         adminTraitantId: adminId,
-        dateTraitement: new Date()
+        dateTraitement: new Date(),
+        updatedAt: new Date()
       },
       include: {
-        typeDocument: true,
-        user: {
+        typedocument: true,
+        user_demandedocument_userIdTouser: {
           select: { id: true, nom: true, prenom: true, email: true }
         }
       }
@@ -208,7 +211,7 @@ export class DocumentService {
 
     // Créer l'historique si le statut a changé
     if (data.statut && data.statut !== ancienStatut) {
-      await this.prisma.historiqueStatut.create({
+      await this.prisma.historiquestatut.create({
         data: {
           demandeDocumentId: id,
           ancienStatut,
@@ -227,7 +230,7 @@ export class DocumentService {
       };
 
       if (messages[data.statut]) {
-        await this.prisma.notificationDocument.create({
+        await this.prisma.notificationdocument.create({
           data: {
             demandeDocumentId: id,
             userId: demande.userId,
@@ -258,7 +261,7 @@ export class DocumentService {
     const numeroDocument = `CCISN-${typeDocument.nom.substring(0, 2).toUpperCase()}-${Date.now()}`;
     const nomFichier = `${typeDocument.nom.toLowerCase().replace(/\s+/g, '-')}-${numeroDocument}.pdf`;
 
-    const documentGenere = await this.prisma.documentGenere.create({
+    const documentGenere = await this.prisma.documentgenere.create({
       data: {
         demandeDocumentId: demandeId,
         typeDocumentId: demande.typeDocumentId,
@@ -269,7 +272,8 @@ export class DocumentService {
         tailleFichier: 0, // À remplir après génération du PDF
         statut: 'genere',
         hashDocument: `sha256:${Math.random().toString(36)}`,
-        qrCode: `QR-${numeroDocument}`
+        qrCode: `QR-${numeroDocument}`,
+        updatedAt: new Date()
       }
     });
 
@@ -280,13 +284,13 @@ export class DocumentService {
   }
 
   async findDocumentsGeneresByUser(userId: number = 1) {
-    return this.prisma.documentGenere.findMany({
+    return this.prisma.documentgenere.findMany({
       where: { userId },
       include: {
-        typeDocument: {
+        typedocument: {
           select: { nom: true }
         },
-        demandeDocument: {
+        demandedocument: {
           select: { nomDemandeur: true, prenomDemandeur: true }
         }
       },
@@ -295,10 +299,10 @@ export class DocumentService {
   }
 
   async downloadDocument(id: number, userId: number = 1) {
-    const document = await this.prisma.documentGenere.findUnique({
+    const document = await this.prisma.documentgenere.findUnique({
       where: { id },
       include: {
-        demandeDocument: true
+        demandedocument: true
       }
     });
 
@@ -311,12 +315,13 @@ export class DocumentService {
     }
 
     // Mettre à jour les statistiques de téléchargement
-    await this.prisma.documentGenere.update({
+    await this.prisma.documentgenere.update({
       where: { id },
       data: {
         dateTelecharge: new Date(),
         nbTelecharge: { increment: 1 },
-        statut: 'telecharge'
+        statut: 'telecharge',
+        updatedAt: new Date()
       }
     });
 
@@ -326,12 +331,12 @@ export class DocumentService {
   // ===== NOTIFICATIONS =====
 
   async findNotificationsByUser(userId: number = 1) {
-    return this.prisma.notificationDocument.findMany({
+    return this.prisma.notificationdocument.findMany({
       where: { userId },
       include: {
-        demandeDocument: {
+        demandedocument: {
           include: {
-            typeDocument: {
+            typedocument: {
               select: { nom: true }
             }
           }
@@ -342,7 +347,7 @@ export class DocumentService {
   }
 
   async markNotificationAsRead(id: number, userId: number = 1) {
-    const notification = await this.prisma.notificationDocument.findUnique({
+    const notification = await this.prisma.notificationdocument.findUnique({
       where: { id }
     });
 
@@ -354,7 +359,7 @@ export class DocumentService {
       throw new BadRequestException('Vous n\'avez pas accès à cette notification');
     }
 
-    return this.prisma.notificationDocument.update({
+    return this.prisma.notificationdocument.update({
       where: { id },
       data: {
         lu: true,
@@ -374,12 +379,12 @@ export class DocumentService {
       documentsGeneres,
       typesDocuments
     ] = await Promise.all([
-      this.prisma.demandeDocument.count(),
-      this.prisma.demandeDocument.count({ where: { statut: 'en_attente' } }),
-      this.prisma.demandeDocument.count({ where: { statut: 'accepte' } }),
-      this.prisma.demandeDocument.count({ where: { statut: 'rejete' } }),
-      this.prisma.documentGenere.count(),
-      this.prisma.typeDocument.count({ where: { actif: true } })
+      this.prisma.demandedocument.count(),
+      this.prisma.demandedocument.count({ where: { statut: 'en_attente' } }),
+      this.prisma.demandedocument.count({ where: { statut: 'accepte' } }),
+      this.prisma.demandedocument.count({ where: { statut: 'rejete' } }),
+      this.prisma.documentgenere.count(),
+      this.prisma.typedocument.count({ where: { actif: true } })
     ]);
 
     return {

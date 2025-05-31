@@ -57,7 +57,7 @@
             
             <div class="detail-row">
               <i class="fas fa-users"></i>
-              <span>{{ formation.inscriptions.length }}/{{ formation.maxParticipants }} participants</span>
+              <span>{{ formation.inscription.length }}/{{ formation.maxParticipants }} participants</span>
             </div>
           </div>
           

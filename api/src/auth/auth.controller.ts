@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, Res, Req } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, Res, Req, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { Response, Request } from 'express';
@@ -122,6 +122,20 @@ export class AuthController {
     return { message: 'Déconnexion réussie' };
   }
   
+  @Get('me')
+  @ApiOperation({ summary: 'Get current user (alternative endpoint)' })
+  @ApiResponse({ status: 200, description: 'Returns current user info.' })
+  async getMe(@Req() request: Request) {
+    const userId = request.cookies['userId'];
+    
+    if (!userId) {
+      return { isLoggedIn: false, user: null };
+    }
+    
+    const user = await this.authService.getUserById(parseInt(userId));
+    return { isLoggedIn: !!user, user };
+  }
+
   @Post('current-user')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get current user' })

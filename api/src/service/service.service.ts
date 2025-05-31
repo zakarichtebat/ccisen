@@ -10,7 +10,9 @@ export class ServiceService {
     description: string;
     duree: number;
   }) {
-    return this.prisma.service.create({ data });
+    return this.prisma.service.create({ 
+      data: { ...data, updatedAt: new Date() } 
+    });
   }
 
   async findAll() {

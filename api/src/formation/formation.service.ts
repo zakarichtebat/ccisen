@@ -28,9 +28,9 @@ export class FormationService {
     }
 
     return this.prisma.formation.create({
-      data,
+      data: { ...data, updatedAt: new Date() },
       include: {
-        inscriptions: {
+        inscription: {
           include: {
             user: {
               select: {
@@ -49,7 +49,7 @@ export class FormationService {
   async findAll() {
     return this.prisma.formation.findMany({
       include: {
-        inscriptions: {
+        inscription: {
           include: {
             user: {
               select: {
@@ -77,7 +77,7 @@ export class FormationService {
         }
       },
       include: {
-        inscriptions: {
+        inscription: {
           include: {
             user: {
               select: {
@@ -89,7 +89,7 @@ export class FormationService {
             }
           }
         },
-        likes: {
+        like: {
           include: {
             user: {
               select: {
@@ -100,7 +100,7 @@ export class FormationService {
             }
           }
         },
-        comments: {
+        comment: {
           include: {
             user: {
               select: {
@@ -126,7 +126,7 @@ export class FormationService {
     const formation = await this.prisma.formation.findUnique({
       where: { id },
       include: {
-        inscriptions: {
+        inscription: {
           include: {
             user: {
               select: {
@@ -176,9 +176,9 @@ export class FormationService {
 
     return this.prisma.formation.update({
       where: { id },
-      data,
+      data: { ...data, updatedAt: new Date() },
       include: {
-        inscriptions: {
+        inscription: {
           include: {
             user: {
               select: {
@@ -219,7 +219,7 @@ export class FormationService {
     }
 
     // Vérifier si la formation n'est pas complète
-    if (formation.inscriptions.length >= formation.maxParticipants) {
+    if (formation.inscription.length >= formation.maxParticipants) {
       throw new BadRequestException('Cette formation est complète');
     }
 
@@ -241,7 +241,8 @@ export class FormationService {
       data: {
         userId,
         formationId,
-        notes
+        notes,
+        updatedAt: new Date()
       },
       include: {
         user: {
@@ -400,7 +401,8 @@ export class FormationService {
       data: {
         content,
         userId,
-        formationId
+        formationId,
+        updatedAt: new Date()
       },
       include: {
         user: {
@@ -483,7 +485,7 @@ export class FormationService {
         }
       },
       include: {
-        inscriptions: {
+        inscription: {
           include: {
             user: {
               select: {
@@ -495,7 +497,7 @@ export class FormationService {
             }
           }
         },
-        likes: {
+        like: {
           include: {
             user: {
               select: {
@@ -506,7 +508,7 @@ export class FormationService {
             }
           }
         },
-        comments: {
+        comment: {
           include: {
             user: {
               select: {
@@ -555,7 +557,8 @@ export class FormationService {
         secteurActivite: 'Non spécifié',
         telephone: 'Non renseigné',
         adresse: 'Non renseignée',
-        role: 'anonymous'
+        role: 'anonymous',
+        updatedAt: new Date()
       }
     });
     

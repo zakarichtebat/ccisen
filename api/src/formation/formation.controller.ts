@@ -238,7 +238,36 @@ export class FormationController {
     }
   }
 
-  @Get('admin/inscriptions')
+  @Get('user/likes')
+  @ApiOperation({ summary: 'Get user liked formations' })
+  async getUserLikes(@Req() req: Request) {
+    try {
+      const userId = req.cookies['userId'];
+      
+      if (!userId) {
+        throw new HttpException(
+          {
+            status: HttpStatus.UNAUTHORIZED,
+            error: 'Utilisateur non connecté',
+          },
+          HttpStatus.UNAUTHORIZED
+        );
+      }
+
+      return await this.formationService.getUserLikes(+userId);
+    } catch (error: any) {
+      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+      throw new HttpException(
+        {
+          status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+          error: `Erreur lors de la récupération des likes utilisateur: ${errorMessage}`,
+        },
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @Get('all/inscriptions')
   @ApiOperation({ summary: 'Get all inscriptions (Admin only)' })
   async getAllInscriptions(@Req() req: Request) {
     try {
@@ -256,7 +285,7 @@ export class FormationController {
     }
   }
 
-  @Patch('inscription/:inscriptionId/confirmer')
+  @Patch('inscriptions/:inscriptionId/confirmer')
   @ApiOperation({ summary: 'Confirm an inscription (Admin only)' })
   async confirmerInscription(@Param('inscriptionId') inscriptionId: string) {
     try {
@@ -292,7 +321,7 @@ export class FormationController {
     }
   }
 
-  // Endpoints pour les likes
+  // Endpoints pour les likes (routes spécifiques AVANT les routes avec paramètres)
   @Post(':id/like')
   @ApiOperation({ summary: 'Like/Unlike a formation' })
   async toggleLike(@Param('id') id: string, @Req() req: Request) {
@@ -329,35 +358,6 @@ export class FormationController {
         {
           status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
           error: `Erreur lors de la récupération des likes: ${errorMessage}`,
-        },
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
-  }
-
-  @Get('user/likes')
-  @ApiOperation({ summary: 'Get user liked formations' })
-  async getUserLikes(@Req() req: Request) {
-    try {
-      const userId = req.cookies['userId'];
-      
-      if (!userId) {
-        throw new HttpException(
-          {
-            status: HttpStatus.UNAUTHORIZED,
-            error: 'Utilisateur non connecté',
-          },
-          HttpStatus.UNAUTHORIZED
-        );
-      }
-
-      return await this.formationService.getUserLikes(+userId);
-    } catch (error: any) {
-      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
-      throw new HttpException(
-        {
-          status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
-          error: `Erreur lors de la récupération des likes utilisateur: ${errorMessage}`,
         },
         error.status || HttpStatus.INTERNAL_SERVER_ERROR
       );

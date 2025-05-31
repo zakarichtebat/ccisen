@@ -44,7 +44,7 @@ export class RendezVousService {
     }
 
     // Vérifier s'il existe déjà un rendez-vous à la même date et heure
-    const existingRendezVous = await this.prisma.rendezVous.findFirst({
+    const existingRendezVous = await this.prisma.rendezvous.findFirst({
       where: {
         date: data.date,
         heure: data.heure,
@@ -57,8 +57,8 @@ export class RendezVousService {
 
     console.log(`Création d'un rendez-vous pour l'utilisateur ${utilisateur.nom} ${utilisateur.prenom} (ID: ${data.userId})`);
     
-    return this.prisma.rendezVous.create({ 
-      data,
+    return this.prisma.rendezvous.create({ 
+      data: { ...data, updatedAt: new Date() },
       include: {
         user: true,
         service: true
@@ -67,7 +67,7 @@ export class RendezVousService {
   }
 
   async findAll() {
-    return this.prisma.rendezVous.findMany({
+    return this.prisma.rendezvous.findMany({
       include: {
         user: true,
         service: true
@@ -76,7 +76,7 @@ export class RendezVousService {
   }
 
   async findAllWithDetails() {
-    return this.prisma.rendezVous.findMany({
+    return this.prisma.rendezvous.findMany({
       include: {
         user: {
           select: {
@@ -104,7 +104,7 @@ export class RendezVousService {
   }
 
   async findByUser(userId: number) {
-    return this.prisma.rendezVous.findMany({
+    return this.prisma.rendezvous.findMany({
       where: { userId },
       include: {
         service: true
@@ -113,7 +113,7 @@ export class RendezVousService {
   }
 
   async findOne(id: number) {
-    return this.prisma.rendezVous.findUnique({ 
+    return this.prisma.rendezvous.findUnique({ 
       where: { id },
       include: {
         user: true,
@@ -131,7 +131,7 @@ export class RendezVousService {
   }) {
     // Si la date ou l'heure est modifiée, vérifier s'il existe déjà un rendez-vous à cette date et heure
     if (data.date || data.heure) {
-      const rendezVousToUpdate = await this.prisma.rendezVous.findUnique({
+      const rendezVousToUpdate = await this.prisma.rendezvous.findUnique({
         where: { id }
       });
 
@@ -156,7 +156,7 @@ export class RendezVousService {
         }
       }
 
-      const existingRendezVous = await this.prisma.rendezVous.findFirst({
+      const existingRendezVous = await this.prisma.rendezvous.findFirst({
         where: {
           date: dateToCheck,
           heure: heureToCheck,
@@ -169,7 +169,7 @@ export class RendezVousService {
       }
     }
 
-    return this.prisma.rendezVous.update({
+    return this.prisma.rendezvous.update({
       where: { id },
       data,
       include: {
@@ -180,6 +180,6 @@ export class RendezVousService {
   }
 
   async remove(id: number) {
-    return this.prisma.rendezVous.delete({ where: { id } });
+    return this.prisma.rendezvous.delete({ where: { id } });
   }
 } 

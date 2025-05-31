@@ -191,7 +191,7 @@ const getInscriptionStatusText = (status) => {
 // Fonctions pour les inscriptions
 const fetchAllInscriptions = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/formations/admin/inscriptions', {
+    const response = await axios.get('http://localhost:3000/formations/all/inscriptions', {
       withCredentials: true
     })
     inscriptions.value = response.data
@@ -211,7 +211,7 @@ const confirmerInscription = async (inscriptionId) => {
   
   try {
     const response = await axios.patch(
-      `http://localhost:3000/formations/inscription/${inscriptionId}/confirmer`,
+      `http://localhost:3000/formations/inscriptions/${inscriptionId}/confirmer`,
       {},
       { withCredentials: true }
     )
@@ -237,7 +237,7 @@ const annulerInscription = async (inscriptionId) => {
   
   try {
     const response = await axios.patch(
-      `http://localhost:3000/formations/inscription/${inscriptionId}/annuler`,
+      `http://localhost:3000/formations/inscriptions/${inscriptionId}/annuler`,
       {},
       { withCredentials: true }
     )

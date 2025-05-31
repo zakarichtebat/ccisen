@@ -16,7 +16,9 @@ export class UserService {
     telephone: string;
     adresse: string;
   }) {
-    return this.prisma.user.create({ data });
+    return this.prisma.user.create({ 
+      data: { ...data, updatedAt: new Date() } 
+    });
   }
 
   async findAll() {

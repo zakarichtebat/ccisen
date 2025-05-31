@@ -114,7 +114,7 @@
                 
                 <div class="detail-item">
                   <i class="fas fa-users"></i>
-                  <span>{{ formation.inscriptions.length }}/{{ formation.maxParticipants }} participants</span>
+                  <span>{{ formation.inscription.length }}/{{ formation.maxParticipants }} participants</span>
                 </div>
               </div>
               
@@ -122,10 +122,10 @@
               <div class="participants-progress">
                 <div 
                   class="progress-bar" 
-                  :style="{ width: (formation.inscriptions.length / formation.maxParticipants * 100) + '%' }"
+                  :style="{ width: (formation.inscription.length / formation.maxParticipants * 100) + '%' }"
                 ></div>
                 <span class="progress-text">
-                  {{ Math.round((formation.inscriptions.length / formation.maxParticipants) * 100) }}% complet
+                  {{ Math.round((formation.inscription.length / formation.maxParticipants) * 100) }}% complet
                 </span>
               </div>
               
@@ -148,12 +148,12 @@
                     :class="{ 'liked': isLiked(formation.id) }"
                   >
                     <i :class="isLiked(formation.id) ? 'fas fa-heart' : 'far fa-heart'" @click.stop></i>
-                    <span @click.stop>{{ formation.likes?.length || 0 }}</span>
+                    <span @click.stop>{{ formation.like?.length || 0 }}</span>
                   </button>
                   
                   <div class="comment-info" @click.stop>
                     <i class="far fa-comment" @click.stop></i>
-                    <span @click.stop>{{ formation.comments?.length || 0 }} commentaires</span>
+                    <span @click.stop>{{ formation.comment?.length || 0 }} commentaires</span>
                   </div>
                   
                   <button @click.stop="shareFormation(formation)" class="share-btn">
@@ -169,7 +169,7 @@
               <!-- Section commentaires (toujours visible et simplifiée) -->
               <div class="comments-section" @click.stop @mousedown.stop @mouseup.stop>
                 <div class="comments-header" @click.stop @mousedown.stop @mouseup.stop>
-                  <h4 @click.stop @mousedown.stop @mouseup.stop>💬 Commentaires ({{ formation.comments?.length || 0 }})</h4>
+                  <h4 @click.stop @mousedown.stop @mouseup.stop>💬 Commentaires ({{ formation.comment?.length || 0 }})</h4>
                 </div>
                 
                 <!-- Formulaire d'ajout de commentaire (en haut) -->
@@ -221,9 +221,9 @@
                 </div>
                 
                 <!-- Liste des commentaires -->
-                <div v-if="formation.comments && formation.comments.length > 0" class="comments-list" @click.stop @mousedown.stop @mouseup.stop>
+                <div v-if="formation.comment && formation.comment.length > 0" class="comments-list" @click.stop @mousedown.stop @mouseup.stop>
                   <div 
-                    v-for="comment in formation.comments" 
+                    v-for="comment in formation.comment" 
                     :key="comment.id"
                     class="comment-item"
                     @click.stop
@@ -265,7 +265,7 @@
                 
                 <span v-if="subscribing === formation.id">Inscription...</span>
                 <span v-else-if="isAlreadySubscribed(formation.id)">Déjà inscrit</span>
-                <span v-else-if="formation.inscriptions.length >= formation.maxParticipants">Complet</span>
+                <span v-else-if="formation.inscription.length >= formation.maxParticipants">Complet</span>
                 <span v-else>S'inscrire</span>
               </button>
             </div>
@@ -406,11 +406,11 @@ const formationImages = [
 
 // Computed properties
 const totalInscriptions = computed(() => {
-  return formations.value.reduce((total, formation) => total + formation.inscriptions.length, 0)
+  return formations.value.reduce((total, formation) => total + formation.inscription.length, 0)
 })
 
 const totalLikes = computed(() => {
-  return formations.value.reduce((total, formation) => total + (formation.likes?.length || 0), 0)
+  return formations.value.reduce((total, formation) => total + (formation.like?.length || 0), 0)
 })
 
 const currentUserAvatar = computed(() => {
@@ -511,7 +511,7 @@ const onImageError = (event) => {
 }
 
 const getStatusText = (formation) => {
-  if (formation.inscriptions.length >= formation.maxParticipants) {
+  if (formation.inscription.length >= formation.maxParticipants) {
     return 'Complet'
   }
   if (new Date(formation.dateDebut) <= new Date()) {
@@ -521,7 +521,7 @@ const getStatusText = (formation) => {
 }
 
 const getStatusClass = (formation) => {
-  if (formation.inscriptions.length >= formation.maxParticipants) {
+  if (formation.inscription.length >= formation.maxParticipants) {
     return 'full'
   }
   if (new Date(formation.dateDebut) <= new Date()) {
@@ -531,7 +531,7 @@ const getStatusClass = (formation) => {
 }
 
 const canSubscribe = (formation) => {
-  if (formation.inscriptions.length >= formation.maxParticipants) return false
+  if (formation.inscription.length >= formation.maxParticipants) return false
   if (new Date(formation.dateDebut) <= new Date()) return false
   if (isAlreadySubscribed(formation.id)) return false
   return true
@@ -626,8 +626,8 @@ const toggleLike = async (formationId) => {
     if (formation) {
       if (response.data.liked) {
         // Ajouter le like
-        formation.likes = formation.likes || []
-        formation.likes.push({
+        formation.like = formation.like || []
+        formation.like.push({
           id: Date.now(),
           userId: currentUser.value?.id || 'anonymous',
           formationId: formationId,
@@ -643,7 +643,7 @@ const toggleLike = async (formationId) => {
         }
       } else {
         // Retirer le like
-        formation.likes = formation.likes.filter(like => 
+        formation.like = formation.like.filter(like => 
           isAuthenticated.value ? like.userId !== currentUser.value?.id : like.userId === 'anonymous'
         )
         userLikes.value = userLikes.value.filter(id => id !== formationId)
@@ -685,8 +685,8 @@ const addComment = async (formationId) => {
     // Ajouter le commentaire à la liste locale
     const formation = formations.value.find(f => f.id === formationId)
     if (formation) {
-      if (!formation.comments) formation.comments = []
-      formation.comments.unshift(response.data)
+      if (!formation.comment) formation.comment = []
+      formation.comment.unshift(response.data)
     }
     
     newComments.value[formationId] = ''
