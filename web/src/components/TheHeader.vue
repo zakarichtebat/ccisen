@@ -5,7 +5,7 @@
       <!-- Logo du site avec animation au survol -->
       <div class="logo animate-fade-in">
         <router-link to="/">
-          <h1>CCISN</h1>
+          <img src="/images/logoccis-removebg-preview.png" alt="CCISN" class="logo-image">
         </router-link>
       </div>
       
@@ -248,16 +248,52 @@ const getUserRole = () => {
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
-  padding: 1rem 2rem;
+  padding: 1.2rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 /* Styles pour le logo */
+.logo {
+  position: relative;
+  overflow: hidden;
+}
+
 .logo a {
   text-decoration: none;
   color: #2c3e50;
+  display: block;
+  position: relative;
+}
+
+/* Effet de brillance occasionnel */
+.logo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.4), 
+    transparent
+  );
+  animation: logoShine 4s ease-in-out infinite;
+  z-index: 1;
+  pointer-events: none;
+}
+
+@keyframes logoShine {
+  0%, 90%, 100% {
+    left: -100%;
+    opacity: 0;
+  }
+  50% {
+    left: 100%;
+    opacity: 1;
+  }
 }
 
 .logo h1 {
@@ -273,6 +309,72 @@ const getUserRole = () => {
 .logo h1:hover {
   transform: scale(1.05);
   filter: brightness(1.1);
+}
+
+.logo-image {
+  height: 70px;
+  width: auto;
+  max-width: 500px;
+  object-fit: contain;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: logoFloat 3s ease-in-out infinite, logoAppear 1s ease-out;
+  transform-origin: center;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.logo-image:hover {
+  transform: scale(1.1) rotate(2deg);
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2)) brightness(1.1);
+  animation-play-state: paused;
+}
+
+/* Animation de flottement subtile */
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-3px) rotate(1deg);
+  }
+  50% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-2px) rotate(-1deg);
+  }
+}
+
+/* Animation d'apparition au chargement */
+@keyframes logoAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-20px);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05) translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0px);
+  }
+}
+
+/* Animation de pulsation au clic */
+.logo-image:active {
+  animation: logoPulse 0.3s ease-in-out;
+}
+
+@keyframes logoPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* Styles pour le menu de navigation */
