@@ -266,6 +266,94 @@
         </button>
       </div>
     </transition>
+
+    <!-- Modal professionnelle pour l'envoi d'email -->
+    <transition name="modal">
+      <div v-if="showEmailModal" class="modal-overlay" @click="closeEmailModal">
+        <div class="email-modal" @click.stop>
+          <div class="modal-header">
+            <div class="header-icon">
+              <i class="fas fa-envelope-open"></i>
+            </div>
+            <h3>Choisissez votre méthode d'envoi</h3>
+            <p>Sélectionnez comment vous souhaitez envoyer votre message</p>
+            <button @click="closeEmailModal" class="close-modal">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          
+          <div class="modal-content">
+            <div class="email-options">
+              <div class="email-option" @click="openOutlook">
+                <div class="option-icon outlook">
+                  <i class="fas fa-envelope"></i>
+                </div>
+                <div class="option-content">
+                  <h4>Microsoft Outlook</h4>
+                  <p>Ouvrir dans l'application Outlook</p>
+                </div>
+                <div class="option-arrow">
+                  <i class="fas fa-chevron-right"></i>
+                </div>
+              </div>
+              
+              <div class="email-option" @click="openGmail">
+                <div class="option-icon gmail">
+                  <i class="fab fa-google"></i>
+                </div>
+                <div class="option-content">
+                  <h4>Gmail</h4>
+                  <p>Ouvrir dans Gmail (navigateur)</p>
+                </div>
+                <div class="option-arrow">
+                  <i class="fas fa-chevron-right"></i>
+                </div>
+              </div>
+              
+              <div class="email-option" @click="copyToClipboard">
+                <div class="option-icon copy">
+                  <i class="fas fa-copy"></i>
+                </div>
+                <div class="option-content">
+                  <h4>Copier les informations</h4>
+                  <p>Copier le contenu dans le presse-papier</p>
+                </div>
+                <div class="option-arrow">
+                  <i class="fas fa-chevron-right"></i>
+                </div>
+              </div>
+              
+              <div class="email-option" @click="openDefaultEmail">
+                <div class="option-icon default">
+                  <i class="fas fa-mail-bulk"></i>
+                </div>
+                <div class="option-content">
+                  <h4>Client email par défaut</h4>
+                  <p>Ouvrir avec votre application email</p>
+                </div>
+                <div class="option-arrow">
+                  <i class="fas fa-chevron-right"></i>
+                </div>
+              </div>
+            </div>
+            
+            <div class="contact-info-modal">
+              <h5>Ou contactez-nous directement :</h5>
+              <div class="direct-contacts">
+                <a href="tel:+212536603857" class="direct-contact">
+                  <i class="fas fa-phone"></i>
+                  <span>+212 5 36 60 38 57</span>
+                </a>
+                <a href="mailto:zakariachtebat@gmail.com" class="direct-contact">
+                  <i class="fas fa-envelope"></i>
+                  <span>zakariachtebat@gmail.com</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
     
     <TheFooter />
   </div>
@@ -294,6 +382,7 @@ const errors = ref({})
 const isSubmitting = ref(false)
 const successMessage = ref('')
 const errorMessage = ref('')
+const showEmailModal = ref(false)
 
 // Validation du formulaire
 const validateForm = () => {
@@ -326,6 +415,76 @@ const validateForm = () => {
   return Object.keys(errors.value).length === 0
 }
 
+// Générer le contenu de l'email
+const generateEmailContent = () => {
+  const subject = encodeURIComponent(`Contact CCIS - ${formData.sujet}`)
+  const body = encodeURIComponent(`
+Nom: ${formData.nom} ${formData.prenom}
+Email: ${formData.email}
+Téléphone: ${formData.telephone || 'Non renseigné'}
+Entreprise: ${formData.entreprise || 'Non renseignée'}
+Sujet: ${formData.sujet}
+
+Message:
+${formData.message}
+  `.trim())
+  
+  return { subject, body }
+}
+
+// Fonctions pour les différentes options d'envoi
+const openOutlook = () => {
+  const { subject, body } = generateEmailContent()
+  const mailtoLink = `mailto:zakariachtebat@gmail.com?subject=${subject}&body=${body}`
+  window.location.href = mailtoLink
+  closeEmailModal()
+  successMessage.value = 'Outlook a été ouvert. Veuillez envoyer l\'email pour finaliser votre demande.'
+}
+
+const openGmail = () => {
+  const { subject, body } = generateEmailContent()
+  const gmailLink = `https://mail.google.com/mail/?view=cm&to=zakariachtebat@gmail.com&su=${subject}&body=${body}`
+  window.open(gmailLink, '_blank')
+  closeEmailModal()
+  successMessage.value = 'Gmail a été ouvert dans un nouvel onglet. Veuillez envoyer l\'email pour finaliser votre demande.'
+}
+
+const copyToClipboard = async () => {
+  const emailContent = `
+À: zakariachtebat@gmail.com
+Sujet: Contact CCIS - ${formData.sujet}
+
+Nom: ${formData.nom} ${formData.prenom}
+Email: ${formData.email}
+Téléphone: ${formData.telephone || 'Non renseigné'}
+Entreprise: ${formData.entreprise || 'Non renseignée'}
+Sujet: ${formData.sujet}
+
+Message:
+${formData.message}
+  `.trim()
+  
+  try {
+    await navigator.clipboard.writeText(emailContent)
+    closeEmailModal()
+    successMessage.value = 'Les informations ont été copiées dans votre presse-papier !'
+  } catch (err) {
+    errorMessage.value = 'Impossible de copier dans le presse-papier.'
+  }
+}
+
+const openDefaultEmail = () => {
+  const { subject, body } = generateEmailContent()
+  const mailtoLink = `mailto:zakariachtebat@gmail.com?subject=${subject}&body=${body}`
+  window.location.href = mailtoLink
+  closeEmailModal()
+  successMessage.value = 'Votre client email par défaut a été ouvert.'
+}
+
+const closeEmailModal = () => {
+  showEmailModal.value = false
+}
+
 // Soumission du formulaire
 const submitForm = async () => {
   if (!validateForm()) {
@@ -356,23 +515,9 @@ const submitForm = async () => {
   } catch (error) {
     console.error('Erreur lors de l\'envoi:', error)
     
-    // Fallback vers mailto si l'API ne fonctionne pas
-    const subject = encodeURIComponent(`Contact CCIS - ${formData.sujet}`)
-    const body = encodeURIComponent(`
-Nom: ${formData.nom} ${formData.prenom}
-Email: ${formData.email}
-Téléphone: ${formData.telephone || 'Non renseigné'}
-Entreprise: ${formData.entreprise || 'Non renseignée'}
-Sujet: ${formData.sujet}
-
-Message:
-${formData.message}
-    `.trim())
+    // Ouvrir la modal professionnelle au lieu de la popup native
+    showEmailModal.value = true
     
-    const mailtoLink = `mailto:zakariachtebat@gmail.com?subject=${subject}&body=${body}`
-    window.location.href = mailtoLink
-    
-    successMessage.value = 'Votre client de messagerie s\'est ouvert. Envoyez l\'email pour finaliser votre demande.'
   } finally {
     isSubmitting.value = false
   }
@@ -1648,4 +1793,394 @@ ${formData.message}
     font-size: 1.1rem;
   }
 }
+
+/* Modal professionnelle pour l'envoi d'email */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.email-modal {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(30px) saturate(180%);
+  border-radius: 32px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 
+    0 40px 120px rgba(0, 0, 0, 0.2),
+    0 20px 60px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Header de la modal */
+.modal-header {
+  background: linear-gradient(
+    135deg,
+    rgba(76, 175, 80, 0.95) 0%,
+    rgba(33, 150, 243, 0.95) 100%
+  );
+  color: white;
+  padding: 2.5rem 2rem;
+  border-radius: 32px 32px 0 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.modal-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  animation: rotate 15s linear infinite;
+}
+
+.header-icon {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  position: relative;
+  z-index: 2;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.header-icon i {
+  font-size: 2rem;
+  color: white;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.modal-header h3 {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+  font-weight: 800;
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header p {
+  font-size: 1.1rem;
+  opacity: 0.95;
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+}
+
+.close-modal {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 3;
+  backdrop-filter: blur(10px);
+}
+
+.close-modal:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg) scale(1.1);
+}
+
+/* Contenu de la modal */
+.modal-content {
+  padding: 2.5rem 2rem;
+}
+
+.email-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.email-option {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.9));
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(226, 232, 240, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.email-option::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.05), rgba(33, 150, 243, 0.05));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.email-option:hover::before {
+  opacity: 1;
+}
+
+.email-option:hover {
+  transform: translateX(8px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+  border-color: rgba(76, 175, 80, 0.3);
+}
+
+.option-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.option-icon.outlook {
+  background: linear-gradient(135deg, #0078d4, #106ebe);
+  box-shadow: 0 8px 20px rgba(0, 120, 212, 0.3);
+}
+
+.option-icon.gmail {
+  background: linear-gradient(135deg, #ea4335, #fbbc04);
+  box-shadow: 0 8px 20px rgba(234, 67, 53, 0.3);
+}
+
+.option-icon.copy {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+}
+
+.option-icon.default {
+  background: linear-gradient(135deg, #64748b, #475569);
+  box-shadow: 0 8px 20px rgba(100, 116, 139, 0.3);
+}
+
+.option-icon i {
+  color: white;
+  font-size: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.email-option:hover .option-icon {
+  transform: rotate(10deg) scale(1.1);
+}
+
+.email-option:hover .option-icon i {
+  transform: scale(1.2);
+}
+
+.option-content {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.option-content h4 {
+  color: #1e293b;
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: 0.025em;
+}
+
+.option-content p {
+  color: #64748b;
+  margin: 0;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.option-arrow {
+  color: #94a3b8;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.email-option:hover .option-arrow {
+  color: #4CAF50;
+  transform: translateX(4px);
+}
+
+/* Informations de contact dans la modal */
+.contact-info-modal {
+  background: linear-gradient(145deg, rgba(248, 250, 252, 0.8), rgba(241, 245, 249, 0.8));
+  border-radius: 20px;
+  padding: 2rem;
+  border: 1px solid rgba(226, 232, 240, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+.contact-info-modal h5 {
+  color: #1e293b;
+  margin: 0 0 1.5rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-align: center;
+  letter-spacing: 0.025em;
+}
+
+.direct-contacts {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.direct-contact {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  border-radius: 16px;
+  text-decoration: none;
+  color: #374151;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(226, 232, 240, 0.5);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.direct-contact:hover {
+  background: linear-gradient(145deg, #4CAF50, #2196F3);
+  color: white;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 12px 24px rgba(76, 175, 80, 0.3);
+}
+
+.direct-contact i {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.direct-contact:hover i {
+  transform: scale(1.2);
+}
+
+/* Animations de transition pour la modal */
+.modal-enter-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-enter-from {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.modal-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.modal-enter-from .email-modal {
+  transform: scale(0.8) translateY(40px);
+}
+
+.modal-leave-to .email-modal {
+  transform: scale(0.9) translateY(20px);
+}
+
+/* Responsive pour la modal */
+@media (max-width: 768px) {
+  .email-modal {
+    margin: 1rem;
+    border-radius: 24px;
+  }
+  
+  .modal-header {
+    padding: 2rem 1.5rem;
+    border-radius: 24px 24px 0 0;
+  }
+  
+  .modal-header h3 {
+    font-size: 1.7rem;
+  }
+  
+  .modal-content {
+    padding: 2rem 1.5rem;
+  }
+  
+  .email-option {
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+  
+  .option-icon {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .option-content h4 {
+    font-size: 1.1rem;
+  }
+  
+  .direct-contacts {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .direct-contact {
+    justify-content: center;
+  }
+}
+
+/* États pour l'accessibilité */
 </style>
