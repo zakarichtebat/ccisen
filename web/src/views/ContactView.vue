@@ -789,9 +789,16 @@ ${formData.message}
   font-size: 1rem;
   font-weight: 500;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  background: #ffffff;
+  color: #1e293b;
   position: relative;
   z-index: 1;
+}
+
+.input-group input::placeholder,
+.input-group textarea::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
 }
 
 .input-group input:focus,
@@ -800,6 +807,7 @@ ${formData.message}
   outline: none;
   border-color: #4CAF50;
   background: #ffffff;
+  color: #1e293b;
   box-shadow: 
     0 0 0 4px rgba(76, 175, 80, 0.1),
     0 8px 16px rgba(76, 175, 80, 0.15);
@@ -810,7 +818,8 @@ ${formData.message}
 .input-group select.error,
 .input-group textarea.error {
   border-color: #ef4444;
-  background: linear-gradient(145deg, #fef2f2, #ffffff);
+  background: #ffffff;
+  color: #1e293b;
   box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
 }
 
