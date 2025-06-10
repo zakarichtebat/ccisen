@@ -43,6 +43,16 @@ const router = createRouter({
       component: () => import('../views/AboutView.vue')
     },
     {
+      path: '/aide',
+      name: 'aide',
+      component: () => import('../views/AideView.vue')
+    },
+    {
+      path: '/test-icons',
+      name: 'test-icons',
+      component: () => import('../views/TestIconsView.vue')
+    },
+    {
       path: '/actualites',
       name: 'actualites',
       component: () => import('../views/HomeView.vue') // Temporairement redirigé vers home
@@ -55,7 +65,7 @@ const router = createRouter({
     {
       path: '/faq',
       name: 'faq',
-      component: () => import('../views/HomeView.vue') // Temporairement redirigé vers home
+      component: () => import('../views/AideView.vue') // Redirection vers la page d'aide
     },
     {
       path: '/privacy',

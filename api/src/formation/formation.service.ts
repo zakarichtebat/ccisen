@@ -198,15 +198,31 @@ export class FormationService {
     // Vérifier que la formation existe
     await this.findOne(id);
 
-    // Supprimer d'abord les inscriptions
+    // Supprimer dans l'ordre des dépendances pour éviter les erreurs de contrainte
+    // 1. Supprimer d'abord les commentaires
+    await this.prisma.comment.deleteMany({
+      where: { formationId: id }
+    });
+
+    // 2. Supprimer les likes
+    await this.prisma.like.deleteMany({
+      where: { formationId: id }
+    });
+
+    // 3. Supprimer les inscriptions
     await this.prisma.inscription.deleteMany({
       where: { formationId: id }
     });
 
-    // Puis supprimer la formation
-    return this.prisma.formation.delete({
+    // 4. Enfin supprimer la formation
+    const deletedFormation = await this.prisma.formation.delete({
       where: { id }
     });
+
+    return {
+      message: 'Formation supprimée avec succès',
+      formation: deletedFormation
+    };
   }
 
   // Méthodes pour les inscriptions

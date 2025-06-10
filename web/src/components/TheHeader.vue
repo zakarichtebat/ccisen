@@ -16,9 +16,9 @@
         <router-link to="/services" class="nav-link">Services</router-link>
         <router-link to="/formations" class="nav-link">Formations</router-link>
         <router-link to="/about" class="nav-link">À propos</router-link>
-   
+      
         <router-link to="/contact" class="nav-link">Contact</router-link>
-        
+   
         <!-- Menu utilisateur affiché seulement si connecté -->
         <div v-if="user" class="user-menu">
           <div class="user-trigger" @click="toggleDropdown">
@@ -62,7 +62,7 @@
                 <span>Notifications</span>
               </router-link>
               
-              <router-link to="/support" class="dropdown-item" @click="closeDropdown">
+              <router-link to="/aide" class="dropdown-item" @click="closeDropdown">
                 <i class="fas fa-question-circle"></i>
                 <span>Aide & Support</span>
               </router-link>
