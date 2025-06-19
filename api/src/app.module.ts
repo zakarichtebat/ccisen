@@ -12,6 +12,7 @@ import { ContactModule } from './contact/contact.module';
 import { DocumentModule } from './document/document.module';
 import { AvisModule } from './avis/avis.module';
 import { ReclamationModule } from './reclamation/reclamation.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -25,7 +26,8 @@ import { ReclamationModule } from './reclamation/reclamation.module';
     ContactModule,
     DocumentModule,
     AvisModule,
-    ReclamationModule
+    ReclamationModule,
+    AnalyticsModule
   ],
   controllers: [AppController],
   providers: [AppService],
