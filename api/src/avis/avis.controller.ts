@@ -21,15 +21,26 @@ export class AvisController {
   constructor(private readonly avisService: AvisService) {}
 
   @Post()
-  async create(@Body() createAvisDto: CreateAvisDto, @Request() req) {
+  async create(@Body() createAvisDto: any, @Request() req) {
     try {
-      const userId = req.user?.id || req.body.userId;
+      console.log('Données reçues pour création d\'avis:', createAvisDto);
+      console.log('Request user:', req.user);
+      
+      // Récupérer l'ID utilisateur depuis le body ou la requête
+      const userId = createAvisDto.userId || req.user?.id;
+      
       if (!userId) {
-        throw new HttpException('Utilisateur non authentifié', HttpStatus.UNAUTHORIZED);
+        throw new HttpException('ID utilisateur requis', HttpStatus.BAD_REQUEST);
       }
       
-      return await this.avisService.create(createAvisDto, userId);
+      // Nettoyer les données avant de les passer au service
+      const { userId: _, ...avisData } = createAvisDto;
+      
+      console.log('Création avis pour utilisateur:', userId, 'avec données:', avisData);
+      
+      return await this.avisService.create(avisData, userId);
     } catch (error: any) {
+      console.error('Erreur dans create avis:', error);
       throw new HttpException(
         error.message || 'Erreur lors de la création de l\'avis',
         HttpStatus.BAD_REQUEST,
@@ -38,12 +49,54 @@ export class AvisController {
   }
 
   @Get()
-  async findAll(@Query() filters: AvisFilterDto) {
+  async findAll(@Query() query: any) {
     try {
+      console.log('Query reçue:', query);
+      
+      // Convertir les paramètres de requête
+      const filters: any = {};
+      
+      if (query.typeService) filters.typeService = query.typeService;
+      if (query.statut) filters.statut = query.statut;
+      if (query.visible !== undefined) {
+        filters.visible = query.visible === 'true' || query.visible === true;
+      }
+      if (query.userId) filters.userId = parseInt(query.userId);
+      if (query.limit) filters.limit = parseInt(query.limit) || 50;
+      if (query.offset) filters.offset = parseInt(query.offset) || 0;
+      
+      console.log('Filtres appliqués:', filters);
+      
       return await this.avisService.findAll(filters);
     } catch (error: any) {
+      console.error('Erreur dans findAll:', error);
       throw new HttpException(
         error.message || 'Erreur lors de la récupération des avis',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Get('public')
+  async getPublicAvis(@Query() query: any) {
+    try {
+      console.log('Récupération des avis publics, query:', query);
+      
+      const limit = parseInt(query.limit) || 6;
+      const offset = parseInt(query.offset) || 0;
+      
+      const filters = {
+        statut: 'actif',
+        visible: true,
+        limit,
+        offset
+      };
+      
+      return await this.avisService.findAll(filters);
+    } catch (error: any) {
+      console.error('Erreur dans getPublicAvis:', error);
+      throw new HttpException(
+        error.message || 'Erreur lors de la récupération des avis publics',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

@@ -35,30 +35,42 @@ export class AvisService {
     limit?: number;
     offset?: number;
   }) {
-    const where: any = {};
-    
-    if (filters?.typeService) where.typeService = filters.typeService;
-    if (filters?.statut) where.statut = filters.statut;
-    if (filters?.visible !== undefined) where.visible = filters.visible;
-    if (filters?.userId) where.userId = filters.userId;
+    try {
+      console.log('Service findAll - Filtres reçus:', filters);
+      
+      const where: any = {};
+      
+      if (filters?.typeService) where.typeService = filters.typeService;
+      if (filters?.statut) where.statut = filters.statut;
+      if (filters?.visible !== undefined) where.visible = filters.visible;
+      if (filters?.userId) where.userId = filters.userId;
 
-    return this.prisma.avis.findMany({
-      where,
-      include: {
-        user: {
-          select: {
-            id: true,
-            nom: true,
-            prenom: true,
+      console.log('Service findAll - Clause WHERE:', where);
+
+      const result = await this.prisma.avis.findMany({
+        where,
+        include: {
+          user: {
+            select: {
+              id: true,
+              nom: true,
+              prenom: true,
+            },
           },
         },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      take: filters?.limit || 50,
-      skip: filters?.offset || 0,
-    });
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: filters?.limit || 50,
+        skip: filters?.offset || 0,
+      });
+
+      console.log(`Service findAll - ${result.length} avis trouvés`);
+      return result;
+    } catch (error) {
+      console.error('Erreur dans service findAll:', error);
+      throw error;
+    }
   }
 
   // Récupérer un avis par ID
