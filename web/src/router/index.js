@@ -124,10 +124,22 @@ const router = createRouter({
       meta: { requiresAuth: true } // Marquer cette route comme nécessitant une authentification
     },
     {
+      path: '/reclamations',
+      name: 'reclamations',
+      component: () => import('../views/ReclamationsView.vue'),
+      meta: { requiresAuth: true } // Marquer cette route comme nécessitant une authentification
+    },
+    {
       path: '/admin',
       name: 'admin',
       component: () => import('../views/AdminView.vue'),
       meta: { requiresAuth: true } // Marquer cette route comme nécessitant une authentification
+    },
+    {
+      path: '/admin/reclamations',
+      name: 'admin-reclamations',
+      component: () => import('../views/AdminReclamationsView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true } // Marquer cette route comme nécessitant une authentification admin
     },
     {
       path: '/profile',

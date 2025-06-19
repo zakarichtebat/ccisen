@@ -248,21 +248,22 @@ model typedocument {
 }
 
 model user {
-  id                                                    Int                    @id @default(autoincrement())
+  id                                                    Int                     @id @default(autoincrement())
   nom                                                   String
   prenom                                                String
-  email                                                 String                 @unique(map: "User_email_key")
+  email                                                 String                  @unique(map: "User_email_key")
   motDePasse                                            String
-  numRegistreCommerce                                   String                 @unique(map: "User_numRegistreCommerce_key")
+  numRegistreCommerce                                   String                  @unique(map: "User_numRegistreCommerce_key")
   secteurActivite                                       String
   telephone                                             String
   adresse                                               String
-  createdAt                                             DateTime               @default(now())
+  createdAt                                             DateTime                @default(now())
   updatedAt                                             DateTime
-  role                                                  String                 @default("client")
+  role                                                  String                  @default("client")
+  status                                                String                  @default("actif")
   comment                                               comment[]
-  demandedocument_demandedocument_adminTraitantIdTouser demandedocument[]      @relation("demandedocument_adminTraitantIdTouser")
-  demandedocument_demandedocument_userIdTouser          demandedocument[]      @relation("demandedocument_userIdTouser")
+  demandedocument_demandedocument_adminTraitantIdTouser demandedocument[]       @relation("demandedocument_adminTraitantIdTouser")
+  demandedocument_demandedocument_userIdTouser          demandedocument[]       @relation("demandedocument_userIdTouser")
   documentgenere                                        documentgenere[]
   historiquestatut                                      historiquestatut[]
   inscription                                           inscription[]
@@ -270,4 +271,74 @@ model user {
   like                                                  like[]
   notificationdocument                                  notificationdocument[]
   rendezvous                                            rendezvous[]
+  avis                                                  avis[]
+  reclamation                                           reclamation[]
+  reclamation_adminTraitant                             reclamation[]           @relation("reclamation_adminTraitantTouser")
+  historiquereclamation                                 historiquereclamation[]
+}
+
+model avis {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  sujet       String
+  commentaire String   @db.Text
+  note        Int      @default(0) // Note de 1 à 5
+  typeService String // formation, document, rendez-vous, general
+  serviceId   Int? // ID du service concerné (formationId, rendezvousId, etc.)
+  statut      String   @default("actif") // actif, masque, supprime
+  visible     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([typeService])
+  @@index([statut])
+}
+
+model reclamation {
+  id                Int                     @id @default(autoincrement())
+  userId            Int
+  sujet             String
+  description       String                  @db.Text
+  typeReclamation   String // service, document, formation, technique, autre
+  priorite          String                  @default("normale") // basse, normale, haute, urgente
+  statut            String                  @default("ouverte") // ouverte, en_cours, resolue, fermee
+  numeroReclamation String                  @unique
+  serviceId         Int? // ID du service concerné si applicable
+  adminTraitantId   Int?
+  dateTraitement    DateTime?
+  dateResolution    DateTime?
+  reponseAdmin      String?                 @db.Text
+  satisfaction      Int? // Note de satisfaction après résolution (1-5)
+  commentaireFinal  String?                 @db.Text
+  fichierJoint      String? // Chemin vers un fichier joint si nécessaire
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+  user              user                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  adminTraitant     user?                   @relation("reclamation_adminTraitantTouser", fields: [adminTraitantId], references: [id])
+  historique        historiquereclamation[]
+
+  @@index([userId])
+  @@index([adminTraitantId])
+  @@index([statut])
+  @@index([typeReclamation])
+  @@index([priorite])
+}
+
+model historiquereclamation {
+  id            Int         @id @default(autoincrement())
+  reclamationId Int
+  ancienStatut  String?
+  nouveauStatut String
+  adminId       Int?
+  commentaire   String?     @db.Text
+  dateAction    DateTime    @default(now())
+  typeAction    String // creation, modification, traitement, resolution, fermeture
+  reclamation   reclamation @relation(fields: [reclamationId], references: [id], onDelete: Cascade)
+  admin         user?       @relation(fields: [adminId], references: [id])
+
+  @@index([reclamationId])
+  @@index([adminId])
+  @@index([dateAction])
 }

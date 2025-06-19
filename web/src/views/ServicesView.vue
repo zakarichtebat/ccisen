@@ -3,254 +3,238 @@
     <!-- En-tête de la page -->
     <TheHeader />
     
-    <!-- Section Hero -->
+    <!-- Section Hero Ultra-Professionnelle -->
+    <section class="services-hero">
+      <div class="hero-background">
+        <div class="hero-particles"></div>
+        <div class="hero-waves">
+          <div class="wave wave-1"></div>
+          <div class="wave wave-2"></div>
+          <div class="wave wave-3"></div>
+        </div>
+      </div>
+      <div class="hero-overlay"></div>
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-badge animate-float">
+            <span class="badge-icon animate-pulse-glow">🏆</span>
+            Excellence & Innovation
+          </div>
+          <h1 class="hero-title animate-slide-up">
+            <span class="title-main">Nos Services</span>
+            <span class="title-highlight">Professionnels</span>
+          </h1>
+          <div class="hero-divider animate-scale-in"></div>
+          <p class="hero-subtitle animate-fade-up-delay">
+            Découvrez notre gamme complète de services conçus pour accompagner votre entreprise vers l'excellence et la croissance durable
+          </p>
+          <div class="hero-stats animate-fade-up-delay-2">
+            <div class="stat-item">
+              <div class="stat-number">1200+</div>
+              <div class="stat-label">Entreprises accompagnées</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">15+</div>
+              <div class="stat-label">Années d'expérience</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">98%</div>
+              <div class="stat-label">Satisfaction client</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-scroll-indicator animate-bounce">
+        <div class="scroll-arrow"></div>
+      </div>
+    </section>
 
-
-    <!-- Navigation des services -->
+    <!-- Navigation des services avec animations avancées -->
     <section class="services-nav">
       <div class="container">
         <div class="nav-container">
-          <a href="#accompagnement" class="nav-item">
-            <div class="nav-icon">
+          <a href="#accompagnement" class="nav-item animate-nav-item" data-delay="0">
+            <div class="nav-icon animate-3d-rotate">
               <svg viewBox="0 0 24 24" width="24" height="24">
                 <path fill="currentColor" d="M21.5 4h-19C1.12 4 0 5.12 0 6.5v11C0 18.88 1.12 20 2.5 20h19c1.38 0 2.5-1.12 2.5-2.5v-11C24 5.12 22.88 4 21.5 4zM9.32 15.22c-.04.2-.14.38-.29.54l-2 2c-.18.18-.4.29-.63.29-.27 0-.52-.11-.71-.29-.18-.18-.29-.41-.29-.66 0-.25.11-.48.3-.66l.84-.84H2c-.55 0-1-.45-1-1s.45-1 1-1h4.54l-.84-.84c-.38-.38-.39-1.01-.01-1.4.39-.39 1.01-.39 1.4 0l2 2c.15.15.25.34.29.55.03.16.03.37 0 .53-.03.17-.07.33-.14.47.06-.12.04-.23.07-.39zM22 10c0 .55-.45 1-1 1h-4.54l.84.84c.38.38.39 1.01.01 1.4-.39.39-1.01.39-1.4 0l-2-2c-.15-.15-.25-.34-.29-.54s-.04-.38 0-.57c.04-.19.14-.38.29-.54l2-2c.39-.39 1.01-.39 1.4 0 .38.38.38 1.01 0 1.4l-.84.84H21c.55 0 1 .45 1 1z"/>
               </svg>
             </div>
-            <span>Accompagnement</span>
+            <span class="nav-text">Accompagnement</span>
+            <div class="nav-glow"></div>
           </a>
-          <a href="#certificats" class="nav-item">
-            <div class="nav-icon">
-              <svg viewBox="0 0 24 24" width="24" height="24">
-                <path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM16 18H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-              </svg>
-            </div>
-            <span>Certificats</span>
-          </a>
-          <a href="#formation" class="nav-item">
-            <div class="nav-icon">
+         
+          <a href="#formation" class="nav-item animate-nav-item" data-delay="200">
+            <div class="nav-icon animate-3d-rotate">
               <svg viewBox="0 0 24 24" width="24" height="24">
                 <path fill="currentColor" d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/>
               </svg>
             </div>
-            <span>Formation</span>
+            <span class="nav-text">Formation</span>
+            <div class="nav-glow"></div>
           </a>
-          <a href="#export" class="nav-item">
-            <div class="nav-icon">
-              <svg viewBox="0 0 24 24" width="24" height="24">
-                <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-              </svg>
-            </div>
-            <span>Export</span>
-          </a>
-          <a href="#adhesion" class="nav-item">
-            <div class="nav-icon">
-              <svg viewBox="0 0 24 24" width="24" height="24">
-                <path fill="currentColor" d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
-              </svg>
-            </div>
-            <span>Adhésion</span>
-          </a>
+       
+          
         </div>
       </div>
     </section>
 
     <!-- Section Accompagnement des Entreprises -->
     <section id="accompagnement" class="service-section">
+      <div class="section-background">
+        <div class="floating-shapes">
+          <div class="shape shape-1"></div>
+          <div class="shape shape-2"></div>
+          <div class="shape shape-3"></div>
+        </div>
+      </div>
       <div class="container">
         <div class="service-content">
           <div class="service-text reveal-left">
             <div class="service-header">
-              <div class="service-icon">
+              <div class="service-icon animate-morph">
+                <div class="icon-glow"></div>
                 <svg viewBox="0 0 24 24" width="24" height="24">
                   <path fill="currentColor" d="M21.5 4h-19C1.12 4 0 5.12 0 6.5v11C0 18.88 1.12 20 2.5 20h19c1.38 0 2.5-1.12 2.5-2.5v-11C24 5.12 22.88 4 21.5 4zM9.32 15.22c-.04.2-.14.38-.29.54l-2 2c-.18.18-.4.29-.63.29-.27 0-.52-.11-.71-.29-.18-.18-.29-.41-.29-.66 0-.25.11-.48.3-.66l.84-.84H2c-.55 0-1-.45-1-1s.45-1 1-1h4.54l-.84-.84c-.38-.38-.39-1.01-.01-1.4.39-.39 1.01-.39 1.4 0l2 2c.15.15.25.34.29.55.03.16.03.37 0 .53-.03.17-.07.33-.14.47.06-.12.04-.23.07-.39zM22 10c0 .55-.45 1-1 1h-4.54l.84.84c.38.38.39 1.01.01 1.4-.39.39-1.01.39-1.4 0l-2-2c-.15-.15-.25-.34-.29-.54s-.04-.38 0-.57c.04-.19.14-.38.29-.54l2-2c.39-.39 1.01-.39 1.4 0 .38.38.38 1.01 0 1.4l-.84.84H21c.55 0 1 .45 1 1z"/>
                 </svg>
               </div>
-              <h2>Accompagnement des Entreprises</h2>
+              <h2 class="animate-text-wave">Accompagnement des Entreprises</h2>
             </div>
             <div class="service-description">
-              <p>Notre service d'accompagnement offre un soutien complet aux entreprises à tous les stades de leur développement, de la création à l'expansion internationale.</p>
+              <p class="animate-typewriter">Notre service d'accompagnement offre un soutien complet aux entreprises à tous les stades de leur développement, de la création à l'expansion internationale.</p>
               
-              <h3>Nos prestations d'accompagnement comprennent :</h3>
-              <ul>
-                <li>
-                  <span class="feature-title">Conseil personnalisé</span>
-                  <p>Consultations individuelles avec nos experts pour analyser votre situation spécifique et vous proposer des solutions adaptées.</p>
+              <h3 class="animate-slide-in">Nos prestations d'accompagnement comprennent :</h3>
+              <ul class="features-list">
+                <li class="feature-item animate-cascade" data-delay="0">
+                  <div class="feature-icon animate-bounce-glow">💡</div>
+                  <div class="feature-content">
+                    <span class="feature-title">Conseil personnalisé</span>
+                    <p>Consultations individuelles avec nos experts pour analyser votre situation spécifique et vous proposer des solutions adaptées.</p>
+                  </div>
                 </li>
-                <li>
-                  <span class="feature-title">Orientation stratégique</span>
-                  <p>Accompagnement dans l'élaboration de votre stratégie de développement et identification des opportunités de croissance.</p>
+                <li class="feature-item animate-cascade" data-delay="100">
+                  <div class="feature-icon animate-bounce-glow">🎯</div>
+                  <div class="feature-content">
+                    <span class="feature-title">Orientation stratégique</span>
+                    <p>Accompagnement dans l'élaboration de votre stratégie de développement et identification des opportunités de croissance.</p>
+                  </div>
                 </li>
-                <li>
-                  <span class="feature-title">Information juridique et fiscale</span>
-                  <p>Conseils sur les aspects juridiques, fiscaux et réglementaires liés à votre activité au Maroc.</p>
+                <li class="feature-item animate-cascade" data-delay="200">
+                  <div class="feature-icon animate-bounce-glow">⚖️</div>
+                  <div class="feature-content">
+                    <span class="feature-title">Information juridique et fiscale</span>
+                    <p>Conseils sur les aspects juridiques, fiscaux et réglementaires liés à votre activité au Maroc.</p>
+                  </div>
                 </li>
-                <li>
-                  <span class="feature-title">Mise en relation</span>
-                  <p>Connexion avec les acteurs clés de votre secteur et partenaires potentiels pour développer votre réseau professionnel.</p>
+                <li class="feature-item animate-cascade" data-delay="300">
+                  <div class="feature-icon animate-bounce-glow">🤝</div>
+                  <div class="feature-content">
+                    <span class="feature-title">Mise en relation</span>
+                    <p>Connexion avec les acteurs clés de votre secteur et partenaires potentiels pour développer votre réseau professionnel.</p>
+                  </div>
                 </li>
               </ul>
               
               <div class="service-cta">
-                <router-link to="/rendez-vous" class="btn-service">Demander un accompagnement</router-link>
+                <router-link to="/rendez-vous" class="btn-service animate-magnetic">
+                  <span class="btn-text">Demander un accompagnement</span>
+                  <div class="btn-ripple"></div>
+                  <div class="btn-arrow">→</div>
+                </router-link>
               </div>
             </div>
           </div>
           <div class="service-image reveal-right">
-            <div class="image-container">
+            <div class="image-container animate-3d-tilt">
+              <div class="image-frame"></div>
               <img src="/images/m1.jpg" alt="Accompagnement des entreprises" />
-              <div class="image-overlay"></div>
+              <div class="image-overlay animate-gradient-flow"></div>
+              <div class="image-particles">
+                <div class="particle particle-1"></div>
+                <div class="particle particle-2"></div>
+                <div class="particle particle-3"></div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Section Certificats et Documents -->
-    <section id="certificats" class="service-section service-alt">
-      <div class="container">
-        <div class="service-content">
-          <div class="service-image reveal-left">
-            <div class="image-container">
-              <img src="/images/m1.jpg" alt="Certificats et documents" />
-              <div class="image-overlay"></div>
-            </div>
-          </div>
-          <div class="service-text reveal-right">
-            <div class="service-header">
-              <div class="service-icon">
-                <svg viewBox="0 0 24 24" width="24" height="24">
-                  <path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM16 18H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-                </svg>
-              </div>
-              <h2>Certificats et Documents</h2>
-            </div>
-            <div class="service-description">
-              <p>La CCISN délivre divers documents officiels nécessaires aux entreprises pour leurs activités commerciales nationales et internationales.</p>
-              
-              <h3>Nos services de documentation incluent :</h3>
-              <ul>
-                <li>
-                  <span class="feature-title">Certificats d'origine</span>
-                  <p>Documents officiels attestant l'origine des marchandises exportées, indispensables pour le commerce international.</p>
-                </li>
-                <li>
-                  <span class="feature-title">Attestations professionnelles</span>
-                  <p>Documents certifiant le statut professionnel de votre entreprise pour vos démarches administratives.</p>
-                </li>
-                <li>
-                  <span class="feature-title">Visas de documents commerciaux</span>
-                  <p>Authentification et légalisation de vos documents commerciaux pour leur validité à l'international.</p>
-                </li>
-                <li>
-                  <span class="feature-title">Légalisation de signatures</span>
-                  <p>Service de légalisation pour authentifier les documents et signatures de votre entreprise.</p>
-                </li>
-              </ul>
-              
-              <div class="service-cta">
-                <router-link to="/rendez-vous" class="btn-service">Demander un document</router-link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+   
 
     <!-- Section Formation -->
     <section id="formation" class="service-section">
+      <div class="section-background">
+        <div class="floating-shapes">
+          <div class="shape shape-1"></div>
+          <div class="shape shape-2"></div>
+          <div class="shape shape-3"></div>
+        </div>
+      </div>
       <div class="container">
         <div class="service-content">
           <div class="service-text reveal-left">
             <div class="service-header">
-              <div class="service-icon">
+              <div class="service-icon animate-morph">
+                <div class="icon-glow"></div>
                 <svg viewBox="0 0 24 24" width="24" height="24">
                   <path fill="currentColor" d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/>
                 </svg>
               </div>
-              <h2>Formation</h2>
+              <h2 class="animate-text-wave">Formation Professionnelle</h2>
             </div>
             <div class="service-description">
-              <p>Nous proposons des programmes de formation adaptés aux besoins spécifiques des commerçants, entrepreneurs et professionnels de la région de Nador.</p>
+              <p class="animate-typewriter">Nous proposons des programmes de formation adaptés aux besoins spécifiques des commerçants, entrepreneurs et professionnels de la région de Nador.</p>
               
-              <h3>Notre offre de formation comprend :</h3>
-              <ul>
-                <li>
-                  <span class="feature-title">Ateliers pratiques</span>
-                  <p>Sessions pratiques sur des sujets concrets comme la comptabilité, le marketing digital ou la gestion d'entreprise.</p>
+              <h3 class="animate-slide-in">Notre offre de formation comprend :</h3>
+              <ul class="features-list">
+                <li class="feature-item animate-cascade" data-delay="0">
+                  <div class="feature-icon animate-bounce-glow">🛠️</div>
+                  <div class="feature-content">
+                    <span class="feature-title">Ateliers pratiques</span>
+                    <p>Sessions pratiques sur des sujets concrets comme la comptabilité, le marketing digital ou la gestion d'entreprise.</p>
+                  </div>
                 </li>
-                <li>
-                  <span class="feature-title">Séminaires thématiques</span>
-                  <p>Événements spécialisés animés par des experts pour approfondir vos connaissances dans votre domaine d'activité.</p>
+                <li class="feature-item animate-cascade" data-delay="100">
+                  <div class="feature-icon animate-bounce-glow">🎓</div>
+                  <div class="feature-content">
+                    <span class="feature-title">Séminaires thématiques</span>
+                    <p>Événements spécialisés animés par des experts pour approfondir vos connaissances dans votre domaine d'activité.</p>
+                  </div>
                 </li>
-                <li>
-                  <span class="feature-title">Formation continue</span>
-                  <p>Programmes de développement des compétences pour vous et vos employés, adaptés aux évolutions du marché.</p>
+                <li class="feature-item animate-cascade" data-delay="200">
+                  <div class="feature-icon animate-bounce-glow">📈</div>
+                  <div class="feature-content">
+                    <span class="feature-title">Formation continue</span>
+                    <p>Programmes de développement des compétences pour vous et vos employés, adaptés aux évolutions du marché.</p>
+                  </div>
                 </li>
-                <li>
-                  <span class="feature-title">Certification professionnelle</span>
-                  <p>Formations certifiantes reconnues pour valoriser vos compétences et celles de votre équipe.</p>
+                <li class="feature-item animate-cascade" data-delay="300">
+                  <div class="feature-icon animate-bounce-glow">🏆</div>
+                  <div class="feature-content">
+                    <span class="feature-title">Certification professionnelle</span>
+                    <p>Formations certifiantes reconnues pour valoriser vos compétences et celles de votre équipe.</p>
+                  </div>
                 </li>
               </ul>
               
               <div class="service-cta">
-                <router-link to="/formations" class="btn-service">S'inscrire à une formation</router-link>
+                <router-link to="/formations" class="btn-service animate-magnetic">
+                  <span class="btn-text">S'inscrire à une formation</span>
+                  <div class="btn-ripple"></div>
+                  <div class="btn-arrow">→</div>
+                </router-link>
               </div>
             </div>
           </div>
           <div class="service-image reveal-right">
-            <div class="image-container">
+            <div class="image-container animate-3d-tilt">
+              <div class="image-frame"></div>
               <img src="/images/m1.jpg" alt="Formation professionnelle" />
-              <div class="image-overlay"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Section Promotion et Export -->
-    <section id="export" class="service-section service-alt">
-      <div class="container">
-        <div class="service-content">
-          <div class="service-image reveal-left">
-            <div class="image-container">
-              <img src="/images/m1.jpg" alt="Promotion et export" />
-              <div class="image-overlay"></div>
-            </div>
-          </div>
-          <div class="service-text reveal-right">
-            <div class="service-header">
-              <div class="service-icon">
-                <svg viewBox="0 0 24 24" width="24" height="24">
-                  <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-                </svg>
-              </div>
-              <h2>Promotion et Export</h2>
-            </div>
-            <div class="service-description">
-              <p>Nous accompagnons les entreprises de Nador dans leur développement à l'international et promouvons les opportunités d'investissement dans la région.</p>
-              
-              <h3>Nos services de promotion incluent :</h3>
-              <ul>
-                <li>
-                  <span class="feature-title">Missions commerciales</span>
-                  <p>Organisation de délégations d'affaires à l'étranger pour développer vos opportunités commerciales.</p>
-                </li>
-                <li>
-                  <span class="feature-title">Participation aux salons</span>
-                  <p>Accompagnement pour votre participation aux salons nationaux et internationaux dans votre secteur d'activité.</p>
-                </li>
-                <li>
-                  <span class="feature-title">Études de marché</span>
-                  <p>Analyses sectorielles et informations sur les marchés étrangers pour faciliter votre expansion.</p>
-                </li>
-                <li>
-                  <span class="feature-title">Mise en relation B2B</span>
-                  <p>Organisation de rencontres d'affaires entre entrepreneurs locaux et partenaires internationaux.</p>
-                </li>
-              </ul>
-              
-              <div class="service-cta">
-                <router-link to="/rendez-vous" class="btn-service">Développer à l'international</router-link>
+              <div class="image-overlay animate-gradient-flow"></div>
+              <div class="image-particles">
+                <div class="particle particle-1"></div>
+                <div class="particle particle-2"></div>
+                <div class="particle particle-3"></div>
               </div>
             </div>
           </div>
@@ -258,68 +242,54 @@
       </div>
     </section>
 
-    <!-- Section Carte d'Adhésion -->
-    <section id="adhesion" class="service-section">
-      <div class="container">
-        <div class="service-content">
-          <div class="service-text reveal-left">
-            <div class="service-header">
-              <div class="service-icon">
-                <svg viewBox="0 0 24 24" width="24" height="24">
-                  <path fill="currentColor" d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
-                </svg>
-              </div>
-              <h2>Carte d'Adhésion</h2>
-            </div>
-            <div class="service-description">
-              <p>Devenez membre de la CCISN et bénéficiez d'avantages exclusifs pour développer votre entreprise dans un réseau dynamique de professionnels.</p>
-              
-              <h3>Les avantages de l'adhésion :</h3>
-              <ul>
-                <li>
-                  <span class="feature-title">Accès privilégié</span>
-                  <p>Priorité sur les services de la Chambre et tarifs préférentiels sur certaines prestations.</p>
-                </li>
-                <li>
-                  <span class="feature-title">Réseau professionnel</span>
-                  <p>Intégration à notre communauté d'affaires et participation aux événements réservés aux membres.</p>
-                </li>
-                <li>
-                  <span class="feature-title">Visibilité accrue</span>
-                  <p>Promotion de votre entreprise dans nos supports de communication et lors de nos événements.</p>
-                </li>
-                <li>
-                  <span class="feature-title">Information exclusive</span>
-                  <p>Accès à des rapports sectoriels, alertes sur les appels d'offres et nouvelles opportunités d'affaires.</p>
-                </li>
-              </ul>
-              
-              <div class="service-cta">
-                <router-link to="/rendez-vous" class="btn-service">Devenir membre</router-link>
-              </div>
-            </div>
-          </div>
-          <div class="service-image reveal-right">
-            <div class="image-container">
-              <img src="/images/m1.jpg" alt="Carte d'adhésion" />
-              <div class="image-overlay"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    
 
-    <!-- Section Contact -->
+
+    <!-- Section Contact Ultra-Professionnelle -->
     <section class="contact-section">
+      <div class="contact-background">
+        <div class="contact-particles"></div>
+        <div class="contact-waves">
+          <div class="wave wave-1"></div>
+          <div class="wave wave-2"></div>
+        </div>
+      </div>
       <div class="container">
         <div class="contact-content reveal-bottom">
-          <h2>Besoin d'informations supplémentaires ?</h2>
-          <p>Notre équipe est à votre disposition pour répondre à toutes vos questions concernant nos services</p>
-          <div class="contact-actions">
-            <router-link to="/rendez-vous" class="btn-primary">Contactez-nous</router-link>
-            <a href="tel:+212536603857" class="btn-secondary">
-              <i class="fas fa-phone-alt"></i> +212 536 603 857
+          <div class="contact-badge animate-float">
+            <span class="badge-icon animate-pulse-glow">🚀</span>
+            Transformation Digitale
+          </div>
+          <h2 class="contact-title animate-slide-up">
+            Prêt à <span class="title-highlight">transformer</span> votre entreprise ?
+          </h2>
+          <p class="contact-subtitle animate-fade-up-delay">
+            Notre équipe d'experts est à votre disposition pour vous accompagner dans tous vos projets de développement et de croissance
+          </p>
+          <div class="contact-features animate-fade-up-delay-2">
+            <div class="feature-pill">✨ Consultation gratuite</div>
+            <div class="feature-pill">⚡ Réponse sous 24h</div>
+            <div class="feature-pill">🎯 Solutions sur mesure</div>
+          </div>
+          <div class="contact-actions animate-fade-up-delay-3">
+            <router-link to="/rendez-vous" class="btn-primary animate-magnetic">
+              <span class="btn-text">Contactez-nous</span>
+              <div class="btn-ripple"></div>
+            </router-link>
+            <a href="tel:+212536603857" class="btn-secondary animate-magnetic">
+              <i class="fas fa-phone-alt"></i>
+              <span>+212 536 603 857</span>
             </a>
+          </div>
+          <div class="contact-stats animate-fade-up-delay-4">
+            <div class="stat-item">
+              <div class="stat-number animate-counter" data-target="1200">0</div>
+              <div class="stat-label">Entreprises accompagnées</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number animate-counter" data-target="98">0</div>
+              <div class="stat-label">% Satisfaction</div>
+            </div>
           </div>
         </div>
       </div>
@@ -337,13 +307,53 @@ import TheFooter from '@/components/TheFooter.vue'
 
 // Configuration de l'intersection observer pour les animations au défilement
 let revealObserver = null
+let countersObserver = null
 
 onMounted(() => {
+  // Animation des compteurs
+  const animateCounter = (element, target) => {
+    let current = 0
+    const increment = target / 100
+    const timer = setInterval(() => {
+      current += increment
+      if (current >= target) {
+        current = target
+        clearInterval(timer)
+      }
+      element.textContent = Math.floor(current)
+    }, 20)
+  }
+
+  // Observer pour les compteurs
+  countersObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const target = parseInt(entry.target.dataset.target)
+        animateCounter(entry.target, target)
+        countersObserver.unobserve(entry.target)
+      }
+    })
+  }, { threshold: 0.5 })
+
+  // Observer tous les compteurs
+  document.querySelectorAll('.animate-counter').forEach(counter => {
+    countersObserver.observe(counter)
+  })
+
   // Fonction pour animer les éléments au défilement
   revealObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('revealed')
+        
+        // Animation spéciale pour les éléments en cascade
+        if (entry.target.classList.contains('animate-cascade')) {
+          const delay = parseInt(entry.target.dataset.delay) || 0
+          setTimeout(() => {
+            entry.target.classList.add('cascade-revealed')
+          }, delay)
+        }
+        
         revealObserver.unobserve(entry.target)
       }
     })
@@ -353,14 +363,19 @@ onMounted(() => {
   })
 
   // Observer tous les éléments avec les classes d'animation
-  document.querySelectorAll('.reveal-left, .reveal-right, .reveal-bottom').forEach(el => {
+  document.querySelectorAll('.reveal-left, .reveal-right, .reveal-bottom, .animate-cascade').forEach(el => {
     revealObserver.observe(el)
   })
 
   // Animation des items de navigation au survol
   const navItems = document.querySelectorAll('.nav-item')
   
-  navItems.forEach(item => {
+  navItems.forEach((item, index) => {
+    // Animation d'entrée avec délai
+    setTimeout(() => {
+      item.classList.add('nav-revealed')
+    }, index * 100)
+    
     item.addEventListener('mouseenter', () => {
       item.classList.add('nav-item-hover')
     })
@@ -386,11 +401,31 @@ onMounted(() => {
       }
     })
   })
+
+  // Animation des particules flottantes
+  const createFloatingParticles = () => {
+    const particles = document.querySelectorAll('.hero-particles, .contact-particles')
+    particles.forEach(container => {
+      for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div')
+        particle.className = 'floating-particle'
+        particle.style.left = Math.random() * 100 + '%'
+        particle.style.animationDelay = Math.random() * 10 + 's'
+        particle.style.animationDuration = (Math.random() * 10 + 10) + 's'
+        container.appendChild(particle)
+      }
+    })
+  }
+
+  createFloatingParticles()
 })
 
 onUnmounted(() => {
   if (revealObserver) {
     revealObserver.disconnect()
+  }
+  if (countersObserver) {
+    countersObserver.disconnect()
   }
 })
 </script>
@@ -400,6 +435,7 @@ onUnmounted(() => {
 .services-page {
   width: 100%;
   overflow-x: hidden;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
 .container {
@@ -409,16 +445,292 @@ onUnmounted(() => {
   padding: 0 20px;
 }
 
-/* Hero section */
+/* Animations ultra-professionnelles */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(255, 193, 7, 0.6);
+  }
+  50% { 
+    transform: scale(1.1);
+    box-shadow: 0 0 30px rgba(255, 193, 7, 0.8);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes fade-up-delay {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  60% { transform: translateY(-5px); }
+}
+
+@keyframes rotate-3d {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(360deg); }
+}
+
+@keyframes morph {
+  0%, 100% { 
+    transform: scale(1) rotate(0deg);
+    border-radius: 50%;
+  }
+  25% { 
+    transform: scale(1.1) rotate(90deg);
+    border-radius: 30%;
+  }
+  50% { 
+    transform: scale(1.2) rotate(180deg);
+    border-radius: 20%;
+  }
+  75% { 
+    transform: scale(1.1) rotate(270deg);
+    border-radius: 40%;
+  }
+}
+
+@keyframes text-wave {
+  0%, 100% { transform: translateY(0); }
+  25% { transform: translateY(-5px); }
+  50% { transform: translateY(0); }
+  75% { transform: translateY(-3px); }
+}
+
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes cascade {
+  from {
+    opacity: 0;
+    transform: translateX(-30px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes bounce-glow {
+  0%, 100% { 
+    transform: scale(1);
+    filter: drop-shadow(0 0 10px rgba(33, 150, 243, 0.6));
+  }
+  50% { 
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 20px rgba(33, 150, 243, 0.8));
+  }
+}
+
+@keyframes magnetic {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes tilt-3d {
+  0%, 100% { transform: perspective(1000px) rotateX(0deg) rotateY(0deg); }
+  25% { transform: perspective(1000px) rotateX(5deg) rotateY(-5deg); }
+  50% { transform: perspective(1000px) rotateX(-5deg) rotateY(5deg); }
+  75% { transform: perspective(1000px) rotateX(5deg) rotateY(5deg); }
+}
+
+@keyframes gradient-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes floating-particle {
+  0%, 100% { 
+    transform: translateY(0px) translateX(0px);
+    opacity: 0.3;
+  }
+  25% { 
+    transform: translateY(-20px) translateX(10px);
+    opacity: 0.7;
+  }
+  50% { 
+    transform: translateY(-10px) translateX(-15px);
+    opacity: 1;
+  }
+  75% { 
+    transform: translateY(-30px) translateX(5px);
+    opacity: 0.5;
+  }
+}
+
+@keyframes wave-animation {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Classes d'animation */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-slide-up {
+  animation: slide-up 1s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 1.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0.5s forwards;
+}
+
+.animate-fade-up-delay {
+  animation: fade-up-delay 1s cubic-bezier(0.165, 0.84, 0.44, 1) 0.8s forwards;
+  opacity: 0;
+}
+
+.animate-fade-up-delay-2 {
+  animation: fade-up-delay 1s cubic-bezier(0.165, 0.84, 0.44, 1) 1.2s forwards;
+  opacity: 0;
+}
+
+.animate-fade-up-delay-3 {
+  animation: fade-up-delay 1s cubic-bezier(0.165, 0.84, 0.44, 1) 1.6s forwards;
+  opacity: 0;
+}
+
+.animate-fade-up-delay-4 {
+  animation: fade-up-delay 1s cubic-bezier(0.165, 0.84, 0.44, 1) 2s forwards;
+  opacity: 0;
+}
+
+.animate-bounce {
+  animation: bounce 2s infinite;
+}
+
+.animate-3d-rotate:hover {
+  animation: rotate-3d 1s ease-in-out;
+}
+
+.animate-morph {
+  animation: morph 4s ease-in-out infinite;
+}
+
+.animate-text-wave {
+  animation: text-wave 2s ease-in-out infinite;
+}
+
+.animate-typewriter {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typewriter 3s steps(40, end) forwards;
+}
+
+.animate-slide-in {
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.animate-slide-in.revealed {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.animate-cascade {
+  opacity: 0;
+  transform: translateX(-30px) scale(0.8);
+  transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.animate-cascade.cascade-revealed {
+  animation: cascade 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+.animate-bounce-glow {
+  animation: bounce-glow 3s ease-in-out infinite;
+}
+
+.animate-magnetic:hover {
+  animation: magnetic 0.3s ease-in-out;
+}
+
+.animate-3d-tilt {
+  animation: tilt-3d 8s ease-in-out infinite;
+}
+
+.animate-gradient-flow {
+  background: linear-gradient(45deg, rgba(76, 175, 80, 0.8), rgba(33, 150, 243, 0.8), rgba(156, 39, 176, 0.8));
+  background-size: 300% 300%;
+  animation: gradient-flow 4s ease infinite;
+}
+
+.animate-nav-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.animate-nav-item.nav-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.floating-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: floating-particle 15s linear infinite;
+}
+
+/* Hero section ultra-professionnel */
 .services-hero {
-  height: 50vh;
-  min-height: 400px;
+  height: 100vh;
+  min-height: 600px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   overflow: hidden;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .hero-background {
@@ -427,7 +739,52 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: -1;
+  z-index: 0;
+}
+
+.hero-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+.hero-waves {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  overflow: hidden;
+}
+
+.wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 200%;
+  height: 100px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: wave-animation 8s linear infinite;
+}
+
+.wave-1 {
+  animation-delay: 0s;
+  height: 80px;
+}
+
+.wave-2 {
+  animation-delay: -2s;
+  height: 60px;
+  opacity: 0.7;
+}
+
+.wave-3 {
+  animation-delay: -4s;
+  height: 40px;
+  opacity: 0.5;
 }
 
 .hero-overlay {
@@ -436,38 +793,124 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(120deg, rgba(76, 175, 80, 0.9), rgba(33, 150, 243, 0.9));
-  z-index: 0;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
+  z-index: 1;
 }
 
 .hero-content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   text-align: center;
-  max-width: 800px;
+  max-width: 900px;
   padding: 0 20px;
 }
 
-.hero-content h1 {
-  font-size: 3.5rem;
-  margin-bottom: 1rem;
-  font-weight: 700;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
-.hero-content .divider {
-  width: 80px;
-  height: 4px;
-  background: white;
-  margin: 1.5rem auto;
-  border-radius: 2px;
-}
-
-.hero-content p {
+.badge-icon {
   font-size: 1.2rem;
-  max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.6;
+}
+
+.hero-title {
+  font-size: 4rem;
+  margin-bottom: 2rem;
+  font-weight: 800;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  line-height: 1.1;
+}
+
+.title-main {
+  display: block;
+  color: white;
+}
+
+.title-highlight {
+  display: block;
+  background: linear-gradient(45deg, #FFD700, #FFA500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-top: 0.5rem;
+}
+
+.hero-divider {
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, #FFD700, #FFA500);
+  margin: 2rem auto;
+  border-radius: 2px;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+}
+
+.hero-subtitle {
+  font-size: 1.3rem;
+  max-width: 700px;
+  margin: 0 auto 3rem;
+  line-height: 1.7;
+  opacity: 0.95;
+  font-weight: 400;
+}
+
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-top: 3rem;
+}
+
+.stat-item {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1.5rem 2rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #FFD700;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+.hero-scroll-indicator {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.scroll-arrow {
+  width: 30px;
+  height: 30px;
+  border: 2px solid white;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+  opacity: 0.7;
 }
 
 /* Animation des éléments hero */
@@ -496,14 +939,16 @@ onUnmounted(() => {
   }
 }
 
-/* Navigation des services */
+/* Navigation des services avec animations avancées */
 .services-nav {
-  background-color: white;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
   padding: 0;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   z-index: 100;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .nav-container {
@@ -516,13 +961,15 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1.5rem 1rem;
+  padding: 1.8rem 1.2rem;
   text-decoration: none;
   color: #333;
   flex: 1;
-  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
   border-bottom: 3px solid transparent;
   position: relative;
+  background: transparent;
+  overflow: hidden;
 }
 
 .nav-item::after {
@@ -532,15 +979,32 @@ onUnmounted(() => {
   left: 0;
   width: 100%;
   height: 3px;
-  background: linear-gradient(90deg, #4CAF50, #2196F3);
+  background: linear-gradient(90deg, #667eea, #764ba2);
   transform: scaleX(0);
   transform-origin: right;
   transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
+.nav-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
 .nav-item:hover {
-  background-color: rgba(33, 150, 243, 0.05);
-  color: #2196F3;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
+  color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.15);
+}
+
+.nav-item:hover .nav-glow {
+  opacity: 1;
 }
 
 .nav-item:hover::after {
@@ -550,58 +1014,141 @@ onUnmounted(() => {
 
 .nav-icon {
   font-size: 1.5rem;
-  margin-bottom: 0.5rem;
-  color: #4CAF50;
-  transition: all 0.3s ease;
+  margin-bottom: 0.8rem;
+  color: #667eea;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  position: relative;
+  z-index: 2;
 }
 
 .nav-icon svg {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   fill: currentColor;
+  filter: drop-shadow(0 4px 8px rgba(102, 126, 234, 0.2));
 }
 
 .nav-item:hover .nav-icon {
-  transform: translateY(-5px);
-  color: #2196F3;
+  transform: translateY(-8px) scale(1.1);
+  color: #764ba2;
 }
 
-.nav-item span {
-  font-weight: 500;
-  font-size: 0.9rem;
+.nav-text {
+  font-weight: 600;
+  font-size: 0.95rem;
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s ease;
 }
 
 .nav-item-hover {
-  color: #2196F3;
-  background-color: rgba(33, 150, 243, 0.05);
+  color: #667eea;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
+  transform: translateY(-2px);
 }
 
 .nav-item-hover .nav-icon {
-  transform: translateY(-5px);
-  color: #2196F3;
+  transform: translateY(-8px) scale(1.1);
+  color: #764ba2;
 }
 
-/* Sections de service */
+/* Sections de service avec animations avancées */
 .service-section {
-  padding: 5rem 0;
+  padding: 6rem 0;
   position: relative;
+  overflow: hidden;
+}
+
+.section-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+}
+
+.floating-shapes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+.shape {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  animation: floating-particle 20s linear infinite;
+}
+
+.shape-1 {
+  width: 100px;
+  height: 100px;
+  top: 10%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.shape-2 {
+  width: 60px;
+  height: 60px;
+  top: 60%;
+  right: 15%;
+  animation-delay: -5s;
+}
+
+.shape-3 {
+  width: 80px;
+  height: 80px;
+  bottom: 20%;
+  left: 70%;
+  animation-delay: -10s;
+}
+
+.shape-4 {
+  width: 120px;
+  height: 120px;
+  top: 30%;
+  right: 20%;
+  animation-delay: -2s;
+}
+
+.shape-5 {
+  width: 40px;
+  height: 40px;
+  bottom: 40%;
+  left: 20%;
+  animation-delay: -7s;
+}
+
+.shape-6 {
+  width: 90px;
+  height: 90px;
+  top: 70%;
+  right: 60%;
+  animation-delay: -12s;
 }
 
 .service-section.service-alt {
-  background-color: #f8f9fa;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
 .service-content {
   display: flex;
   align-items: center;
-  gap: 4rem;
+  gap: 5rem;
+  position: relative;
+  z-index: 1;
 }
 
 .service-text {
   flex: 1;
   transform: translateX(-50px);
   opacity: 0;
-  transition: all 1s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: all 1.2s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .service-text.revealed {
@@ -613,7 +1160,7 @@ onUnmounted(() => {
   flex: 1;
   transform: translateX(50px);
   opacity: 0;
-  transition: all 1s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: all 1.2s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .service-image.revealed {
@@ -624,19 +1171,19 @@ onUnmounted(() => {
 .reveal-left {
   transform: translateX(-50px);
   opacity: 0;
-  transition: all 1s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: all 1.2s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .reveal-right {
   transform: translateX(50px);
   opacity: 0;
-  transition: all 1s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: all 1.2s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .reveal-bottom {
   transform: translateY(50px);
   opacity: 0;
-  transition: all 1s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: all 1.2s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .reveal-left.revealed,
@@ -649,138 +1196,204 @@ onUnmounted(() => {
 .service-header {
   display: flex;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  gap: 1.5rem;
 }
 
 .service-icon {
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4CAF50, #2196F3);
+  background: linear-gradient(135deg, #667eea, #764ba2);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 1.5rem;
-  margin-right: 1rem;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  font-size: 2rem;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.icon-glow {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  animation: rotate-3d 6s linear infinite;
 }
 
 .service-icon svg {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   fill: white;
+  position: relative;
+  z-index: 2;
 }
 
 .service-header h2 {
-  font-size: 2rem;
+  font-size: 2.5rem;
   color: #333;
-  font-weight: 700;
+  font-weight: 800;
   margin: 0;
+  background: linear-gradient(135deg, #333, #667eea);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .service-description {
   color: #555;
+  position: relative;
+  z-index: 1;
 }
 
 .service-description p {
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
-  font-size: 1.05rem;
+  margin-bottom: 2rem;
+  line-height: 1.8;
+  font-size: 1.1rem;
 }
 
 .service-description h3 {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   color: #2c3e50;
-  margin: 2rem 0 1.5rem;
-  font-weight: 600;
+  margin: 2.5rem 0 2rem;
+  font-weight: 700;
 }
 
-.service-description ul {
+.features-list {
   padding-left: 0;
   list-style: none;
 }
 
-.service-description li {
-  margin-bottom: 1.5rem;
-  padding-left: 2rem;
-  position: relative;
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-.service-description li:before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 8px;
-  width: 6px;
-  height: 6px;
+.feature-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+  font-size: 2rem;
+  min-width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
   border-radius: 50%;
-  background: linear-gradient(135deg, #4CAF50, #2196F3);
+  border: 2px solid rgba(102, 126, 234, 0.2);
+}
+
+.feature-content {
+  flex: 1;
 }
 
 .feature-title {
   display: block;
-  font-weight: 600;
-  color: #2196F3;
-  margin-bottom: 0.5rem;
-  font-size: 1.1rem;
+  font-weight: 700;
+  color: #667eea;
+  margin-bottom: 0.8rem;
+  font-size: 1.2rem;
+}
+
+.feature-content p {
+  margin: 0;
+  line-height: 1.6;
+  color: #666;
 }
 
 .service-cta {
-  margin-top: 2.5rem;
+  margin-top: 3rem;
 }
 
 .btn-service {
-  display: inline-block;
-  padding: 1rem 2rem;
-  background: linear-gradient(45deg, #4CAF50, #2196F3);
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.2rem 2.5rem;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   text-decoration: none;
   border-radius: 50px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  box-shadow: 0 5px 15px rgba(33, 150, 243, 0.2);
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
   border: none;
   position: relative;
   overflow: hidden;
   z-index: 1;
 }
 
-.btn-service::after {
-  content: '';
+.btn-ripple {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(45deg, #2196F3, #4CAF50);
-  z-index: -1;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
   opacity: 0;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.btn-arrow {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
 }
 
 .btn-service:hover {
   transform: translateY(-3px);
-  box-shadow: 0 10px 20px rgba(33, 150, 243, 0.3);
+  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
 }
 
-.btn-service:hover::after {
+.btn-service:hover .btn-ripple {
   opacity: 1;
+}
+
+.btn-service:hover .btn-arrow {
+  transform: translateX(5px);
 }
 
 .image-container {
   width: 100%;
-  height: 400px;
-  border-radius: 10px;
+  height: 450px;
+  border-radius: 20px;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-  transition: all 0.4s ease;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.image-frame {
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 25px;
+  z-index: -1;
 }
 
 .image-container:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
 }
 
 .image-container img {
@@ -791,7 +1404,7 @@ onUnmounted(() => {
 }
 
 .image-container:hover img {
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
 
 .image-overlay {
@@ -800,76 +1413,221 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0));
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
   z-index: 1;
 }
 
-/* Section Contact */
+.image-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  animation: floating-particle 12s linear infinite;
+}
+
+.particle-1 {
+  top: 20%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.particle-2 {
+  top: 60%;
+  right: 30%;
+  animation-delay: -4s;
+}
+
+.particle-3 {
+  bottom: 30%;
+  left: 70%;
+  animation-delay: -8s;
+}
+
+/* Section Contact Ultra-Professionnelle */
 .contact-section {
-  padding: 5rem 0;
-  background: linear-gradient(135deg, #4CAF50, #2196F3);
+  padding: 6rem 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+}
+
+.contact-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+.contact-waves {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  overflow: hidden;
 }
 
 .contact-content {
   padding: 3rem;
+  position: relative;
+  z-index: 2;
 }
 
-.contact-content h2 {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-}
-
-.contact-content p {
-  font-size: 1.2rem;
+.contact-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1rem;
   margin-bottom: 2rem;
-  opacity: 0.9;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.contact-title {
+  font-size: 3.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.contact-subtitle {
+  font-size: 1.3rem;
+  margin-bottom: 2.5rem;
+  opacity: 0.95;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+.contact-features {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
+}
+
+.feature-pill {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.8rem 1.5rem;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
 .contact-actions {
   display: flex;
   justify-content: center;
-  gap: 1.5rem;
+  gap: 2rem;
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
 }
 
 .btn-primary {
-  display: inline-block;
-  padding: 1rem 2.5rem;
-  background-color: white;
-  color: #2196F3;
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.2rem 2.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  color: white;
   text-decoration: none;
   border-radius: 50px;
   font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  font-size: 1.1rem;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-primary:hover {
   transform: translateY(-3px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
 }
 
 .btn-secondary {
-  display: inline-block;
-  padding: 1rem 2.5rem;
-  background-color: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1.2rem 2.5rem;
+  background: transparent;
   color: white;
   text-decoration: none;
   border: 2px solid rgba(255, 255, 255, 0.5);
   border-radius: 50px;
   font-weight: 600;
-  transition: all 0.3s ease;
+  font-size: 1.1rem;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .btn-secondary:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1);
   border-color: white;
   transform: translateY(-3px);
 }
 
-.btn-secondary i {
-  margin-right: 0.5rem;
+.contact-stats {
+  display: flex;
+  justify-content: center;
+  gap: 4rem;
+  margin-top: 3rem;
+}
+
+.contact-stats .stat-item {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 2rem 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.contact-stats .stat-number {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #FFD700;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+}
+
+.contact-stats .stat-label {
+  font-size: 1rem;
+  opacity: 0.9;
+  font-weight: 500;
 }
 
 /* Responsive Design */

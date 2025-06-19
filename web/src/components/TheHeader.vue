@@ -62,6 +62,11 @@
                 <span>Notifications</span>
               </router-link>
               
+              <router-link to="/reclamations" class="dropdown-item" @click="closeDropdown">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Réclamations</span>
+              </router-link>
+              
               <router-link to="/aide" class="dropdown-item" @click="closeDropdown">
                 <i class="fas fa-question-circle"></i>
                 <span>Aide & Support</span>

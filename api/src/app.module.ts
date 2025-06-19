@@ -10,6 +10,8 @@ import { PlageHoraireModule } from './plage-horaire/plage-horaire.module';
 import { FormationModule } from './formation/formation.module';
 import { ContactModule } from './contact/contact.module';
 import { DocumentModule } from './document/document.module';
+import { AvisModule } from './avis/avis.module';
+import { ReclamationModule } from './reclamation/reclamation.module';
 
 @Module({
   imports: [
@@ -21,7 +23,9 @@ import { DocumentModule } from './document/document.module';
     PlageHoraireModule,
     FormationModule,
     ContactModule,
-    DocumentModule
+    DocumentModule,
+    AvisModule,
+    ReclamationModule
   ],
   controllers: [AppController],
   providers: [AppService],

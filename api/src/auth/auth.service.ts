@@ -29,9 +29,8 @@ export class AuthService {
       motDePasse: hashedPassword,
     });
 
-    // Remove password from response
-    const { motDePasse, ...result } = user;
-    return result;
+    // Le service user.create retourne déjà l'utilisateur sans mot de passe
+    return user;
   }
 
   async login(email: string, motDePasse: string) {
@@ -68,8 +67,7 @@ export class AuthService {
       return null;
     }
     
-    // Créer une copie de l'utilisateur sans le mot de passe
-    const { motDePasse, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    // Le service user.findOne retourne déjà l'utilisateur sans mot de passe
+    return user;
   }
 } 
