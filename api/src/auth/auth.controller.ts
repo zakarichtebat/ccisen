@@ -97,20 +97,31 @@ export class AuthController {
     @Body() loginData: { email: string; motDePasse: string },
     @Res({ passthrough: true }) response: Response
   ) {
-    const result = await this.authService.login(loginData.email, loginData.motDePasse);
+    console.log(`📥 Requête de connexion reçue pour: ${loginData.email}`);
     
-    // Définir un cookie avec l'ID de l'utilisateur
-    response.cookie('userId', result.user.id, {
-      httpOnly: false,  // Permettre au JavaScript côté client d'accéder au cookie
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
-      sameSite: 'lax',
-      path: '/',
-      secure: process.env.NODE_ENV === 'production' // Uniquement en HTTPS en production
-    });
-    
-    console.log(`Utilisateur connecté: ${result.user.nom} ${result.user.prenom} (ID: ${result.user.id})`);
-    
-    return result;
+    try {
+      const result = await this.authService.login(loginData.email, loginData.motDePasse);
+      
+      // Définir un cookie avec l'ID de l'utilisateur
+      response.cookie('userId', result.user.id, {
+        httpOnly: false,  // Permettre au JavaScript côté client d'accéder au cookie
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production' // Uniquement en HTTPS en production
+      });
+      
+      console.log(`✅ Contrôleur: Connexion réussie pour ${result.user.nom} ${result.user.prenom} (ID: ${result.user.id})`);
+      console.log(`📤 Envoi de la réponse au frontend:`, { 
+        hasToken: !!result.access_token, 
+        userId: result.user.id 
+      });
+      
+      return result;
+    } catch (error: any) {
+      console.log(`❌ Contrôleur: Erreur de connexion pour ${loginData.email}:`, error.message);
+      throw error;
+    }
   }
   
   @Post('logout')

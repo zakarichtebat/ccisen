@@ -20,33 +20,35 @@ export class AuthService {
     telephone: string;
     adresse: string;
   }) {
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(userData.motDePasse, 10);
-
-    // Create user with hashed password
-    const user = await this.userService.create({
-      ...userData,
-      motDePasse: hashedPassword,
-    });
+    // Le mot de passe sera haché dans le service user (éviter le double hachage)
+    const user = await this.userService.create(userData);
 
     // Le service user.create retourne déjà l'utilisateur sans mot de passe
     return user;
   }
 
   async login(email: string, motDePasse: string) {
+    console.log(`🔐 Tentative de connexion pour: ${email}`);
+    
     const user = await this.userService.findByEmail(email);
     if (!user) {
+      console.log(`❌ Utilisateur non trouvé pour: ${email}`);
       throw new UnauthorizedException('Email ou mot de passe incorrect');
     }
+    
+    console.log(`✅ Utilisateur trouvé: ${user.nom} ${user.prenom} (ID: ${user.id})`);
 
     const isPasswordValid = await bcrypt.compare(motDePasse, user.motDePasse);
+    console.log(`🔓 Mot de passe valide: ${isPasswordValid}`);
+    
     if (!isPasswordValid) {
+      console.log(`❌ Mot de passe incorrect pour: ${email}`);
       throw new UnauthorizedException('Email ou mot de passe incorrect');
     }
 
     // Generate JWT token
     const payload = { email: user.email, sub: user.id };
-    return {
+    const result = {
       access_token: this.jwtService.sign(payload),
       user: {
         id: user.id,
@@ -59,6 +61,9 @@ export class AuthService {
         adresse: user.adresse,
       },
     };
+    
+    console.log(`🎉 Connexion réussie pour: ${email} (ID: ${user.id})`);
+    return result;
   }
 
   async getUserById(id: number) {
