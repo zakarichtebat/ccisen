@@ -209,10 +209,48 @@ export class UserController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a user' })
-  @ApiResponse({ status: 200, description: 'User successfully deleted.' })
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  @ApiOperation({ summary: 'Delete a user (PERMANENTLY - removes all related data)' })
+  @ApiResponse({ status: 200, description: 'User and all related data successfully deleted.' })
+  async remove(@Param('id') id: string) {
+    try {
+      console.log(`🗑️ Tentative de suppression de l'utilisateur ID: ${id}`);
+      const result = await this.userService.remove(+id);
+      console.log(`✅ Utilisateur ${id} supprimé avec succès`);
+      return result;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+      console.error(`❌ Erreur lors de la suppression de l'utilisateur ${id}:`, errorMessage);
+      console.error(`📊 Détails de l'erreur:`, error);
+      
+      if (errorMessage.includes('foreign key constraint')) {
+        throw new BadRequestException('Impossible de supprimer cet utilisateur car il a des données liées (rendez-vous, réclamations, etc.). Veuillez d\'abord supprimer ces données ou désactiver l\'utilisateur.');
+      } else if (errorMessage.includes('Record to delete does not exist')) {
+        throw new NotFoundException('Utilisateur non trouvé');
+      } else {
+        throw new InternalServerErrorException(`Erreur lors de la suppression: ${errorMessage}`);
+      }
+    }
+  }
+
+  @Patch(':id/deactivate')
+  @ApiOperation({ summary: 'Deactivate a user (SAFER - blocks user without deleting data)' })
+  @ApiResponse({ status: 200, description: 'User successfully deactivated.' })
+  async deactivateUser(@Param('id') id: string) {
+    try {
+      console.log(`🚫 Tentative de désactivation de l'utilisateur ID: ${id}`);
+      const result = await this.userService.deactivateUser(+id);
+      console.log(`✅ Utilisateur ${id} désactivé avec succès`);
+      return result;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+      console.error(`❌ Erreur lors de la désactivation de l'utilisateur ${id}:`, errorMessage);
+      
+      if (errorMessage.includes('Record to update not found')) {
+        throw new NotFoundException('Utilisateur non trouvé');
+      } else {
+        throw new InternalServerErrorException(`Erreur lors de la désactivation: ${errorMessage}`);
+      }
+    }
   }
 
   @Get('admin/export')

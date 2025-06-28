@@ -693,21 +693,57 @@ const updateUserStatus = async (userId, newStatus) => {
 
 // Fonction pour supprimer un utilisateur
 const deleteUser = async (userId) => {
-  if (!confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
-    return
-  }
+  // Proposer le choix entre désactiver et supprimer
+  const choice = confirm(
+    'Choisissez une action :\n\n' +
+    '• Cliquez "OK" pour DÉSACTIVER l\'utilisateur (recommandé - préserve les données)\n' +
+    '• Cliquez "Annuler" puis "OK" dans la prochaine boîte pour SUPPRIMER DÉFINITIVEMENT\n\n' +
+    'Voulez-vous désactiver cet utilisateur ?'
+  )
 
-  try {
-    await axios.delete(`${API_BASE_URL}/users/${userId}`, {
-      withCredentials: true
-    })
-    
-    emit('show-success', 'Utilisateur supprimé avec succès!')
-    await fetchUsers()
-  } catch (error) {
-    console.error('Erreur lors de la suppression:', error)
-    const errorMessage = error.response?.data?.message || 'Erreur lors de la suppression de l\'utilisateur'
-    emit('show-error', errorMessage)
+  if (choice) {
+    // Désactiver l'utilisateur (option recommandée)
+    try {
+      await axios.patch(`${API_BASE_URL}/users/${userId}/deactivate`, {}, {
+        withCredentials: true
+      })
+      
+      emit('show-success', 'Utilisateur désactivé avec succès!')
+      await fetchUsers()
+    } catch (error) {
+      console.error('Erreur lors de la désactivation:', error)
+      const errorMessage = error.response?.data?.message || 'Erreur lors de la désactivation de l\'utilisateur'
+      emit('show-error', errorMessage)
+    }
+  } else {
+    // Demander confirmation pour suppression définitive
+    const confirmDelete = confirm(
+      '⚠️ ATTENTION : SUPPRESSION DÉFINITIVE ⚠️\n\n' +
+      'Cette action va supprimer DÉFINITIVEMENT :\n' +
+      '• L\'utilisateur\n' +
+      '• Tous ses rendez-vous\n' +
+      '• Toutes ses réclamations\n' +
+      '• Tous ses documents\n' +
+      '• Toutes ses inscriptions\n' +
+      '• Tous ses commentaires et avis\n\n' +
+      'Cette action est IRRÉVERSIBLE !\n\n' +
+      'Êtes-vous absolument sûr de vouloir continuer ?'
+    )
+
+    if (confirmDelete) {
+      try {
+        await axios.delete(`${API_BASE_URL}/users/${userId}`, {
+          withCredentials: true
+        })
+        
+        emit('show-success', 'Utilisateur et toutes ses données supprimés définitivement!')
+        await fetchUsers()
+      } catch (error) {
+        console.error('Erreur lors de la suppression:', error)
+        const errorMessage = error.response?.data?.message || 'Erreur lors de la suppression de l\'utilisateur'
+        emit('show-error', errorMessage)
+      }
+    }
   }
 }
 

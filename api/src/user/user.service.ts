@@ -315,17 +315,106 @@ export class UserService {
   }
 
   async remove(id: number) {
-    const user = await this.prisma.user.delete({ 
+    // Vérifier que l'utilisateur existe d'abord
+    const userExists = await this.prisma.user.findUnique({ where: { id } });
+    if (!userExists) {
+      throw new Error('Utilisateur non trouvé');
+    }
+
+    console.log(`🔍 Vérification des données liées pour l'utilisateur ${id}...`);
+
+    // Supprimer toutes les données liées en premier
+    await this.prisma.$transaction(async (prisma) => {
+      // Supprimer les réclamations
+      const deletedReclamations = await prisma.reclamation.deleteMany({
+        where: { userId: id }
+      });
+      console.log(`🗑️ Supprimé ${deletedReclamations.count} réclamations`);
+
+      // Supprimer les rendez-vous
+      const deletedRendezVous = await prisma.rendezvous.deleteMany({
+        where: { userId: id }
+      });
+      console.log(`🗑️ Supprimé ${deletedRendezVous.count} rendez-vous`);
+
+      // Supprimer les inscriptions aux formations
+      const deletedInscriptions = await prisma.inscription.deleteMany({
+        where: { userId: id }
+      });
+      console.log(`🗑️ Supprimé ${deletedInscriptions.count} inscriptions`);
+
+      // Supprimer les likes
+      const deletedLikes = await prisma.like.deleteMany({
+        where: { userId: id }
+      });
+      console.log(`🗑️ Supprimé ${deletedLikes.count} likes`);
+
+      // Supprimer les commentaires
+      const deletedComments = await prisma.comment.deleteMany({
+        where: { userId: id }
+      });
+      console.log(`🗑️ Supprimé ${deletedComments.count} commentaires`);
+
+      // Supprimer les avis
+      const deletedAvis = await prisma.avis.deleteMany({
+        where: { userId: id }
+      });
+      console.log(`🗑️ Supprimé ${deletedAvis.count} avis`);
+
+      // Supprimer les documents générés
+      const deletedDocuments = await prisma.documentgenere.deleteMany({
+        where: { userId: id }
+      });
+      console.log(`🗑️ Supprimé ${deletedDocuments.count} documents générés`);
+
+      // Supprimer les demandes de documents
+      const deletedDemandesDoc = await prisma.demandedocument.deleteMany({
+        where: { userId: id }
+      });
+      console.log(`🗑️ Supprimé ${deletedDemandesDoc.count} demandes de documents`);
+
+      // Supprimer les notifications
+      const deletedNotifications = await prisma.notificationdocument.deleteMany({
+        where: { userId: id }
+      });
+      console.log(`🗑️ Supprimé ${deletedNotifications.count} notifications`);
+
+      // Finalement, supprimer l'utilisateur
+      const user = await prisma.user.delete({
+        where: { id },
+        select: {
+          id: true,
+          nom: true,
+          prenom: true,
+          email: true
+        }
+      });
+
+      console.log(`✅ Utilisateur supprimé: ${user.nom} ${user.prenom} (${user.email})`);
+      return user;
+    });
+
+    return { message: 'Utilisateur et toutes ses données supprimés avec succès' };
+  }
+
+  // Alternative plus sûre : désactiver au lieu de supprimer
+  async deactivateUser(id: number) {
+    const user = await this.prisma.user.update({
       where: { id },
+      data: { 
+        status: 'bloque',
+        updatedAt: new Date()
+      },
       select: {
         id: true,
         nom: true,
         prenom: true,
-        email: true
+        email: true,
+        status: true
       }
     });
-    
-    return { message: 'Utilisateur supprimé avec succès', user };
+
+    return { message: 'Utilisateur désactivé avec succès', user };
   }
 
   async exportUsers() {

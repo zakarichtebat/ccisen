@@ -37,6 +37,18 @@ export class AuthService {
     }
     
     console.log(`✅ Utilisateur trouvé: ${user.nom} ${user.prenom} (ID: ${user.id})`);
+    console.log(`📊 Statut de l'utilisateur: ${user.status}`);
+
+    // Vérifier le statut de l'utilisateur AVANT de vérifier le mot de passe
+    if (user.status === 'bloque') {
+      console.log(`🚫 Utilisateur bloqué: ${email}`);
+      throw new UnauthorizedException('Votre compte a été bloqué. Contactez l\'administrateur.');
+    }
+    
+    if (user.status === 'inactif') {
+      console.log(`😴 Utilisateur inactif: ${email}`);
+      throw new UnauthorizedException('Votre compte est inactif. Contactez l\'administrateur.');
+    }
 
     const isPasswordValid = await bcrypt.compare(motDePasse, user.motDePasse);
     console.log(`🔓 Mot de passe valide: ${isPasswordValid}`);
