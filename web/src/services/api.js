@@ -1,5 +1,5 @@
 // Configuration de base de l'API
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 // Service API centralisé
 class ApiService {
@@ -12,6 +12,7 @@ class ApiService {
         'Content-Type': 'application/json',
         ...options.headers
       },
+      credentials: 'include', // Important pour les cookies d'authentification
       ...options
     }
     
@@ -108,6 +109,74 @@ class ApiService {
   // Services
   async getServices() {
     return this.request('/services')
+  }
+
+  // Réclamations
+  async getReclamations(filters = {}) {
+    const params = new URLSearchParams()
+    Object.keys(filters).forEach(key => {
+      if (filters[key]) params.append(key, filters[key])
+    })
+    
+    return this.request(`/reclamations?${params}`)
+  }
+
+  async createReclamation(reclamationData) {
+    return this.request('/reclamations', {
+      method: 'POST',
+      body: JSON.stringify(reclamationData)
+    })
+  }
+
+  async getReclamation(id) {
+    return this.request(`/reclamations/${id}`)
+  }
+
+  async updateReclamation(id, data) {
+    return this.request(`/reclamations/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data)
+    })
+  }
+
+  async getReclamationStats() {
+    return this.request('/reclamations/stats')
+  }
+
+  async assignReclamation(id, adminId) {
+    return this.request(`/reclamations/${id}/assign`, {
+      method: 'POST',
+      body: JSON.stringify({ adminId })
+    })
+  }
+
+  async traiterReclamation(id, data) {
+    return this.request(`/reclamations/${id}/traiter`, {
+      method: 'PATCH',
+      body: JSON.stringify(data)
+    })
+  }
+
+  async closeReclamation(id, commentaire) {
+    return this.request(`/reclamations/${id}/close`, {
+      method: 'PATCH',
+      body: JSON.stringify({ commentaire })
+    })
+  }
+
+  async addSatisfaction(id, satisfaction, commentaire) {
+    return this.request(`/reclamations/${id}/satisfaction`, {
+      method: 'POST',
+      body: JSON.stringify({ satisfaction, commentaire })
+    })
+  }
+  
+  // Nouvelle méthode pour changer le statut
+  async updateReclamationStatus(id, statut, commentaire) {
+    return this.request(`/reclamations/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ statut, commentaire })
+    })
   }
   
   // Admin endpoints

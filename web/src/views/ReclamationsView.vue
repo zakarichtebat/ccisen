@@ -110,8 +110,8 @@
       </div>
 
       <div v-else class="reclamations-grid">
-        <div 
-          v-for="reclamation in reclamations" 
+        <div
+          v-for="reclamation in reclamations"
           :key="reclamation.id"
           class="reclamation-card"
           @click="viewReclamation(reclamation)"
@@ -130,7 +130,7 @@
               </span>
             </div>
           </div>
-          
+
           <div class="card-content">
             <p class="description">{{ reclamation.description }}</p>
             <div class="metadata">
@@ -149,7 +149,11 @@
     </div>
 
     <!-- New Reclamation Modal -->
-    <div v-if="showNewReclamationModal" class="modal-overlay" @click="closeModal">
+    <div
+      v-if="showNewReclamationModal"
+      class="modal-overlay"
+      @click="closeModal"
+    >
       <div class="modal-content" @click.stop>
         <div class="modal-header">
           <h2>Nouvelle Réclamation</h2>
@@ -157,22 +161,26 @@
             <i class="fas fa-times"></i>
           </button>
         </div>
-        
+
         <form @submit.prevent="submitReclamation" class="modal-body">
           <div class="form-group">
             <label for="sujet">Sujet *</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               id="sujet"
               v-model="newReclamation.sujet"
               required
               maxlength="255"
-            >
+            />
           </div>
 
           <div class="form-group">
             <label for="typeReclamation">Type de réclamation *</label>
-            <select id="typeReclamation" v-model="newReclamation.typeReclamation" required>
+            <select
+              id="typeReclamation"
+              v-model="newReclamation.typeReclamation"
+              required
+            >
               <option value="">-- Sélectionner --</option>
               <option value="service">Service</option>
               <option value="document">Document</option>
@@ -194,7 +202,7 @@
 
           <div class="form-group">
             <label for="description">Description *</label>
-            <textarea 
+            <textarea
               id="description"
               v-model="newReclamation.description"
               required
@@ -209,7 +217,7 @@
             </button>
             <button type="submit" class="btn-primary" :disabled="submitting">
               <i v-if="submitting" class="fas fa-spinner fa-spin"></i>
-              {{ submitting ? 'Envoi...' : 'Envoyer' }}
+              {{ submitting ? "Envoi..." : "Envoyer" }}
             </button>
           </div>
         </form>
@@ -217,7 +225,11 @@
     </div>
 
     <!-- Reclamation Detail Modal -->
-    <div v-if="selectedReclamation" class="modal-overlay" @click="closeDetailModal">
+    <div
+      v-if="selectedReclamation"
+      class="modal-overlay"
+      @click="closeDetailModal"
+    >
       <div class="modal-content large" @click.stop>
         <div class="modal-header">
           <h2>Réclamation #{{ selectedReclamation.numeroReclamation }}</h2>
@@ -225,7 +237,7 @@
             <i class="fas fa-times"></i>
           </button>
         </div>
-        
+
         <div class="modal-body">
           <div class="detail-grid">
             <div class="detail-section">
@@ -236,7 +248,9 @@
               </div>
               <div class="detail-item">
                 <label>Type:</label>
-                <span>{{ getTypeLabel(selectedReclamation.typeReclamation) }}</span>
+                <span>{{
+                  getTypeLabel(selectedReclamation.typeReclamation)
+                }}</span>
               </div>
               <div class="detail-item">
                 <label>Statut:</label>
@@ -246,7 +260,9 @@
               </div>
               <div class="detail-item">
                 <label>Priorité:</label>
-                <span :class="['badge', 'priority', selectedReclamation.priorite]">
+                <span
+                  :class="['badge', 'priority', selectedReclamation.priorite]"
+                >
                   {{ getPriorityLabel(selectedReclamation.priorite) }}
                 </span>
               </div>
@@ -258,37 +274,61 @@
 
             <div class="detail-section">
               <h3>Description</h3>
-              <p class="description-text">{{ selectedReclamation.description }}</p>
-              
-              <div v-if="selectedReclamation.reponseAdmin" class="admin-response">
+              <p class="description-text">
+                {{ selectedReclamation.description }}
+              </p>
+
+              <div
+                v-if="selectedReclamation.reponseAdmin"
+                class="admin-response"
+              >
                 <h4>Réponse de l'administration</h4>
                 <p>{{ selectedReclamation.reponseAdmin }}</p>
-                <small>Traitée le {{ formatDateTime(selectedReclamation.dateTraitement) }}</small>
+                <small
+                  >Traitée le
+                  {{
+                    formatDateTime(selectedReclamation.dateTraitement)
+                  }}</small
+                >
               </div>
             </div>
           </div>
 
           <!-- Historique -->
-          <div v-if="reclamationHistorique.length > 0" class="historique-section">
+          <div
+            v-if="reclamationHistorique.length > 0"
+            class="historique-section"
+          >
             <h3>Historique</h3>
             <div class="timeline">
-              <div 
-                v-for="item in reclamationHistorique" 
+              <div
+                v-for="item in reclamationHistorique"
                 :key="item.id"
                 class="timeline-item"
               >
                 <div class="timeline-marker"></div>
                 <div class="timeline-content">
                   <div class="timeline-header">
-                    <span class="action">{{ getActionLabel(item.typeAction) }}</span>
-                    <span class="date">{{ formatDateTime(item.dateAction) }}</span>
+                    <span class="action">{{
+                      getActionLabel(item.typeAction)
+                    }}</span>
+                    <span class="date">{{
+                      formatDateTime(item.dateAction)
+                    }}</span>
                   </div>
                   <div class="timeline-body">
                     <p v-if="item.commentaire">{{ item.commentaire }}</p>
-                    <div v-if="item.ancienStatut && item.nouveauStatut" class="status-change">
-                      <span class="old-status">{{ getStatusLabel(item.ancienStatut) }}</span>
+                    <div
+                      v-if="item.ancienStatut && item.nouveauStatut"
+                      class="status-change"
+                    >
+                      <span class="old-status">{{
+                        getStatusLabel(item.ancienStatut)
+                      }}</span>
                       <i class="fas fa-arrow-right"></i>
-                      <span class="new-status">{{ getStatusLabel(item.nouveauStatut) }}</span>
+                      <span class="new-status">{{
+                        getStatusLabel(item.nouveauStatut)
+                      }}</span>
                     </div>
                   </div>
                 </div>
@@ -302,10 +342,10 @@
 </template>
 
 <script>
-import axios from 'axios'
+import apiService from "../services/api.js";
 
 export default {
-  name: 'ReclamationsView',
+  name: "ReclamationsView",
   data() {
     return {
       loading: false,
@@ -318,145 +358,152 @@ export default {
         total: 0,
         enCours: 0,
         resolue: 0,
-        fermee: 0
+        fermee: 0,
       },
       filters: {
-        statut: '',
-        type: '',
-        priorite: ''
+        statut: "",
+        type: "",
+        priorite: "",
       },
       newReclamation: {
-        sujet: '',
-        description: '',
-        typeReclamation: '',
-        priorite: 'normale'
-      }
-    }
+        sujet: "",
+        description: "",
+        typeReclamation: "",
+        priorite: "normale",
+      },
+    };
   },
   mounted() {
-    this.loadReclamations()
+    this.loadReclamations();
   },
   methods: {
     async loadReclamations() {
-      this.loading = true
+      this.loading = true;
       try {
-        const params = new URLSearchParams()
-        if (this.filters.statut) params.append('statut', this.filters.statut)
-        if (this.filters.type) params.append('type', this.filters.type)
-        if (this.filters.priorite) params.append('priorite', this.filters.priorite)
+        const filters = {};
+        if (this.filters.statut) filters.statut = this.filters.statut;
+        if (this.filters.type) filters.typeReclamation = this.filters.type;
+        if (this.filters.priorite) filters.priorite = this.filters.priorite;
 
-        const response = await axios.get(`http://localhost:3000/reclamations?${params}`, {
-          withCredentials: true
-        })
-        
-        this.reclamations = response.data.reclamations || []
-        this.stats = response.data.stats || this.stats
+        const response = await apiService.getReclamations(filters);
+
+        this.reclamations = response.reclamations || response || [];
+
+        // Calculer les stats à partir des réclamations
+        this.calculateStats();
       } catch (error) {
-        console.error('Erreur lors du chargement des réclamations:', error)
-        this.$toast?.error('Erreur lors du chargement des réclamations')
+        console.error("Erreur lors du chargement des réclamations:", error);
+        this.$toast?.error("Erreur lors du chargement des réclamations");
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
 
+    calculateStats() {
+      this.stats = {
+        total: this.reclamations.length,
+        enCours: this.reclamations.filter((r) => r.statut === "en_cours")
+          .length,
+        resolue: this.reclamations.filter((r) => r.statut === "resolue").length,
+        fermee: this.reclamations.filter((r) => r.statut === "fermee").length,
+      };
+    },
+
     async submitReclamation() {
-      this.submitting = true
+      this.submitting = true;
       try {
-        await axios.post('http://localhost:3000/reclamations', this.newReclamation, {
-          withCredentials: true
-        })
-        
-        this.$toast?.success('Réclamation créée avec succès')
-        this.closeModal()
-        this.loadReclamations()
+        await apiService.createReclamation(this.newReclamation);
+
+        this.$toast?.success("Réclamation créée avec succès");
+        this.closeModal();
+        this.loadReclamations();
       } catch (error) {
-        console.error('Erreur lors de la création de la réclamation:', error)
-        this.$toast?.error('Erreur lors de la création de la réclamation')
+        console.error("Erreur lors de la création de la réclamation:", error);
+        this.$toast?.error("Erreur lors de la création de la réclamation");
       } finally {
-        this.submitting = false
+        this.submitting = false;
       }
     },
 
     async viewReclamation(reclamation) {
-      this.selectedReclamation = reclamation
-      
-      // Charger l'historique
+      this.selectedReclamation = reclamation;
+
+      // Charger les détails avec l'historique
       try {
-        const response = await axios.get(`http://localhost:3000/reclamations/${reclamation.id}`, {
-          withCredentials: true
-        })
-        this.reclamationHistorique = response.data || []
+        const response = await apiService.getReclamation(reclamation.id);
+        this.selectedReclamation = response;
+        this.reclamationHistorique = response.historique || [];
       } catch (error) {
-        console.error('Erreur lors du chargement de l\'historique:', error)
+        console.error("Erreur lors du chargement de l'historique:", error);
       }
     },
 
     closeModal() {
-      this.showNewReclamationModal = false
+      this.showNewReclamationModal = false;
       this.newReclamation = {
-        sujet: '',
-        description: '',
-        typeReclamation: '',
-        priorite: 'normale'
-      }
+        sujet: "",
+        description: "",
+        typeReclamation: "",
+        priorite: "normale",
+      };
     },
 
     closeDetailModal() {
-      this.selectedReclamation = null
-      this.reclamationHistorique = []
+      this.selectedReclamation = null;
+      this.reclamationHistorique = [];
     },
 
     getStatusLabel(statut) {
       const labels = {
-        'ouverte': 'Ouverte',
-        'en_cours': 'En cours',
-        'resolue': 'Résolue',
-        'fermee': 'Fermée'
-      }
-      return labels[statut] || statut
+        ouverte: "Ouverte",
+        en_cours: "En cours",
+        resolue: "Résolue",
+        fermee: "Fermée",
+      };
+      return labels[statut] || statut;
     },
 
     getPriorityLabel(priorite) {
       const labels = {
-        'basse': 'Basse',
-        'normale': 'Normale',
-        'haute': 'Haute',
-        'urgente': 'Urgente'
-      }
-      return labels[priorite] || priorite
+        basse: "Basse",
+        normale: "Normale",
+        haute: "Haute",
+        urgente: "Urgente",
+      };
+      return labels[priorite] || priorite;
     },
 
     getTypeLabel(type) {
       const labels = {
-        'service': 'Service',
-        'document': 'Document',
-        'formation': 'Formation',
-        'technique': 'Technique',
-        'autre': 'Autre'
-      }
-      return labels[type] || type
+        service: "Service",
+        document: "Document",
+        formation: "Formation",
+        technique: "Technique",
+        autre: "Autre",
+      };
+      return labels[type] || type;
     },
 
     getActionLabel(action) {
       const labels = {
-        'creation': 'Création',
-        'modification': 'Modification',
-        'traitement': 'Traitement',
-        'resolution': 'Résolution',
-        'fermeture': 'Fermeture'
-      }
-      return labels[action] || action
+        creation: "Création",
+        modification: "Modification",
+        traitement: "Traitement",
+        resolution: "Résolution",
+        fermeture: "Fermeture",
+      };
+      return labels[action] || action;
     },
 
     formatDate(date) {
-      return new Date(date).toLocaleDateString('fr-FR')
+      return new Date(date).toLocaleDateString("fr-FR");
     },
 
     formatDateTime(date) {
-      return new Date(date).toLocaleString('fr-FR')
-    }
-  }
-}
+      return new Date(date).toLocaleString("fr-FR");
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -470,7 +517,7 @@ export default {
   background: white;
   margin: 0 2rem 2rem;
   border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
@@ -507,7 +554,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 1rem;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
 }
 
@@ -526,10 +573,18 @@ export default {
   font-size: 1.5rem;
 }
 
-.stat-icon.blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
-.stat-icon.orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
-.stat-icon.green { background: linear-gradient(135deg, #10b981, #047857); }
-.stat-icon.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.stat-icon.blue {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+.stat-icon.orange {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+.stat-icon.green {
+  background: linear-gradient(135deg, #10b981, #047857);
+}
+.stat-icon.red {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
 
 .stat-content h3 {
   font-size: 2rem;
@@ -549,7 +604,7 @@ export default {
   margin: 0 2rem 2rem;
   border-radius: 15px;
   padding: 2rem;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .filters-row {
@@ -588,15 +643,17 @@ export default {
   margin: 0 2rem;
 }
 
-.loading-state, .empty-state {
+.loading-state,
+.empty-state {
   background: white;
   border-radius: 15px;
   padding: 4rem;
   text-align: center;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.loading-state i, .empty-state i {
+.loading-state i,
+.empty-state i {
   font-size: 3rem;
   color: #9ca3af;
   margin-bottom: 1rem;
@@ -622,7 +679,7 @@ export default {
   background: white;
   border-radius: 15px;
   padding: 1.5rem;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: all 0.3s ease;
   border: 2px solid transparent;
@@ -630,7 +687,7 @@ export default {
 
 .reclamation-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   border-color: #4f46e5;
 }
 
@@ -668,15 +725,39 @@ export default {
   text-transform: uppercase;
 }
 
-.badge.status.ouverte { background: #fef3c7; color: #92400e; }
-.badge.status.en_cours { background: #dbeafe; color: #1e40af; }
-.badge.status.resolue { background: #d1fae5; color: #065f46; }
-.badge.status.fermee { background: #fee2e2; color: #991b1b; }
+.badge.status.ouverte {
+  background: #fef3c7;
+  color: #92400e;
+}
+.badge.status.en_cours {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.badge.status.resolue {
+  background: #d1fae5;
+  color: #065f46;
+}
+.badge.status.fermee {
+  background: #fee2e2;
+  color: #991b1b;
+}
 
-.badge.priority.basse { background: #f3f4f6; color: #374151; }
-.badge.priority.normale { background: #dbeafe; color: #1e40af; }
-.badge.priority.haute { background: #fef3c7; color: #92400e; }
-.badge.priority.urgente { background: #fee2e2; color: #991b1b; }
+.badge.priority.basse {
+  background: #f3f4f6;
+  color: #374151;
+}
+.badge.priority.normale {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.badge.priority.haute {
+  background: #fef3c7;
+  color: #92400e;
+}
+.badge.priority.urgente {
+  background: #fee2e2;
+  color: #991b1b;
+}
 
 .card-content .description {
   color: #4b5563;
@@ -702,7 +783,8 @@ export default {
   gap: 0.25rem;
 }
 
-.btn-primary, .btn-secondary {
+.btn-primary,
+.btn-secondary {
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   font-weight: 600;
@@ -907,7 +989,7 @@ export default {
 }
 
 .timeline::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 0.75rem;
   top: 0;
@@ -972,53 +1054,53 @@ export default {
   .reclamations-container {
     padding: 1rem 0;
   }
-  
+
   .page-header,
   .stats-grid,
   .filters-section,
   .reclamations-list {
     margin: 0 1rem 1rem;
   }
-  
+
   .header-content {
     padding: 2rem;
   }
-  
+
   .header-content h1 {
     font-size: 2rem;
   }
-  
+
   .stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .filters-row {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .filter-group {
     min-width: auto;
   }
-  
+
   .card-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
-  
+
   .metadata {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .modal-overlay {
     padding: 1rem;
   }
-  
+
   .modal-actions {
     flex-direction: column;
   }
 }
-</style> 
+</style>

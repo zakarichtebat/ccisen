@@ -4,7 +4,9 @@
     <div class="page-header">
       <div class="header-content">
         <h1>Gestion des Réclamations</h1>
-        <p class="subtitle">Visualisez et traitez toutes les réclamations clients</p>
+        <p class="subtitle">
+          Visualisez et traitez toutes les réclamations clients
+        </p>
       </div>
     </div>
 
@@ -132,8 +134,8 @@
             </tr>
           </thead>
           <tbody>
-            <tr 
-              v-for="reclamation in reclamations" 
+            <tr
+              v-for="reclamation in reclamations"
               :key="reclamation.id"
               :class="{ 'urgent-row': reclamation.priorite === 'urgente' }"
             >
@@ -142,18 +144,25 @@
               </td>
               <td>
                 <div class="client-info">
-                  <strong>{{ reclamation.user?.nom }} {{ reclamation.user?.prenom }}</strong>
+                  <strong
+                    >{{ reclamation.user?.nom }}
+                    {{ reclamation.user?.prenom }}</strong
+                  >
                   <small>{{ reclamation.user?.email }}</small>
                 </div>
               </td>
               <td>
                 <div class="sujet-cell">
                   <strong>{{ reclamation.sujet }}</strong>
-                  <p class="description-preview">{{ truncateText(reclamation.description, 100) }}</p>
+                  <p class="description-preview">
+                    {{ truncateText(reclamation.description, 100) }}
+                  </p>
                 </div>
               </td>
               <td>
-                <span class="type-badge">{{ getTypeLabel(reclamation.typeReclamation) }}</span>
+                <span class="type-badge">{{
+                  getTypeLabel(reclamation.typeReclamation)
+                }}</span>
               </td>
               <td>
                 <span :class="['badge', 'priority', reclamation.priorite]">
@@ -176,30 +185,31 @@
               <td>
                 <div class="assignee-cell">
                   <span v-if="reclamation.adminTraitant">
-                    {{ reclamation.adminTraitant.nom }} {{ reclamation.adminTraitant.prenom }}
+                    {{ reclamation.adminTraitant.nom }}
+                    {{ reclamation.adminTraitant.prenom }}
                   </span>
                   <span v-else class="unassigned">Non assignée</span>
                 </div>
               </td>
               <td>
                 <div class="actions-cell">
-                  <button 
-                    @click="viewReclamation(reclamation)" 
+                  <button
+                    @click="viewReclamation(reclamation)"
                     class="btn-sm btn-primary"
                     title="Voir détails"
                   >
                     <i class="fas fa-eye"></i>
                   </button>
-                  <button 
-                    @click="assignToMe(reclamation)" 
+                  <button
+                    @click="assignToMe(reclamation)"
                     class="btn-sm btn-secondary"
                     title="M'assigner"
                     v-if="!reclamation.adminTraitantId"
                   >
                     <i class="fas fa-user-plus"></i>
                   </button>
-                  <button 
-                    @click="respondToReclamation(reclamation)" 
+                  <button
+                    @click="respondToReclamation(reclamation)"
                     class="btn-sm btn-success"
                     title="Répondre"
                   >
@@ -214,7 +224,7 @@
 
       <!-- Pagination -->
       <div v-if="pagination.totalPages > 1" class="pagination">
-        <button 
+        <button
           @click="changePage(pagination.currentPage - 1)"
           :disabled="pagination.currentPage === 1"
           class="btn-secondary"
@@ -224,7 +234,7 @@
         <span class="page-info">
           Page {{ pagination.currentPage }} sur {{ pagination.totalPages }}
         </span>
-        <button 
+        <button
           @click="changePage(pagination.currentPage + 1)"
           :disabled="pagination.currentPage === pagination.totalPages"
           class="btn-secondary"
@@ -235,12 +245,20 @@
     </div>
 
     <!-- Detail Modal -->
-    <div v-if="selectedReclamation" class="modal-overlay" @click="closeDetailModal">
+    <div
+      v-if="selectedReclamation"
+      class="modal-overlay"
+      @click="closeDetailModal"
+    >
       <div class="modal-content large" @click.stop>
         <div class="modal-header">
           <h2>Réclamation #{{ selectedReclamation.numeroReclamation }}</h2>
           <div class="modal-actions">
-            <select v-model="selectedReclamation.statut" @change="updateStatus" class="select-sm">
+            <select
+              v-model="selectedReclamation.statut"
+              @change="updateStatus"
+              class="select-sm"
+            >
               <option value="ouverte">Ouverte</option>
               <option value="en_cours">En cours</option>
               <option value="resolue">Résolue</option>
@@ -251,7 +269,7 @@
             </button>
           </div>
         </div>
-        
+
         <div class="modal-body">
           <div class="detail-grid">
             <!-- Client Info -->
@@ -260,7 +278,10 @@
               <div class="client-details">
                 <div class="detail-item">
                   <label>Nom:</label>
-                  <span>{{ selectedReclamation.user?.nom }} {{ selectedReclamation.user?.prenom }}</span>
+                  <span
+                    >{{ selectedReclamation.user?.nom }}
+                    {{ selectedReclamation.user?.prenom }}</span
+                  >
                 </div>
                 <div class="detail-item">
                   <label>Email:</label>
@@ -272,7 +293,9 @@
                 </div>
                 <div class="detail-item">
                   <label>Registre de commerce:</label>
-                  <span>{{ selectedReclamation.user?.numRegistreCommerce }}</span>
+                  <span>{{
+                    selectedReclamation.user?.numRegistreCommerce
+                  }}</span>
                 </div>
               </div>
             </div>
@@ -286,11 +309,15 @@
               </div>
               <div class="detail-item">
                 <label>Type:</label>
-                <span>{{ getTypeLabel(selectedReclamation.typeReclamation) }}</span>
+                <span>{{
+                  getTypeLabel(selectedReclamation.typeReclamation)
+                }}</span>
               </div>
               <div class="detail-item">
                 <label>Priorité:</label>
-                <span :class="['badge', 'priority', selectedReclamation.priorite]">
+                <span
+                  :class="['badge', 'priority', selectedReclamation.priorite]"
+                >
                   {{ getPriorityLabel(selectedReclamation.priorite) }}
                 </span>
               </div>
@@ -302,11 +329,12 @@
                 <label>Assignée à:</label>
                 <div class="assignee-actions">
                   <span v-if="selectedReclamation.adminTraitant">
-                    {{ selectedReclamation.adminTraitant.nom }} {{ selectedReclamation.adminTraitant.prenom }}
+                    {{ selectedReclamation.adminTraitant.nom }}
+                    {{ selectedReclamation.adminTraitant.prenom }}
                   </span>
                   <span v-else class="unassigned">Non assignée</span>
-                  <button 
-                    @click="assignToMe(selectedReclamation, true)" 
+                  <button
+                    @click="assignToMe(selectedReclamation, true)"
                     class="btn-sm btn-secondary"
                     v-if="!selectedReclamation.adminTraitantId"
                   >
@@ -328,32 +356,54 @@
           <!-- Admin Response -->
           <div class="detail-section full-width">
             <h3>Réponse de l'administration</h3>
-            <div v-if="selectedReclamation.reponseAdmin" class="existing-response">
+            <div
+              v-if="selectedReclamation.reponseAdmin"
+              class="existing-response"
+            >
               <div class="response-box">
                 {{ selectedReclamation.reponseAdmin }}
               </div>
               <small class="response-date">
-                Réponse envoyée le {{ formatDateTime(selectedReclamation.dateTraitement) }}
+                Réponse envoyée le
+                {{ formatDateTime(selectedReclamation.dateTraitement) }}
               </small>
             </div>
             <div v-else class="no-response">
               <p>Aucune réponse administrative pour le moment</p>
             </div>
-            
+
             <div class="response-form">
-              <h4>{{ selectedReclamation.reponseAdmin ? 'Modifier la réponse' : 'Nouvelle réponse' }}</h4>
-              <textarea 
+              <h4>
+                {{
+                  selectedReclamation.reponseAdmin
+                    ? "Modifier la réponse"
+                    : "Nouvelle réponse"
+                }}
+              </h4>
+              <textarea
                 v-model="responseText"
                 placeholder="Tapez votre réponse ici..."
                 rows="5"
                 class="response-textarea"
               ></textarea>
               <div class="response-actions">
-                <button @click="sendResponse" class="btn-primary" :disabled="!responseText.trim()">
+                <button
+                  @click="sendResponse"
+                  class="btn-primary"
+                  :disabled="!responseText.trim()"
+                >
                   <i class="fas fa-paper-plane"></i>
-                  {{ selectedReclamation.reponseAdmin ? 'Modifier la réponse' : 'Envoyer la réponse' }}
+                  {{
+                    selectedReclamation.reponseAdmin
+                      ? "Modifier la réponse"
+                      : "Envoyer la réponse"
+                  }}
                 </button>
-                <button @click="sendResponseAndClose" class="btn-success" :disabled="!responseText.trim()">
+                <button
+                  @click="sendResponseAndClose"
+                  class="btn-success"
+                  :disabled="!responseText.trim()"
+                >
                   <i class="fas fa-check"></i>
                   Répondre et clôturer
                 </button>
@@ -362,29 +412,43 @@
           </div>
 
           <!-- Historique -->
-          <div v-if="reclamationHistorique.length > 0" class="detail-section full-width">
+          <div
+            v-if="reclamationHistorique.length > 0"
+            class="detail-section full-width"
+          >
             <h3>Historique des actions</h3>
             <div class="timeline">
-              <div 
-                v-for="item in reclamationHistorique" 
+              <div
+                v-for="item in reclamationHistorique"
                 :key="item.id"
                 class="timeline-item"
               >
                 <div class="timeline-marker"></div>
                 <div class="timeline-content">
                   <div class="timeline-header">
-                    <span class="action">{{ getActionLabel(item.typeAction) }}</span>
+                    <span class="action">{{
+                      getActionLabel(item.typeAction)
+                    }}</span>
                     <span class="admin" v-if="item.admin">
                       par {{ item.admin.nom }} {{ item.admin.prenom }}
                     </span>
-                    <span class="date">{{ formatDateTime(item.dateAction) }}</span>
+                    <span class="date">{{
+                      formatDateTime(item.dateAction)
+                    }}</span>
                   </div>
                   <div class="timeline-body">
                     <p v-if="item.commentaire">{{ item.commentaire }}</p>
-                    <div v-if="item.ancienStatut && item.nouveauStatut" class="status-change">
-                      <span class="old-status">{{ getStatusLabel(item.ancienStatut) }}</span>
+                    <div
+                      v-if="item.ancienStatut && item.nouveauStatut"
+                      class="status-change"
+                    >
+                      <span class="old-status">{{
+                        getStatusLabel(item.ancienStatut)
+                      }}</span>
                       <i class="fas fa-arrow-right"></i>
-                      <span class="new-status">{{ getStatusLabel(item.nouveauStatut) }}</span>
+                      <span class="new-status">{{
+                        getStatusLabel(item.nouveauStatut)
+                      }}</span>
                     </div>
                   </div>
                 </div>
@@ -398,260 +462,282 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from "axios";
 
 export default {
-  name: 'AdminReclamationsView',
+  name: "AdminReclamationsView",
   data() {
     return {
       loading: false,
       reclamations: [],
       selectedReclamation: null,
       reclamationHistorique: [],
-      responseText: '',
+      responseText: "",
       stats: {
         urgentes: 0,
         enAttente: 0,
         enCours: 0,
-        resolues: 0
+        resolues: 0,
       },
       filters: {
-        statut: '',
-        priorite: '',
-        type: '',
-        assigneA: ''
+        statut: "",
+        priorite: "",
+        type: "",
+        assigneA: "",
       },
       pagination: {
         currentPage: 1,
         totalPages: 1,
         totalItems: 0,
-        itemsPerPage: 20
-      }
-    }
+        itemsPerPage: 20,
+      },
+    };
   },
   mounted() {
-    this.loadReclamations()
-    this.loadStats()
+    this.loadReclamations();
+    this.loadStats();
   },
   methods: {
     async loadReclamations() {
-      this.loading = true
+      this.loading = true;
       try {
-        const params = new URLSearchParams()
-        params.append('page', this.pagination.currentPage)
-        params.append('limit', this.pagination.itemsPerPage)
-        
-        if (this.filters.statut) params.append('statut', this.filters.statut)
-        if (this.filters.priorite) params.append('priorite', this.filters.priorite)
-        if (this.filters.type) params.append('type', this.filters.type)
-        if (this.filters.assigneA) params.append('assigneA', this.filters.assigneA)
+        const params = new URLSearchParams();
+        params.append("page", this.pagination.currentPage);
+        params.append("limit", this.pagination.itemsPerPage);
 
-        const response = await axios.get(`http://localhost:3000/reclamations?${params}`, {
-          withCredentials: true
-        })
-        
-        this.reclamations = response.data.reclamations || []
-        this.pagination = response.data.pagination || this.pagination
+        if (this.filters.statut) params.append("statut", this.filters.statut);
+        if (this.filters.priorite)
+          params.append("priorite", this.filters.priorite);
+        if (this.filters.type) params.append("type", this.filters.type);
+        if (this.filters.assigneA)
+          params.append("assigneA", this.filters.assigneA);
+
+        const response = await axios.get(
+          `http://localhost:3000/reclamations?${params}`,
+          {
+            withCredentials: true,
+          }
+        );
+
+        // Le service retourne directement le tableau, pas un objet avec reclamations
+        this.reclamations = Array.isArray(response.data) ? response.data : [];
+        console.log(
+          "📊 AdminReclamationsView - Réclamations reçues:",
+          this.reclamations.length
+        );
+
+        // Pas de pagination pour l'instant
+        this.pagination = this.pagination;
       } catch (error) {
-        console.error('Erreur lors du chargement des réclamations:', error)
-        this.$toast?.error('Erreur lors du chargement des réclamations')
+        console.error("Erreur lors du chargement des réclamations:", error);
+        this.$toast?.error("Erreur lors du chargement des réclamations");
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
 
     async loadStats() {
       try {
-        const response = await axios.get('http://localhost:3000/reclamations/stats', {
-          withCredentials: true
-        })
-        this.stats = response.data
+        const response = await axios.get(
+          "http://localhost:3000/reclamations/stats",
+          {
+            withCredentials: true,
+          }
+        );
+        this.stats = response.data;
       } catch (error) {
-        console.error('Erreur lors du chargement des statistiques:', error)
+        console.error("Erreur lors du chargement des statistiques:", error);
       }
     },
 
     async viewReclamation(reclamation) {
-      this.selectedReclamation = { ...reclamation }
-      this.responseText = reclamation.reponseAdmin || ''
-      
+      this.selectedReclamation = { ...reclamation };
+      this.responseText = reclamation.reponseAdmin || "";
+
       // Charger l'historique
       try {
-        const response = await axios.get(`http://localhost:3000/api/admin/reclamations/${reclamation.id}/historique`, {
-          withCredentials: true
-        })
-        this.reclamationHistorique = response.data || []
+        const response = await axios.get(
+          `http://localhost:3000/reclamations/${reclamation.id}`,
+          {
+            withCredentials: true,
+          }
+        );
+        this.reclamationHistorique = response.data.historique || [];
       } catch (error) {
-        console.error('Erreur lors du chargement de l\'historique:', error)
+        console.error("Erreur lors du chargement de l'historique:", error);
       }
     },
 
     async assignToMe(reclamation, updateModal = false) {
       try {
-        await axios.post(`http://localhost:3000/reclamations/${reclamation.id}/assign`, { adminId: this.$user?.id }, {
-          withCredentials: true
-        })
-        
-        this.$toast?.success('Réclamation assignée avec succès')
-        
+        await axios.post(
+          `http://localhost:3000/reclamations/${reclamation.id}/assign`,
+          { adminId: this.$user?.id },
+          {
+            withCredentials: true,
+          }
+        );
+
+        this.$toast?.success("Réclamation assignée avec succès");
+
         if (updateModal) {
-          this.viewReclamation(reclamation)
+          this.viewReclamation(reclamation);
         }
-        this.loadReclamations()
+        this.loadReclamations();
       } catch (error) {
-        console.error('Erreur lors de l\'assignation:', error)
-        this.$toast?.error('Erreur lors de l\'assignation')
+        console.error("Erreur lors de l'assignation:", error);
+        this.$toast?.error("Erreur lors de l'assignation");
       }
     },
 
     async updateStatus() {
       try {
-        await axios.patch(`http://localhost:3000/reclamations/${this.selectedReclamation.id}/traiter`, {
-          statut: this.selectedReclamation.statut
-        }, {
-          withCredentials: true
-        })
-        
-        this.$toast?.success('Statut mis à jour avec succès')
-        this.loadReclamations()
+        await axios.patch(
+          `http://localhost:3000/reclamations/${this.selectedReclamation.id}/traiter`,
+          {
+            statut: this.selectedReclamation.statut,
+          },
+          {
+            withCredentials: true,
+          }
+        );
+
+        this.$toast?.success("Statut mis à jour avec succès");
+        this.loadReclamations();
       } catch (error) {
-        console.error('Erreur lors de la mise à jour du statut:', error)
-        this.$toast?.error('Erreur lors de la mise à jour du statut')
+        console.error("Erreur lors de la mise à jour du statut:", error);
+        this.$toast?.error("Erreur lors de la mise à jour du statut");
       }
     },
 
     async sendResponse() {
       try {
-        await axios.put(`http://localhost:3000/api/admin/reclamations/${this.selectedReclamation.id}/response`, {
-          reponse: this.responseText
-        }, {
-          withCredentials: true
-        })
-        
-        this.$toast?.success('Réponse envoyée avec succès')
-        this.viewReclamation(this.selectedReclamation)
-        this.loadReclamations()
+        await axios.patch(
+          `http://localhost:3000/reclamations/${this.selectedReclamation.id}/traiter`,
+          {
+            statut: "en_cours",
+            reponseAdmin: this.responseText,
+          },
+          {
+            withCredentials: true,
+          }
+        );
+
+        this.$toast?.success("Réponse envoyée avec succès");
+        this.viewReclamation(this.selectedReclamation);
+        this.loadReclamations();
       } catch (error) {
-        console.error('Erreur lors de l\'envoi de la réponse:', error)
-        this.$toast?.error('Erreur lors de l\'envoi de la réponse')
+        console.error("Erreur lors de l'envoi de la réponse:", error);
+        this.$toast?.error("Erreur lors de l'envoi de la réponse");
       }
     },
 
     async sendResponseAndClose() {
       try {
-        await axios.put(`http://localhost:3000/api/admin/reclamations/${this.selectedReclamation.id}/response`, {
-          reponse: this.responseText,
-          fermer: true
-        }, {
-          withCredentials: true
-        })
-        
-        this.$toast?.success('Réponse envoyée et réclamation clôturée')
-        this.closeDetailModal()
-        this.loadReclamations()
+        await axios.patch(
+          `http://localhost:3000/reclamations/${this.selectedReclamation.id}/close`,
+          {
+            commentaire: this.responseText,
+          },
+          {
+            withCredentials: true,
+          }
+        );
+
+        this.$toast?.success("Réponse envoyée et réclamation clôturée");
+        this.closeDetailModal();
+        this.loadReclamations();
       } catch (error) {
-        console.error('Erreur lors de la clôture:', error)
-        this.$toast?.error('Erreur lors de la clôture')
+        console.error("Erreur lors de la clôture:", error);
+        this.$toast?.error("Erreur lors de la clôture");
       }
     },
 
     async exportReclamations() {
       try {
-        const response = await axios.get('http://localhost:3000/api/admin/reclamations/export', {
-          withCredentials: true,
-          responseType: 'blob'
-        })
-        
-        const url = window.URL.createObjectURL(new Blob([response.data]))
-        const link = document.createElement('a')
-        link.href = url
-        link.setAttribute('download', `reclamations_${new Date().toISOString().split('T')[0]}.xlsx`)
-        document.body.appendChild(link)
-        link.click()
-        link.remove()
-        
-        this.$toast?.success('Export réalisé avec succès')
+        // Temporairement désactivé - endpoint export non implémenté
+        this.$toast?.info("Fonctionnalité d'export en cours de développement");
       } catch (error) {
-        console.error('Erreur lors de l\'export:', error)
-        this.$toast?.error('Erreur lors de l\'export')
+        console.error("Erreur lors de l'export:", error);
+        this.$toast?.error("Erreur lors de l'export");
       }
     },
 
     changePage(page) {
       if (page >= 1 && page <= this.pagination.totalPages) {
-        this.pagination.currentPage = page
-        this.loadReclamations()
+        this.pagination.currentPage = page;
+        this.loadReclamations();
       }
     },
 
     closeDetailModal() {
-      this.selectedReclamation = null
-      this.reclamationHistorique = []
-      this.responseText = ''
+      this.selectedReclamation = null;
+      this.reclamationHistorique = [];
+      this.responseText = "";
     },
 
     respondToReclamation(reclamation) {
-      this.viewReclamation(reclamation)
+      this.viewReclamation(reclamation);
     },
 
     truncateText(text, maxLength) {
-      if (text.length <= maxLength) return text
-      return text.substring(0, maxLength) + '...'
+      if (text.length <= maxLength) return text;
+      return text.substring(0, maxLength) + "...";
     },
 
     getStatusLabel(statut) {
       const labels = {
-        'ouverte': 'Ouverte',
-        'en_cours': 'En cours',
-        'resolue': 'Résolue',
-        'fermee': 'Fermée'
-      }
-      return labels[statut] || statut
+        ouverte: "Ouverte",
+        en_cours: "En cours",
+        resolue: "Résolue",
+        fermee: "Fermée",
+      };
+      return labels[statut] || statut;
     },
 
     getPriorityLabel(priorite) {
       const labels = {
-        'basse': 'Basse',
-        'normale': 'Normale',
-        'haute': 'Haute',
-        'urgente': 'Urgente'
-      }
-      return labels[priorite] || priorite
+        basse: "Basse",
+        normale: "Normale",
+        haute: "Haute",
+        urgente: "Urgente",
+      };
+      return labels[priorite] || priorite;
     },
 
     getTypeLabel(type) {
       const labels = {
-        'service': 'Service',
-        'document': 'Document',
-        'formation': 'Formation',
-        'technique': 'Technique',
-        'autre': 'Autre'
-      }
-      return labels[type] || type
+        service: "Service",
+        document: "Document",
+        formation: "Formation",
+        technique: "Technique",
+        autre: "Autre",
+      };
+      return labels[type] || type;
     },
 
     getActionLabel(action) {
       const labels = {
-        'creation': 'Création',
-        'modification': 'Modification',
-        'traitement': 'Traitement',
-        'resolution': 'Résolution',
-        'fermeture': 'Fermeture',
-        'assignation': 'Assignation',
-        'reponse': 'Réponse'
-      }
-      return labels[action] || action
+        creation: "Création",
+        modification: "Modification",
+        traitement: "Traitement",
+        resolution: "Résolution",
+        fermeture: "Fermeture",
+        assignation: "Assignation",
+        reponse: "Réponse",
+      };
+      return labels[action] || action;
     },
 
     formatDate(date) {
-      return new Date(date).toLocaleDateString('fr-FR')
+      return new Date(date).toLocaleDateString("fr-FR");
     },
 
     formatDateTime(date) {
-      return new Date(date).toLocaleString('fr-FR')
-    }
-  }
-}
+      return new Date(date).toLocaleString("fr-FR");
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -665,7 +751,7 @@ export default {
   background: white;
   margin: 0 2rem 2rem;
   border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
@@ -701,7 +787,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 1rem;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
 }
 
@@ -720,10 +806,18 @@ export default {
   font-size: 1.5rem;
 }
 
-.stat-card.urgent .stat-icon { background: linear-gradient(135deg, #ef4444, #dc2626); }
-.stat-card.pending .stat-icon { background: linear-gradient(135deg, #f59e0b, #d97706); }
-.stat-card.in-progress .stat-icon { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
-.stat-card.resolved .stat-icon { background: linear-gradient(135deg, #10b981, #047857); }
+.stat-card.urgent .stat-icon {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+.stat-card.pending .stat-icon {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+.stat-card.in-progress .stat-icon {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+.stat-card.resolved .stat-icon {
+  background: linear-gradient(135deg, #10b981, #047857);
+}
 
 .stat-content h3 {
   font-size: 2rem;
@@ -743,7 +837,7 @@ export default {
   margin: 0 2rem 2rem;
   border-radius: 15px;
   padding: 2rem;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .filters-row {
@@ -790,16 +884,18 @@ export default {
   margin: 0 2rem;
   background: white;
   border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
-.loading-state, .empty-state {
+.loading-state,
+.empty-state {
   padding: 4rem;
   text-align: center;
 }
 
-.loading-state i, .empty-state i {
+.loading-state i,
+.empty-state i {
   font-size: 3rem;
   color: #9ca3af;
   margin-bottom: 1rem;
@@ -848,7 +944,7 @@ export default {
 }
 
 .numero {
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-weight: 700;
   color: #dc2626;
   font-size: 0.875rem;
@@ -896,15 +992,39 @@ export default {
   text-transform: uppercase;
 }
 
-.badge.status.ouverte { background: #fef3c7; color: #92400e; }
-.badge.status.en_cours { background: #dbeafe; color: #1e40af; }
-.badge.status.resolue { background: #d1fae5; color: #065f46; }
-.badge.status.fermee { background: #f3f4f6; color: #374151; }
+.badge.status.ouverte {
+  background: #fef3c7;
+  color: #92400e;
+}
+.badge.status.en_cours {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.badge.status.resolue {
+  background: #d1fae5;
+  color: #065f46;
+}
+.badge.status.fermee {
+  background: #f3f4f6;
+  color: #374151;
+}
 
-.badge.priority.basse { background: #f3f4f6; color: #374151; }
-.badge.priority.normale { background: #dbeafe; color: #1e40af; }
-.badge.priority.haute { background: #fef3c7; color: #92400e; }
-.badge.priority.urgente { background: #fee2e2; color: #991b1b; }
+.badge.priority.basse {
+  background: #f3f4f6;
+  color: #374151;
+}
+.badge.priority.normale {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.badge.priority.haute {
+  background: #fef3c7;
+  color: #92400e;
+}
+.badge.priority.urgente {
+  background: #fee2e2;
+  color: #991b1b;
+}
 
 .date-cell span {
   display: block;
@@ -954,7 +1074,7 @@ export default {
 
 .btn-sm:hover {
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .pagination {
@@ -971,7 +1091,9 @@ export default {
   font-size: 0.875rem;
 }
 
-.btn-primary, .btn-secondary, .btn-success {
+.btn-primary,
+.btn-secondary,
+.btn-success {
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
@@ -999,9 +1121,11 @@ export default {
   color: white;
 }
 
-.btn-primary:hover, .btn-secondary:hover, .btn-success:hover {
+.btn-primary:hover,
+.btn-secondary:hover,
+.btn-success:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 /* Modal Styles */
@@ -1207,7 +1331,7 @@ export default {
 }
 
 .timeline::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 0.75rem;
   top: 0;
@@ -1285,50 +1409,50 @@ export default {
   .admin-reclamations-container {
     padding: 1rem 0;
   }
-  
+
   .page-header,
   .stats-grid,
   .controls-section,
   .reclamations-table-container {
     margin: 0 1rem 1rem;
   }
-  
+
   .header-content {
     padding: 2rem;
   }
-  
+
   .header-content h1 {
     font-size: 2rem;
   }
-  
+
   .stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .filters-row {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .filter-group {
     min-width: auto;
   }
-  
+
   .actions-row {
     justify-content: center;
   }
-  
+
   .modal-overlay {
     padding: 1rem;
   }
-  
+
   .response-actions {
     flex-direction: column;
   }
-  
+
   .timeline-header {
     flex-direction: column;
     align-items: flex-start;
   }
 }
-</style> 
+</style>

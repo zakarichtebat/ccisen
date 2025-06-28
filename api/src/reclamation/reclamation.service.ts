@@ -70,6 +70,8 @@ export class ReclamationService {
     limit?: number;
     offset?: number;
   }) {
+    console.log('🔍 Service findAll - Filtres reçus:', filters);
+    
     const where: any = {};
     
     if (filters?.typeReclamation) where.typeReclamation = filters.typeReclamation;
@@ -78,7 +80,9 @@ export class ReclamationService {
     if (filters?.userId) where.userId = filters.userId;
     if (filters?.adminTraitantId) where.adminTraitantId = filters.adminTraitantId;
 
-    return this.prisma.reclamation.findMany({
+    console.log('🔍 Conditions WHERE appliquées:', where);
+
+    const result = await this.prisma.reclamation.findMany({
       where,
       include: {
         user: {
@@ -109,6 +113,18 @@ export class ReclamationService {
       take: filters?.limit || 50,
       skip: filters?.offset || 0,
     });
+
+    console.log('📊 Résultats de la base de données:');
+    console.log('- Nombre total de réclamations trouvées:', result.length);
+    console.log('- Détail des réclamations:', result.map(r => ({
+      id: r.id,
+      sujet: r.sujet,
+      statut: r.statut,
+      userId: r.userId,
+      user: r.user.nom + ' ' + r.user.prenom
+    })));
+
+    return result;
   }
 
   // Récupérer une réclamation par ID
@@ -389,55 +405,87 @@ export class ReclamationService {
 
   // Statistiques des réclamations
   async getStats() {
-    const totalReclamations = await this.prisma.reclamation.count();
-    
-    const statusCounts = await this.prisma.reclamation.groupBy({
-      by: ['statut'],
-      _count: {
-        id: true,
-      },
-    });
+    try {
+      const totalReclamations = await this.prisma.reclamation.count();
+      
+      // Compter par statut
+      const ouverte = await this.prisma.reclamation.count({ where: { statut: 'ouverte' } });
+      const enCours = await this.prisma.reclamation.count({ where: { statut: 'en_cours' } });
+      const resolue = await this.prisma.reclamation.count({ where: { statut: 'resolue' } });
+      const fermee = await this.prisma.reclamation.count({ where: { statut: 'fermee' } });
 
-    const typeCounts = await this.prisma.reclamation.groupBy({
-      by: ['typeReclamation'],
-      _count: {
-        id: true,
-      },
-    });
+      // Compter par type
+      const service = await this.prisma.reclamation.count({ where: { typeReclamation: 'service' } });
+      const document = await this.prisma.reclamation.count({ where: { typeReclamation: 'document' } });
+      const formation = await this.prisma.reclamation.count({ where: { typeReclamation: 'formation' } });
+      const technique = await this.prisma.reclamation.count({ where: { typeReclamation: 'technique' } });
+      const autre = await this.prisma.reclamation.count({ where: { typeReclamation: 'autre' } });
 
-    const prioriteCounts = await this.prisma.reclamation.groupBy({
-      by: ['priorite'],
-      _count: {
-        id: true,
-      },
-    });
+      // Compter par priorité
+      const basse = await this.prisma.reclamation.count({ where: { priorite: 'basse' } });
+      const normale = await this.prisma.reclamation.count({ where: { priorite: 'normale' } });
+      const haute = await this.prisma.reclamation.count({ where: { priorite: 'haute' } });
+      const urgente = await this.prisma.reclamation.count({ where: { priorite: 'urgente' } });
 
-    // Temps de résolution moyen
-    const resolvedReclamations = await this.prisma.reclamation.findMany({
-      where: {
-        statut: 'resolue',
-        dateResolution: { not: null },
-      },
-      select: {
-        createdAt: true,
-        dateResolution: true,
-      },
-    });
-
-    const avgResolutionTime = resolvedReclamations.length > 0 
-      ? resolvedReclamations.reduce((acc, rec) => {
-          const diff = new Date(rec.dateResolution!).getTime() - new Date(rec.createdAt).getTime();
-          return acc + diff;
-        }, 0) / resolvedReclamations.length / (1000 * 60 * 60 * 24) // en jours
-      : 0;
-
-    return {
-      totalReclamations,
-      repartitionParStatut: statusCounts,
-      repartitionParType: typeCounts,
-      repartitionParPriorite: prioriteCounts,
-      tempsResolutionMoyen: Math.round(avgResolutionTime * 100) / 100,
-    };
+      return {
+        totalReclamations,
+        repartitionParStatut: {
+          ouverte,
+          en_cours: enCours,
+          resolue,
+          fermee,
+        },
+        repartitionParType: {
+          service,
+          document,
+          formation,
+          technique,
+          autre,
+        },
+        repartitionParPriorite: {
+          basse,
+          normale,
+          haute,
+          urgente,
+        },
+        // Stats pour les cartes admin
+        total: totalReclamations,
+        ouvertes: ouverte,
+        enCours: enCours,
+        resolues: resolue,
+        fermees: fermee,
+      };
+    } catch (error) {
+      console.error('Erreur lors du calcul des statistiques:', error);
+      // Retourner des stats par défaut en cas d'erreur
+      return {
+        totalReclamations: 0,
+        repartitionParStatut: {
+          ouverte: 0,
+          en_cours: 0,
+          resolue: 0,
+          fermee: 0,
+        },
+        repartitionParType: {
+          service: 0,
+          document: 0,
+          formation: 0,
+          technique: 0,
+          autre: 0,
+        },
+        repartitionParPriorite: {
+          basse: 0,
+          normale: 0,
+          haute: 0,
+          urgente: 0,
+        },
+        total: 0,
+        ouvertes: 0,
+        enCours: 0,
+        resolues: 0,
+        fermees: 0,
+      };
+    }
   }
 
   // Ajouter une évaluation de satisfaction
@@ -465,5 +513,61 @@ export class ReclamationService {
         commentaireFinal: commentaire,
       },
     });
+  }
+
+  // Mettre à jour le statut d'une réclamation
+  async updateStatus(id: number, nouveauStatut: string, adminId: number, commentaire?: string) {
+    const reclamation = await this.prisma.reclamation.findUnique({
+      where: { id },
+      select: { statut: true },
+    });
+
+    if (!reclamation) {
+      throw new Error('Réclamation non trouvée');
+    }
+
+    const ancienStatut = reclamation.statut;
+
+    // Mettre à jour la réclamation
+    const result = await this.prisma.reclamation.update({
+      where: { id },
+      data: {
+        statut: nouveauStatut,
+        adminTraitantId: adminId,
+        dateTraitement: nouveauStatut === 'en_cours' ? new Date() : undefined,
+        dateResolution: nouveauStatut === 'resolue' ? new Date() : undefined,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+            email: true,
+          },
+        },
+        adminTraitant: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+          },
+        },
+      },
+    });
+
+    // Ajouter à l'historique
+    await this.prisma.historiquereclamation.create({
+      data: {
+        reclamationId: id,
+        ancienStatut,
+        nouveauStatut,
+        adminId,
+        typeAction: 'modification',
+        commentaire: commentaire || `Statut changé de ${ancienStatut} à ${nouveauStatut}`,
+      },
+    });
+
+    return result;
   }
 } 

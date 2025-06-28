@@ -29,15 +29,23 @@
     <!-- Filtres et actions -->
     <div class="reclamations-controls">
       <div class="filters">
-        <select v-model="selectedStatut" @change="loadReclamations" class="filter-select">
+        <select
+          v-model="selectedStatut"
+          @change="loadReclamations"
+          class="filter-select"
+        >
           <option value="">Tous les statuts</option>
           <option value="ouverte">Ouverte</option>
           <option value="en_cours">En cours</option>
           <option value="resolue">Résolue</option>
           <option value="fermee">Fermée</option>
         </select>
-        
-        <select v-model="selectedPriorite" @change="loadReclamations" class="filter-select">
+
+        <select
+          v-model="selectedPriorite"
+          @change="loadReclamations"
+          class="filter-select"
+        >
           <option value="">Toutes priorités</option>
           <option value="basse">Basse</option>
           <option value="normale">Normale</option>
@@ -47,9 +55,9 @@
 
         <div class="search-box">
           <i class="fas fa-search"></i>
-          <input 
-            type="text" 
-            v-model="searchQuery" 
+          <input
+            type="text"
+            v-model="searchQuery"
             @input="debouncedSearch"
             placeholder="Rechercher par numéro..."
             class="search-input"
@@ -58,7 +66,11 @@
       </div>
 
       <div class="actions">
-        <button @click="loadReclamations" class="btn-refresh" :disabled="loading">
+        <button
+          @click="loadReclamations"
+          class="btn-refresh"
+          :disabled="loading"
+        >
           <i class="fas fa-sync-alt" :class="{ 'fa-spin': loading }"></i>
           Actualiser
         </button>
@@ -85,58 +97,77 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="reclamation in reclamationsList" :key="reclamation.id" :class="getRowClass(reclamation)">
+          <tr
+            v-for="reclamation in reclamationsList"
+            :key="reclamation.id"
+            :class="getRowClass(reclamation)"
+          >
             <td class="numero-cell">
               <strong>{{ reclamation.numeroReclamation }}</strong>
             </td>
-            
+
             <td class="client-cell">
               <div class="client-info">
                 <div class="client-avatar">
                   {{ reclamation.user.prenom.charAt(0).toUpperCase() }}
                 </div>
                 <div class="client-details">
-                  <strong>{{ reclamation.user.prenom }} {{ reclamation.user.nom }}</strong>
+                  <strong
+                    >{{ reclamation.user.prenom }}
+                    {{ reclamation.user.nom }}</strong
+                  >
                   <small>{{ reclamation.user.email }}</small>
                 </div>
               </div>
             </td>
-            
+
             <td>
-              <span class="type-badge" :class="getTypeClass(reclamation.typeReclamation)">
+              <span
+                class="type-badge"
+                :class="getTypeClass(reclamation.typeReclamation)"
+              >
                 {{ getTypeLabel(reclamation.typeReclamation) }}
               </span>
             </td>
-            
+
             <td>
-              <span class="priority-badge" :class="getPriorityClass(reclamation.priorite)">
+              <span
+                class="priority-badge"
+                :class="getPriorityClass(reclamation.priorite)"
+              >
                 {{ getPriorityLabel(reclamation.priorite) }}
               </span>
             </td>
-            
+
             <td>
-              <span class="status-badge" :class="getStatusClass(reclamation.statut)">
+              <span
+                class="status-badge"
+                :class="getStatusClass(reclamation.statut)"
+              >
                 {{ getStatusLabel(reclamation.statut) }}
               </span>
             </td>
-            
+
             <td class="date-cell">
               {{ formatDate(reclamation.createdAt) }}
             </td>
-            
+
             <td class="actions-cell">
               <div class="action-buttons">
-                <button 
-                  @click="viewReclamation(reclamation)" 
+                <button
+                  @click="viewReclamation(reclamation)"
                   class="btn-action btn-view"
                   title="Voir détails"
                 >
                   <i class="fas fa-eye"></i>
                 </button>
-                
-                <button 
-                  v-if="reclamation.statut !== 'resolue' && reclamation.statut !== 'fermee'"
-                  @click="traiterReclamation(reclamation)" 
+
+                <button
+                  v-if="
+                    reclamation.statut !== 'resolue' &&
+                    reclamation.statut !== 'fermee'
+                  "
+                  @click="traiterReclamation(reclamation)"
                   class="btn-action btn-process"
                   title="Traiter"
                 >
@@ -165,12 +196,15 @@
             <i class="fas fa-times"></i>
           </button>
         </div>
-        
+
         <div class="modal-body">
           <div class="reclamation-details">
             <div class="detail-row">
               <strong>Client :</strong>
-              <span>{{ selectedReclamation.user.prenom }} {{ selectedReclamation.user.nom }}</span>
+              <span
+                >{{ selectedReclamation.user.prenom }}
+                {{ selectedReclamation.user.nom }}</span
+              >
             </div>
             <div class="detail-row">
               <strong>Email :</strong>
@@ -178,23 +212,33 @@
             </div>
             <div class="detail-row">
               <strong>Type :</strong>
-              <span>{{ getTypeLabel(selectedReclamation.typeReclamation) }}</span>
+              <span>{{
+                getTypeLabel(selectedReclamation.typeReclamation)
+              }}</span>
             </div>
             <div class="detail-row">
               <strong>Priorité :</strong>
-              <span class="priority-badge" :class="getPriorityClass(selectedReclamation.priorite)">
+              <span
+                class="priority-badge"
+                :class="getPriorityClass(selectedReclamation.priorite)"
+              >
                 {{ getPriorityLabel(selectedReclamation.priorite) }}
               </span>
             </div>
             <div class="detail-row">
               <strong>Statut :</strong>
-              <span class="status-badge" :class="getStatusClass(selectedReclamation.statut)">
+              <span
+                class="status-badge"
+                :class="getStatusClass(selectedReclamation.statut)"
+              >
                 {{ getStatusLabel(selectedReclamation.statut) }}
               </span>
             </div>
             <div class="detail-row">
               <strong>Description :</strong>
-              <p class="description-text">{{ selectedReclamation.description }}</p>
+              <p class="description-text">
+                {{ selectedReclamation.description }}
+              </p>
             </div>
             <div class="detail-row">
               <strong>Date :</strong>
@@ -202,7 +246,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="modal-footer">
           <button @click="closeModal" class="btn-secondary">Fermer</button>
         </div>
@@ -212,232 +256,252 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted } from "vue";
 
 // Variables réactives
-const reclamationsList = ref([])
-const loading = ref(false)
-const selectedStatut = ref('')
-const selectedPriorite = ref('')
-const searchQuery = ref('')
-const selectedReclamation = ref(null)
+const reclamationsList = ref([]);
+const loading = ref(false);
+const selectedStatut = ref("");
+const selectedPriorite = ref("");
+const searchQuery = ref("");
+const selectedReclamation = ref(null);
 
 // Statistiques
-const totalReclamations = ref(0)
-const reclamationsOuvertes = ref(0)
-const reclamationsEnCours = ref(0)
-const reclamationsResolues = ref(0)
+const totalReclamations = ref(0);
+const reclamationsOuvertes = ref(0);
+const reclamationsEnCours = ref(0);
+const reclamationsResolues = ref(0);
 
 // Émissions d'événements
-const emit = defineEmits(['show-success', 'show-error'])
+const emit = defineEmits(["show-success", "show-error"]);
 
 // Debounce pour la recherche
-let searchTimeout = null
+let searchTimeout = null;
 const debouncedSearch = () => {
-  clearTimeout(searchTimeout)
+  clearTimeout(searchTimeout);
   searchTimeout = setTimeout(() => {
-    loadReclamations()
-  }, 500)
-}
+    loadReclamations();
+  }, 500);
+};
 
 /**
  * Charger les réclamations
  */
 const loadReclamations = async () => {
-  loading.value = true
-  
+  loading.value = true;
+
   try {
-    const params = new URLSearchParams()
+    const params = new URLSearchParams();
 
-    if (selectedStatut.value) params.append('statut', selectedStatut.value)
-    if (selectedPriorite.value) params.append('priorite', selectedPriorite.value)
-    if (searchQuery.value) params.append('search', searchQuery.value)
+    if (selectedStatut.value) params.append("statut", selectedStatut.value);
+    if (selectedPriorite.value)
+      params.append("priorite", selectedPriorite.value);
+    if (searchQuery.value) params.append("search", searchQuery.value);
 
-    const token = localStorage.getItem('token')
-    const response = await fetch(`http://localhost:3000/reclamation?${params}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
+    const response = await fetch(
+      `http://localhost:3000/reclamations?${params}`,
+      {
+        credentials: "include",
       }
-    })
+    );
 
     if (response.ok) {
-      const data = await response.json()
-      reclamationsList.value = Array.isArray(data) ? data : data.items || []
+      const data = await response.json();
+      console.log("📊 AdminReclamations - Données reçues:", data);
+      reclamationsList.value = Array.isArray(data) ? data : [];
+      console.log(
+        "📊 AdminReclamations - Réclamations chargées:",
+        reclamationsList.value.length
+      );
     } else {
-      throw new Error('Erreur lors du chargement des réclamations')
+      throw new Error("Erreur lors du chargement des réclamations");
     }
   } catch (error) {
-    console.error('Erreur:', error)
-    emit('show-error', 'Erreur lors du chargement des réclamations')
+    console.error("Erreur:", error);
+    emit("show-error", "Erreur lors du chargement des réclamations");
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 /**
  * Charger les statistiques
  */
 const loadStats = async () => {
   try {
-    const token = localStorage.getItem('token')
-    const response = await fetch('http://localhost:3000/reclamation/stats', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
+    const response = await fetch("http://localhost:3000/reclamations/stats", {
+      credentials: "include",
+    });
 
     if (response.ok) {
-      const stats = await response.json()
-      totalReclamations.value = stats.totalReclamations || reclamationsList.value.length
-      
+      const stats = await response.json();
+      totalReclamations.value =
+        stats.totalReclamations || reclamationsList.value.length;
+
       // Calculer les statistiques additionnelles
-      reclamationsOuvertes.value = reclamationsList.value.filter(r => r.statut === 'ouverte').length
-      reclamationsEnCours.value = reclamationsList.value.filter(r => r.statut === 'en_cours').length
-      reclamationsResolues.value = reclamationsList.value.filter(r => r.statut === 'resolue').length
+      reclamationsOuvertes.value = reclamationsList.value.filter(
+        (r) => r.statut === "ouverte"
+      ).length;
+      reclamationsEnCours.value = reclamationsList.value.filter(
+        (r) => r.statut === "en_cours"
+      ).length;
+      reclamationsResolues.value = reclamationsList.value.filter(
+        (r) => r.statut === "resolue"
+      ).length;
     }
   } catch (error) {
-    console.error('Erreur stats:', error)
+    console.error("Erreur stats:", error);
     // Calculer localement si l'API n'est pas disponible
-    totalReclamations.value = reclamationsList.value.length
-    reclamationsOuvertes.value = reclamationsList.value.filter(r => r.statut === 'ouverte').length
-    reclamationsEnCours.value = reclamationsList.value.filter(r => r.statut === 'en_cours').length
-    reclamationsResolues.value = reclamationsList.value.filter(r => r.statut === 'resolue').length
+    totalReclamations.value = reclamationsList.value.length;
+    reclamationsOuvertes.value = reclamationsList.value.filter(
+      (r) => r.statut === "ouverte"
+    ).length;
+    reclamationsEnCours.value = reclamationsList.value.filter(
+      (r) => r.statut === "en_cours"
+    ).length;
+    reclamationsResolues.value = reclamationsList.value.filter(
+      (r) => r.statut === "resolue"
+    ).length;
   }
-}
+};
 
 /**
  * Voir une réclamation
  */
 const viewReclamation = (reclamation) => {
-  selectedReclamation.value = reclamation
-}
+  selectedReclamation.value = reclamation;
+};
 
 /**
  * Fermer le modal
  */
 const closeModal = () => {
-  selectedReclamation.value = null
-}
+  selectedReclamation.value = null;
+};
 
 /**
  * Traiter une réclamation
  */
 const traiterReclamation = async (reclamation) => {
-  const response = prompt(`Réponse pour la réclamation ${reclamation.numeroReclamation}:`)
-  if (!response) return
+  const response = prompt(
+    `Réponse pour la réclamation ${reclamation.numeroReclamation}:`
+  );
+  if (!response) return;
 
   try {
-    const token = localStorage.getItem('token')
-    const result = await fetch(`http://localhost:3000/reclamation/${reclamation.id}/traiter`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({ 
-        statut: 'resolue',
-        reponseAdmin: response
-      })
-    })
+    const result = await fetch(
+      `http://localhost:3000/reclamations/${reclamation.id}/traiter`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          statut: "resolue",
+          reponseAdmin: response,
+        }),
+      }
+    );
 
     if (result.ok) {
-      reclamation.statut = 'resolue'
-      reclamation.reponseAdmin = response
-      emit('show-success', 'Réclamation traitée avec succès')
-      loadStats()
+      reclamation.statut = "resolue";
+      reclamation.reponseAdmin = response;
+      emit("show-success", "Réclamation traitée avec succès");
+      loadStats();
     } else {
-      throw new Error('Erreur lors du traitement')
+      throw new Error("Erreur lors du traitement");
     }
   } catch (error) {
-    emit('show-error', 'Erreur lors du traitement de la réclamation')
+    emit("show-error", "Erreur lors du traitement de la réclamation");
   }
-}
+};
 
 /**
  * Utilitaires
  */
 const getTypeLabel = (type) => {
   const labels = {
-    service: 'Service',
-    technique: 'Technique',
-    facturation: 'Facturation',
-    autre: 'Autre'
-  }
-  return labels[type] || type
-}
+    service: "Service",
+    technique: "Technique",
+    facturation: "Facturation",
+    autre: "Autre",
+  };
+  return labels[type] || type;
+};
 
 const getTypeClass = (type) => {
   const classes = {
-    service: 'type-service',
-    technique: 'type-technique',
-    facturation: 'type-facturation',
-    autre: 'type-autre'
-  }
-  return classes[type] || 'type-default'
-}
+    service: "type-service",
+    technique: "type-technique",
+    facturation: "type-facturation",
+    autre: "type-autre",
+  };
+  return classes[type] || "type-default";
+};
 
 const getPriorityLabel = (priorite) => {
   const labels = {
-    basse: 'Basse',
-    normale: 'Normale',
-    haute: 'Haute',
-    urgente: 'Urgente'
-  }
-  return labels[priorite] || priorite
-}
+    basse: "Basse",
+    normale: "Normale",
+    haute: "Haute",
+    urgente: "Urgente",
+  };
+  return labels[priorite] || priorite;
+};
 
 const getPriorityClass = (priorite) => {
   const classes = {
-    basse: 'priority-low',
-    normale: 'priority-normal',
-    haute: 'priority-high',
-    urgente: 'priority-urgent'
-  }
-  return classes[priorite] || 'priority-default'
-}
+    basse: "priority-low",
+    normale: "priority-normal",
+    haute: "priority-high",
+    urgente: "priority-urgent",
+  };
+  return classes[priorite] || "priority-default";
+};
 
 const getStatusLabel = (statut) => {
   const labels = {
-    ouverte: 'Ouverte',
-    en_cours: 'En cours',
-    resolue: 'Résolue',
-    fermee: 'Fermée'
-  }
-  return labels[statut] || statut
-}
+    ouverte: "Ouverte",
+    en_cours: "En cours",
+    resolue: "Résolue",
+    fermee: "Fermée",
+  };
+  return labels[statut] || statut;
+};
 
 const getStatusClass = (statut) => {
   const classes = {
-    ouverte: 'status-open',
-    en_cours: 'status-progress',
-    resolue: 'status-resolved',
-    fermee: 'status-closed'
-  }
-  return classes[statut] || 'status-default'
-}
+    ouverte: "status-open",
+    en_cours: "status-progress",
+    resolue: "status-resolved",
+    fermee: "status-closed",
+  };
+  return classes[statut] || "status-default";
+};
 
 const getRowClass = (reclamation) => {
-  if (reclamation.priorite === 'urgente') return 'row-urgent'
-  if (reclamation.priorite === 'haute') return 'row-high'
-  if (reclamation.statut === 'ouverte') return 'row-open'
-  return ''
-}
+  if (reclamation.priorite === "urgente") return "row-urgent";
+  if (reclamation.priorite === "haute") return "row-high";
+  if (reclamation.statut === "ouverte") return "row-open";
+  return "";
+};
 
 const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString('fr-FR', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-}
+  return new Date(dateString).toLocaleDateString("fr-FR", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
 
 // Initialisation
 onMounted(async () => {
-  await loadReclamations()
-  await loadStats()
-})
+  await loadReclamations();
+  await loadStats();
+});
 </script>
 
 <style scoped>
@@ -602,8 +666,12 @@ onMounted(async () => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .reclamations-table {
@@ -690,7 +758,9 @@ onMounted(async () => {
   font-size: 0.85em;
 }
 
-.type-badge, .priority-badge, .status-badge {
+.type-badge,
+.priority-badge,
+.status-badge {
   padding: 4px 10px;
   border-radius: 15px;
   font-size: 0.8em;
@@ -698,22 +768,58 @@ onMounted(async () => {
 }
 
 /* Types */
-.type-service { background: #e3f2fd; color: #1976d2; }
-.type-technique { background: #f3e5f5; color: #7b1fa2; }
-.type-facturation { background: #e8f5e8; color: #388e3c; }
-.type-autre { background: #fff3e0; color: #f57c00; }
+.type-service {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+.type-technique {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+.type-facturation {
+  background: #e8f5e8;
+  color: #388e3c;
+}
+.type-autre {
+  background: #fff3e0;
+  color: #f57c00;
+}
 
 /* Priorités */
-.priority-low { background: #e8f5e8; color: #4caf50; }
-.priority-normal { background: #e3f2fd; color: #2196f3; }
-.priority-high { background: #fff3e0; color: #ff9800; }
-.priority-urgent { background: #ffebee; color: #f44336; }
+.priority-low {
+  background: #e8f5e8;
+  color: #4caf50;
+}
+.priority-normal {
+  background: #e3f2fd;
+  color: #2196f3;
+}
+.priority-high {
+  background: #fff3e0;
+  color: #ff9800;
+}
+.priority-urgent {
+  background: #ffebee;
+  color: #f44336;
+}
 
 /* Statuts */
-.status-open { background: #e3f2fd; color: #2196f3; }
-.status-progress { background: #fff3e0; color: #ff9800; }
-.status-resolved { background: #e8f5e8; color: #4caf50; }
-.status-closed { background: #f5f5f5; color: #757575; }
+.status-open {
+  background: #e3f2fd;
+  color: #2196f3;
+}
+.status-progress {
+  background: #fff3e0;
+  color: #ff9800;
+}
+.status-resolved {
+  background: #e8f5e8;
+  color: #4caf50;
+}
+.status-closed {
+  background: #f5f5f5;
+  color: #757575;
+}
 
 .date-cell {
   font-size: 0.9em;
@@ -743,11 +849,21 @@ onMounted(async () => {
   font-size: 0.85em;
 }
 
-.btn-view { background: #e3f2fd; color: #1976d2; }
-.btn-view:hover { background: #bbdefb; }
+.btn-view {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+.btn-view:hover {
+  background: #bbdefb;
+}
 
-.btn-process { background: #fff3e0; color: #f57c00; }
-.btn-process:hover { background: #ffe0b2; }
+.btn-process {
+  background: #fff3e0;
+  color: #f57c00;
+}
+.btn-process:hover {
+  background: #ffe0b2;
+}
 
 /* Modal */
 .modal-overlay {
@@ -872,35 +988,35 @@ onMounted(async () => {
     gap: 20px;
     padding: 20px;
   }
-  
+
   .reclamations-stats {
     gap: 15px;
     flex-wrap: wrap;
   }
-  
+
   .reclamations-controls {
     flex-direction: column;
     align-items: stretch;
     padding: 15px 20px;
   }
-  
+
   .filters {
     flex-direction: column;
     gap: 10px;
   }
-  
+
   .search-input {
     min-width: 100%;
   }
-  
+
   .reclamations-table-container {
     overflow-x: auto;
   }
-  
+
   .reclamations-table {
     min-width: 800px;
   }
-  
+
   .modal-content {
     margin: 20px;
     max-width: none;
