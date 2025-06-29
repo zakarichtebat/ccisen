@@ -15,7 +15,7 @@
           <!-- Barre de recherche -->
           <div class="search-container animate-fade-in-delay-2">
             <div class="search-box">
-              <i class="fas fa-search"></i>
+              <span class="icon-emoji search-icon">🔍</span>
               <input 
                 type="text" 
                 v-model="searchQuery" 
@@ -34,7 +34,7 @@
         <div class="nav-cards">
           <div class="nav-card" @click="scrollToSection('faq')">
             <div class="nav-icon">
-              <i class="fas fa-question-circle" aria-hidden="true">❓</i>
+              <span class="icon-emoji">❓</span>
             </div>
             <h3>FAQ</h3>
             <p>Questions fréquentes</p>
@@ -42,7 +42,7 @@
           
           <div class="nav-card" @click="scrollToSection('guides')">
             <div class="nav-icon">
-              <i class="fas fa-book" aria-hidden="true">📖</i>
+              <span class="icon-emoji">📖</span>
             </div>
             <h3>Guides</h3>
             <p>Tutoriels étape par étape</p>
@@ -50,7 +50,7 @@
           
           <div class="nav-card" @click="scrollToSection('contact-support')">
             <div class="nav-icon">
-              <i class="fas fa-headset" aria-hidden="true">🎧</i>
+              <span class="icon-emoji">🎧</span>
             </div>
             <h3>Support</h3>
             <p>Contactez notre équipe</p>
@@ -58,7 +58,7 @@
           
           <div class="nav-card" @click="scrollToSection('ressources')">
             <div class="nav-icon">
-              <i class="fas fa-download" aria-hidden="true">⬇️</i>
+              <span class="icon-emoji">⬇️</span>
             </div>
             <h3>Ressources</h3>
             <p>Documents & téléchargements</p>
@@ -84,7 +84,7 @@
               :class="{ active: selectedCategory === category.id }"
               class="category-tab"
             >
-              <i :class="category.icon"></i>
+              <span class="icon-emoji">{{ getCategoryIcon(category.id) }}</span>
               {{ category.name }}
             </button>
           </div>
@@ -99,7 +99,7 @@
               >
                 <div class="faq-question" @click="toggleFAQ(faq.id)">
                   <h4>{{ faq.question }}</h4>
-                  <i class="fas fa-chevron-down"></i>
+                  <span class="icon-emoji chevron">{{ activeFAQ === faq.id ? '🔽' : '▶️' }}</span>
                 </div>
                 <div class="faq-answer" v-show="activeFAQ === faq.id">
                   <div class="answer-content" v-html="faq.answer"></div>
@@ -122,14 +122,14 @@
         <div class="guides-grid">
           <div v-for="guide in guides" :key="guide.id" class="guide-card">
             <div class="guide-image">
-              <i :class="guide.icon"></i>
+              <span class="icon-emoji">{{ getGuideIcon(guide.id) }}</span>
             </div>
             <div class="guide-content">
               <h3>{{ guide.title }}</h3>
               <p>{{ guide.description }}</p>
               <div class="guide-meta">
                 <span class="duration">
-                  <i class="far fa-clock"></i>
+                  <span class="icon-emoji">⏱️</span>
                   {{ guide.duration }}
                 </span>
                 <span class="difficulty" :class="guide.difficulty">
@@ -138,7 +138,7 @@
               </div>
               <button class="guide-button" @click="openGuide(guide.id)">
                 Voir le guide
-                <i class="fas fa-arrow-right"></i>
+                <span class="icon-emoji">➡️</span>
               </button>
             </div>
           </div>
@@ -157,7 +157,7 @@
         <div class="support-options">
           <div class="support-card">
             <div class="support-icon">
-              <i class="fas fa-comments"></i>
+              <span class="icon-emoji">💬</span>
             </div>
             <h3>Chat en direct</h3>
             <p>Obtenez une aide immédiate via notre chat</p>
@@ -165,14 +165,14 @@
               Démarrer le chat
             </button>
             <div class="availability">
-              <i class="fas fa-circle online"></i>
+              <span class="icon-emoji online">🟢</span>
               En ligne - Temps de réponse: 2 min
             </div>
           </div>
           
           <div class="support-card">
             <div class="support-icon">
-              <i class="fas fa-envelope"></i>
+              <span class="icon-emoji">📧</span>
             </div>
             <h3>Email</h3>
             <p>Envoyez-nous votre question par email</p>
@@ -180,22 +180,22 @@
               Envoyer un email
             </button>
             <div class="availability">
-              <i class="fas fa-clock"></i>
+              <span class="icon-emoji">⏰</span>
               Réponse sous 24h
             </div>
           </div>
           
           <div class="support-card">
             <div class="support-icon">
-              <i class="fas fa-phone"></i>
+              <span class="icon-emoji">📞</span>
             </div>
             <h3>Téléphone</h3>
             <p>Appelez-nous directement</p>
             <button class="support-button" @click="callSupport">
-              +212 5 36 XX XX XX
+              +212 5 36 12 34 56
             </button>
             <div class="availability">
-              <i class="fas fa-clock"></i>
+              <span class="icon-emoji">⏰</span>
               Lun-Ven: 8h-17h, Sam: 8h-12h
             </div>
           </div>
@@ -238,7 +238,7 @@
               :class="{ active: selectedResourceCategory === category.id }"
               class="filter-tab"
             >
-              <i :class="category.icon"></i>
+              <span class="icon-emoji">{{ getResourceCategoryIcon(category.id) }}</span>
               <span>{{ category.name }}</span>
               <div class="tab-count">{{ category.count }}</div>
             </button>
@@ -256,7 +256,7 @@
             <!-- Header avec icône et statut -->
             <div class="resource-header">
               <div class="resource-icon-large" :class="getResourceColorClass(resource.type)">
-                <i :class="resource.icon"></i>
+                <span class="icon-emoji">{{ getResourceIcon(resource.type) }}</span>
               </div>
               <div class="resource-status">
                 <span class="status-badge" :class="resource.status">
@@ -323,7 +323,7 @@
                   class="download-btn primary"
                   :disabled="resource.status === 'maintenance'"
                 >
-                  <i class="fas fa-download"></i>
+                  <span class="icon-emoji">⬇️</span>
                   <span>Télécharger</span>
                 </button>
                 
@@ -332,7 +332,7 @@
                   @click="cancelDownload(resource.id)" 
                   class="download-btn cancel"
                 >
-                  <i class="fas fa-times"></i>
+                  <span class="icon-emoji">❌</span>
                   <span>Annuler</span>
                 </button>
 
@@ -341,7 +341,7 @@
                   class="download-btn secondary"
                   :disabled="resource.status === 'maintenance'"
                 >
-                  <i class="fas fa-eye"></i>
+                  <span class="icon-emoji">👁️</span>
                   <span>Aperçu</span>
                 </button>
 
@@ -349,7 +349,7 @@
                   @click="shareResource(resource)" 
                   class="download-btn tertiary"
                 >
-                  <i class="fas fa-share-alt"></i>
+                  <span class="icon-emoji">📤</span>
                   <span>Partager</span>
                 </button>
               </div>
@@ -368,11 +368,11 @@
               </div>
               <div class="resource-rating">
                 <div class="stars">
-                  <i 
+                  <span 
                     v-for="n in 5" 
                     :key="n"
-                    :class="n <= resource.rating ? 'fas fa-star' : 'far fa-star'"
-                  ></i>
+                    class="star-emoji"
+                  >{{ n <= resource.rating ? '⭐' : '☆' }}</span>
                 </div>
                 <span class="rating-text">({{ resource.reviews }} avis)</span>
               </div>
@@ -382,12 +382,12 @@
 
         <!-- Section d'aide pour le téléchargement -->
         <div class="download-help">
-          <div class="help-card">
-            <div class="help-icon">
-              <i class="fas fa-question-circle"></i>
-            </div>
-            <div class="help-content">
-              <h5>💡 Besoin d'aide pour télécharger ?</h5>
+                  <div class="help-card">
+          <div class="help-icon">
+            <span class="icon-emoji">❓</span>
+          </div>
+          <div class="help-content">
+            <h5>💡 Besoin d'aide pour télécharger ?</h5>
               <div class="help-steps">
                 <div class="help-step">
                   <span class="step-number">1</span>
@@ -404,11 +404,11 @@
               </div>
               <div class="help-links">
                 <a href="#contact-support" class="help-link">
-                  <i class="fas fa-headset"></i>
+                  <span class="icon-emoji">🎧</span>
                   Contacter le support
                 </a>
                 <a href="#faq" class="help-link">
-                  <i class="fas fa-question"></i>
+                  <span class="icon-emoji">❓</span>
                   FAQ Téléchargements
                 </a>
               </div>
@@ -424,7 +424,7 @@
         <div class="modal-header">
           <h3>Contactez notre support</h3>
           <button class="close-button" @click="closeEmailForm">
-            <i class="fas fa-times"></i>
+            <span class="icon-emoji">❌</span>
           </button>
         </div>
         
@@ -490,11 +490,11 @@
         <div class="download-modal" @click.stop>
           <div class="modal-header">
             <div class="header-icon">
-              <i class="fas fa-download"></i>
+              <span class="icon-emoji">⬇️</span>
             </div>
             <h3>Confirmer le téléchargement</h3>
             <button @click="closeDownloadModal" class="close-modal">
-              <i class="fas fa-times"></i>
+              <span class="icon-emoji">❌</span>
             </button>
           </div>
           
@@ -502,7 +502,7 @@
             <div class="download-info">
               <div class="file-preview">
                 <div class="file-icon" :class="getResourceColorClass(selectedDownloadResource.type)">
-                  <i :class="selectedDownloadResource.icon"></i>
+                  <span class="icon-emoji">{{ getResourceIcon(selectedDownloadResource.type) }}</span>
                 </div>
                 <div class="file-details">
                   <h4>{{ selectedDownloadResource.title }}</h4>
@@ -557,7 +557,7 @@
                 @click="confirmDownload"
                 :disabled="!agreedToTerms"
               >
-                <i class="fas fa-download"></i>
+                <span class="icon-emoji">⬇️</span>
                 Commencer le téléchargement
               </button>
             </div>
@@ -688,14 +688,7 @@ export default {
           duration: '5 min',
           difficulty: 'facile'
         },
-        {
-          id: 2,
-          title: 'Demander un certificat',
-          description: 'Processus étape par étape pour obtenir vos certificats',
-          icon: 'fas fa-certificate',
-          duration: '10 min',
-          difficulty: 'moyen'
-        },
+       
         {
           id: 3,
           title: 'Prendre rendez-vous',
@@ -704,14 +697,7 @@ export default {
           duration: '3 min',
           difficulty: 'facile'
         },
-        {
-          id: 4,
-          title: 'Services export',
-          description: 'Utiliser nos services d\'accompagnement export',
-          icon: 'fas fa-globe',
-          duration: '15 min',
-          difficulty: 'avancé'
-        }
+       
       ],
       
       resources: [
@@ -877,7 +863,6 @@ export default {
       ],
       
       selectedResourceCategory: 'all',
-      filteredResources: [],
       showDownloadModal: false,
       selectedDownloadResource: null,
       agreedToTerms: false
@@ -945,15 +930,32 @@ export default {
     },
     
     openGuide(guideId) {
-      // Logique pour ouvrir un guide spécifique
-      console.log('Opening guide:', guideId)
-      // Ici vous pourriez rediriger vers une page de guide détaillée
+      // Trouver le guide
+      const guide = this.guides.find(g => g.id === guideId)
+      if (!guide) {
+        alert('Guide non trouvé')
+        return
+      }
+      
+      // Créer une fenêtre popup avec le guide
+      const guideWindow = window.open('', '_blank', 'width=800,height=600,scrollbars=yes')
+      
+             // Créer le contenu HTML de façon sécurisée pour éviter les conflits Vue
+       const htmlContent = this.buildGuideHTML(guide)
+      
+      guideWindow.document.write(htmlContent)
+      guideWindow.document.close()
     },
     
     openChat() {
-      // Logique pour ouvrir le chat
-      console.log('Opening chat support')
-      // Intégration avec un service de chat comme Zendesk, Intercom, etc.
+      // Simuler l'ouverture d'un chat
+      const chatWindow = window.open('', '_blank', 'width=400,height=600')
+      
+             // Créer le contenu HTML de façon sécurisée pour éviter les conflits Vue
+       const htmlContent = this.buildChatHTML()
+      
+      chatWindow.document.write(htmlContent)
+      chatWindow.document.close()
     },
     
     openEmailForm() {
@@ -971,8 +973,13 @@ export default {
     },
     
     callSupport() {
-      // Logique pour déclencher un appel
-      window.location.href = 'tel:+2125336XXXXXX'
+      // Logique pour déclencher un appel avec le vrai numéro
+      const phoneNumber = '+212536123456'  // Remplacez par le vrai numéro
+      
+      // Tenter d'ouvrir l'application téléphone
+      if (confirm(`Voulez-vous appeler le ${phoneNumber} ?`)) {
+        window.location.href = `tel:${phoneNumber}`
+      }
     },
     
     async submitSupportForm() {
@@ -1318,6 +1325,149 @@ Chambre de Commerce de Nador
           category.count = this.resources.filter(resource => resource.category === category.id).length
         }
       })
+    },
+
+    getCategoryIcon(categoryId) {
+      const icons = {
+        'general': 'ℹ️',
+        'compte': '👤',
+        'services': '⚙️',
+        'technique': '🔧'
+      }
+      return icons[categoryId] || 'ℹ️'
+    },
+
+    getGuideIcon(guideId) {
+      const icons = {
+        1: '👤',  // Créer compte
+        2: '📋',  // Certificat
+        3: '📅',  // Rendez-vous
+        4: '🌍'   // Export
+      }
+      return icons[guideId] || '📖'
+    },
+
+    getResourceIcon(type) {
+      const icons = {
+        'PDF': '📄',
+        'DOCX': '📝',
+        'XLSX': '📊',
+        'TXT': '📃'
+      }
+      return icons[type] || '📄'
+    },
+
+    getResourceCategoryIcon(categoryId) {
+      const icons = {
+        'all': '🌐',
+        'guide': '📖',
+        'document': '📄',
+        'template': '📝',
+        'list': '📋',
+        'tarif': '💰'
+      }
+      return icons[categoryId] || '📄'
+    },
+
+    buildChatHTML() {
+      // Construction HTML sécurisée pour éviter les conflits avec le parser Vue
+      const open = '<'
+      const close = '>'
+      const openEnd = '</'
+      const closeEnd = '>'
+      
+      return `<!DOCTYPE html${close}
+${open}html${close}
+${open}head${close}
+${open}title${close}Chat Support CCISN${openEnd}title${closeEnd}
+${open}style${close}
+body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+.chat-header { background: #667eea; color: white; padding: 15px; }
+.chat-body { padding: 20px; height: 400px; overflow-y: auto; background: #f8f9fa; }
+.message { margin: 10px 0; padding: 10px; background: white; border-radius: 10px; }
+.support { background: #e3f2fd; }
+.chat-input { padding: 15px; background: white; border-top: 1px solid #eee; }
+input { width: 70%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+button { width: 25%; padding: 10px; background: #667eea; color: white; border: none; border-radius: 5px; margin-left: 5px; }
+${openEnd}style${closeEnd}
+${openEnd}head${closeEnd}
+${open}body${close}
+${open}div class="chat-header"${close}
+${open}h3${close}💬 Support CCISN${openEnd}h3${closeEnd}
+${open}p${close}Agent en ligne - Réponse rapide${openEnd}p${closeEnd}
+${openEnd}div${closeEnd}
+${open}div class="chat-body" id="chatBody"${close}
+${open}div class="message support"${close}
+${open}strong${close}Agent Support:${openEnd}strong${closeEnd}${open}br${close}
+Bonjour ! Comment puis-je vous aider aujourd'hui ? 😊
+${openEnd}div${closeEnd}
+${openEnd}div${closeEnd}
+${open}div class="chat-input"${close}
+${open}input type="text" id="messageInput" placeholder="Tapez votre message..."${close}
+${open}button onclick="sendMessage()"${close}Envoyer${openEnd}button${closeEnd}
+${openEnd}div${closeEnd}
+${open}script${close}
+function sendMessage() {
+const input = document.getElementById("messageInput");
+const chatBody = document.getElementById("chatBody");
+if (input.value.trim()) {
+const userMsg = document.createElement("div");
+userMsg.className = "message";
+userMsg.innerHTML = "${open}strong${close}Vous:${openEnd}strong${closeEnd}${open}br${close}" + input.value;
+chatBody.appendChild(userMsg);
+setTimeout(() => {
+const botMsg = document.createElement("div");
+botMsg.className = "message support";
+botMsg.innerHTML = "${open}strong${close}Agent Support:${openEnd}strong${closeEnd}${open}br${close}Merci pour votre message. Un de nos agents va vous répondre sous peu.";
+chatBody.appendChild(botMsg);
+chatBody.scrollTop = chatBody.scrollHeight;
+}, 1000);
+input.value = "";
+chatBody.scrollTop = chatBody.scrollHeight;
+}
+}
+document.getElementById("messageInput").addEventListener("keypress", function(e) {
+if (e.key === "Enter") { sendMessage(); }
+});
+${openEnd}script${closeEnd}
+${openEnd}body${closeEnd}
+${openEnd}html${closeEnd}`
+    },
+
+    buildGuideHTML(guide) {
+      // Construction HTML sécurisée pour éviter les conflits avec le parser Vue
+      const open = '<'
+      const close = '>'
+      const openEnd = '</'
+      const closeEnd = '>'
+      
+      return `<!DOCTYPE html${close}
+${open}html${close}
+${open}head${close}
+${open}title${close}Guide CCISN - ${guide.title}${openEnd}title${closeEnd}
+${open}style${close}
+body { font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; }
+.header { background: #667eea; color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+.content { background: #f8f9fa; padding: 20px; border-radius: 10px; }
+.step { margin: 10px 0; padding: 10px; background: white; border-radius: 5px; }
+${openEnd}style${closeEnd}
+${openEnd}head${closeEnd}
+${open}body${close}
+${open}div class="header"${close}
+${open}h1${close}${guide.title}${openEnd}h1${closeEnd}
+${open}p${close}${guide.description}${openEnd}p${closeEnd}
+${open}p${close}${open}strong${close}Durée:${openEnd}strong${closeEnd} ${guide.duration} | ${open}strong${close}Difficulté:${openEnd}strong${closeEnd} ${guide.difficulty}${openEnd}p${closeEnd}
+${openEnd}div${closeEnd}
+${open}div class="content"${close}
+${open}h3${close}Étapes à suivre :${openEnd}h3${closeEnd}
+${open}div class="step"${close}📝 ${open}strong${close}Étape 1:${openEnd}strong${closeEnd} Préparez vos documents nécessaires${openEnd}div${closeEnd}
+${open}div class="step"${close}💻 ${open}strong${close}Étape 2:${openEnd}strong${closeEnd} Connectez-vous à votre espace membre${openEnd}div${closeEnd}
+${open}div class="step"${close}📋 ${open}strong${close}Étape 3:${openEnd}strong${closeEnd} Suivez les instructions à l'écran${openEnd}div${closeEnd}
+${open}div class="step"${close}✅ ${open}strong${close}Étape 4:${openEnd}strong${closeEnd} Validez votre demande${openEnd}div${closeEnd}
+${open}div class="step"${close}📧 ${open}strong${close}Étape 5:${openEnd}strong${closeEnd} Attendez la confirmation par email${openEnd}div${closeEnd}
+${openEnd}div${closeEnd}
+${openEnd}body${closeEnd}
+${openEnd}html${closeEnd}`
     }
   }
 }
@@ -1458,9 +1608,8 @@ Chambre de Commerce de Nador
   margin: 0 auto 1rem;
 }
 
-.nav-icon i {
+.nav-icon .icon-emoji {
   font-size: 1.5rem;
-  color: white;
 }
 
 .nav-card h3 {
@@ -2277,71 +2426,60 @@ Chambre de Commerce de Nador
   }
 }
 
-/* Force Font Awesome icons to display */
-.fas, .far, .fab {
-  font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
-  font-weight: 900 !important;
-  display: inline-block !important;
+/* Styles pour les emojis */
+.icon-emoji {
+  display: inline-block;
+  font-size: 1.2em;
+  line-height: 1;
 }
 
-/* Specific fixes for solid icons */
-.fas {
-  font-family: "Font Awesome 6 Free" !important;
-  font-weight: 900 !important;
-  -webkit-font-feature-settings: normal !important;
-  font-feature-settings: normal !important;
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  font-size: 1.2rem;
 }
 
-.far {
-  font-family: "Font Awesome 6 Free" !important;
-  font-weight: 400 !important;
+.chevron {
+  transition: transform 0.3s ease;
 }
 
-.fab {
-  font-family: "Font Awesome 6 Brands" !important;
-  font-weight: 400 !important;
+.star-emoji {
+  font-size: 1rem;
+  margin-right: 0.1rem;
 }
 
-/* Force all FA icons to use proper fonts */
-[class*="fa-"]:before {
-  font-family: "Font Awesome 6 Free" !important;
-  font-weight: 900 !important;
+/* Styles pour les icônes dans les nav-icon */
+.nav-icon .icon-emoji {
+  font-size: 1.5rem;
 }
 
-.far[class*="fa-"]:before {
-  font-weight: 400 !important;
+/* Styles pour les icônes dans les support-icon */
+.support-icon .icon-emoji {
+  font-size: 2rem;
 }
 
-.fab[class*="fa-"]:before {
-  font-family: "Font Awesome 6 Brands" !important;
-  font-weight: 400 !important;
+/* Styles pour les icônes dans les guide-image */
+.guide-image .icon-emoji {
+  font-size: 2rem;
 }
 
-/* Fallback pour les icônes si Font Awesome ne se charge pas */
-i[class*="fa"]:not(:empty) {
-  font-family: inherit !important;
-  font-weight: normal !important;
-  font-size: 1.2em !important;
+/* Styles pour les icônes dans les resource-icon */
+.resource-icon-large .icon-emoji {
+  font-size: 1.5rem;
 }
 
-/* Style pour les icônes dans les nav-icon */
-.nav-icon i {
-  font-size: 1.5rem !important;
+/* Animation pour les emojis online */
+.online {
+  animation: pulse 2s infinite;
 }
 
-/* Style pour les icônes dans les support-icon */
-.support-icon i {
-  font-size: 2rem !important;
-}
-
-/* Style pour les icônes dans les guide-image */
-.guide-image i {
-  font-size: 2rem !important;
-}
-
-/* Style pour les icônes dans les resource-icon */
-.resource-icon-large i {
-  font-size: 1.5rem !important;
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
 }
 
 /* Responsive */

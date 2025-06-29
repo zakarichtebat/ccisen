@@ -57,10 +57,7 @@
               
              
               
-              <router-link to="/notifications" class="dropdown-item" @click="closeDropdown">
-                <i class="fas fa-bell"></i>
-                <span>Notifications</span>
-              </router-link>
+          
               
               <router-link to="/reclamations" class="dropdown-item" @click="closeDropdown">
                 <i class="fas fa-exclamation-triangle"></i>

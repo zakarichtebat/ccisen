@@ -143,6 +143,75 @@
                 {{ formatDate(reclamation.createdAt) }}
               </span>
             </div>
+
+            <!-- Progress Bar pour le statut -->
+            <div class="status-progress">
+              <div class="progress-bar">
+                <div
+                  class="progress-fill"
+                  :style="{ width: getProgressWidth(reclamation.statut) }"
+                  :class="reclamation.statut"
+                ></div>
+              </div>
+              <div class="progress-labels">
+                <span
+                  :class="{
+                    active: [
+                      'ouverte',
+                      'en_cours',
+                      'resolue',
+                      'fermee',
+                    ].includes(reclamation.statut),
+                  }"
+                  >Ouverte</span
+                >
+                <span
+                  :class="{
+                    active: ['en_cours', 'resolue', 'fermee'].includes(
+                      reclamation.statut
+                    ),
+                  }"
+                  >En cours</span
+                >
+                <span
+                  :class="{
+                    active: ['resolue', 'fermee'].includes(reclamation.statut),
+                  }"
+                  >Résolue</span
+                >
+                <span :class="{ active: reclamation.statut === 'fermee' }"
+                  >Fermée</span
+                >
+              </div>
+            </div>
+
+            <!-- Dernière mise à jour -->
+            <div v-if="reclamation.dateTraitement" class="last-update">
+              <i class="fas fa-clock"></i>
+              <span
+                >Dernière mise à jour:
+                {{ formatDate(reclamation.dateTraitement) }}</span
+              >
+            </div>
+          </div>
+
+          <!-- Actions rapides -->
+          <div class="card-actions">
+            <button
+              @click.stop="viewReclamationDetails(reclamation)"
+              class="btn-sm btn-outline"
+            >
+              <i class="fas fa-eye"></i>
+              Voir détails
+            </button>
+            <button
+              v-if="reclamation.statut === 'resolue'"
+              @click.stop="showSatisfactionModal(reclamation)"
+              class="btn-sm btn-success"
+            >
+              <i class="fas fa-star"></i>
+              Évaluer
+            </button>
           </div>
         </div>
       </div>
@@ -338,6 +407,68 @@
         </div>
       </div>
     </div>
+
+    <!-- Satisfaction Modal -->
+    <div
+      v-if="showSatisfactionModalFlag"
+      class="modal-overlay"
+      @click="closeSatisfactionModal"
+    >
+      <div class="modal-content satisfaction-modal" @click.stop>
+        <div class="modal-header">
+          <h2>Évaluer la réclamation</h2>
+          <button @click="closeSatisfactionModal" class="close-btn">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="satisfaction-content">
+            <h3>Comment évaluez-vous le traitement de votre réclamation ?</h3>
+            <p class="reclamation-ref">
+              Réclamation:
+              {{ selectedReclamationForSatisfaction?.numeroReclamation }}
+            </p>
+
+            <div class="rating-section">
+              <div class="stars-rating">
+                <button
+                  v-for="star in 5"
+                  :key="star"
+                  @click="satisfactionData.rating = star"
+                  :class="['star', { active: star <= satisfactionData.rating }]"
+                >
+                  <i class="fas fa-star"></i>
+                </button>
+              </div>
+              <p class="rating-text">
+                {{ getRatingText(satisfactionData.rating) }}
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label for="satisfaction-comment">Commentaire (optionnel)</label>
+              <textarea
+                id="satisfaction-comment"
+                v-model="satisfactionData.commentaire"
+                rows="4"
+                placeholder="Partagez votre expérience..."
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button @click="closeSatisfactionModal" class="btn-secondary">
+              Annuler
+            </button>
+            <button @click="submitSatisfaction" class="btn-primary">
+              <i class="fas fa-paper-plane"></i>
+              Envoyer l'évaluation
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -370,6 +501,13 @@ export default {
         description: "",
         typeReclamation: "",
         priorite: "normale",
+      },
+      // Données pour la modal de satisfaction
+      showSatisfactionModalFlag: false,
+      selectedReclamationForSatisfaction: null,
+      satisfactionData: {
+        rating: 0,
+        commentaire: "",
       },
     };
   },
@@ -501,6 +639,74 @@ export default {
 
     formatDateTime(date) {
       return new Date(date).toLocaleString("fr-FR");
+    },
+
+    // Nouvelles méthodes pour le suivi de traitement
+    getProgressWidth(statut) {
+      const progressMap = {
+        ouverte: "25%",
+        en_cours: "50%",
+        resolue: "75%",
+        fermee: "100%",
+      };
+      return progressMap[statut] || "0%";
+    },
+
+    viewReclamationDetails(reclamation) {
+      // Même fonction que viewReclamation mais avec un nom plus explicite
+      this.viewReclamation(reclamation);
+    },
+
+    showSatisfactionModal(reclamation) {
+      // Modal pour évaluer la satisfaction
+      this.selectedReclamationForSatisfaction = reclamation;
+      this.showSatisfactionModalFlag = true;
+    },
+
+    async submitSatisfaction() {
+      if (
+        !this.selectedReclamationForSatisfaction ||
+        !this.satisfactionData.rating
+      ) {
+        this.$toast?.error("Veuillez donner une note");
+        return;
+      }
+
+      try {
+        await apiService.addSatisfaction(
+          this.selectedReclamationForSatisfaction.id,
+          this.satisfactionData.rating,
+          this.satisfactionData.commentaire
+        );
+
+        this.$toast?.success("Évaluation envoyée avec succès");
+        this.closeSatisfactionModal();
+        this.loadReclamations();
+      } catch (error) {
+        console.error("Erreur lors de l'envoi de l'évaluation:", error);
+        this.$toast?.error("Erreur lors de l'envoi de l'évaluation");
+      }
+    },
+
+    closeSatisfactionModal() {
+      this.showSatisfactionModalFlag = false;
+      this.selectedReclamationForSatisfaction = null;
+      this.satisfactionData = {
+        rating: 0,
+        commentaire: "",
+      };
+    },
+
+    getRatingText(rating) {
+      const texts = {
+        0: "Sélectionnez une note",
+        1: "Très insatisfait",
+        2: "Insatisfait",
+        3: "Neutre",
+        4: "Satisfait",
+        5: "Très satisfait",
+      };
+      return texts[rating] || "";
     },
   },
 };
@@ -1048,6 +1254,168 @@ export default {
 
 .status-change i {
   color: #6b7280;
+}
+
+/* Progress Bar Styles */
+.status-progress {
+  margin-top: 1rem;
+}
+
+.progress-bar {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+  border-radius: 4px;
+}
+
+.progress-fill.ouverte {
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+.progress-fill.en_cours {
+  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+}
+
+.progress-fill.resolue {
+  background: linear-gradient(90deg, #10b981, #047857);
+}
+
+.progress-fill.fermee {
+  background: linear-gradient(90deg, #10b981, #047857);
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.progress-labels span.active {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+/* Last Update Styles */
+.last-update {
+  margin-top: 0.75rem;
+  padding: 0.5rem;
+  background: #f3f4f6;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.last-update i {
+  color: #9ca3af;
+}
+
+/* Card Actions Styles */
+.card-actions {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-outline {
+  background: transparent;
+  color: #4f46e5;
+  border: 1px solid #4f46e5;
+}
+
+.btn-outline:hover {
+  background: #4f46e5;
+  color: white;
+}
+
+.btn-success {
+  background: #10b981;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #047857;
+}
+
+/* Satisfaction Modal Styles */
+.satisfaction-modal {
+  max-width: 500px;
+}
+
+.satisfaction-content {
+  text-align: center;
+}
+
+.satisfaction-content h3 {
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.reclamation-ref {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-bottom: 2rem;
+}
+
+.rating-section {
+  margin: 2rem 0;
+}
+
+.stars-rating {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.star {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #d1d5db;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.star:hover,
+.star.active {
+  color: #fbbf24;
+}
+
+.rating-text {
+  font-weight: 600;
+  color: #4f46e5;
+  margin: 0;
+}
+
+.satisfaction-modal .form-group {
+  text-align: left;
+  margin-top: 1.5rem;
 }
 
 @media (max-width: 768px) {
