@@ -159,10 +159,10 @@
             <div class="support-icon">
               <span class="icon-emoji">💬</span>
             </div>
-            <h3>Chat en direct</h3>
-            <p>Obtenez une aide immédiate via notre chat</p>
+            <h3>Assistant Intelligent</h3>
+            <p>Chatbot IA pour entrepreneurs - Réponses instantanées</p>
             <button class="support-button primary" @click="openChat">
-              Démarrer le chat
+              🤖 Parler à l'Assistant
             </button>
             <div class="availability">
               <span class="icon-emoji online">🟢</span>
@@ -1379,56 +1379,337 @@ Chambre de Commerce de Nador
       return `<!DOCTYPE html${close}
 ${open}html${close}
 ${open}head${close}
-${open}title${close}Chat Support CCISN${openEnd}title${closeEnd}
+${open}title${close}ChatBot CCISN - Assistant Entrepreneur${openEnd}title${closeEnd}
 ${open}style${close}
-body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-.chat-header { background: #667eea; color: white; padding: 15px; }
-.chat-body { padding: 20px; height: 400px; overflow-y: auto; background: #f8f9fa; }
-.message { margin: 10px 0; padding: 10px; background: white; border-radius: 10px; }
-.support { background: #e3f2fd; }
-.chat-input { padding: 15px; background: white; border-top: 1px solid #eee; }
-input { width: 70%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
-button { width: 25%; padding: 10px; background: #667eea; color: white; border: none; border-radius: 5px; margin-left: 5px; }
+body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; background: #f0f2f5; }
+.chat-container { display: flex; flex-direction: column; height: 100vh; }
+.chat-header { 
+  background: linear-gradient(135deg, #667eea, #764ba2); 
+  color: white; 
+  padding: 20px; 
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.chat-header h3 { margin: 0; font-size: 1.5em; }
+.chat-header p { margin: 5px 0 0; opacity: 0.9; }
+.chat-body { 
+  flex: 1; 
+  padding: 20px; 
+  overflow-y: auto; 
+  background: #f0f2f5;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.message { 
+  max-width: 80%; 
+  padding: 12px 16px; 
+  border-radius: 18px; 
+  margin: 5px 0;
+  word-wrap: break-word;
+  line-height: 1.4;
+}
+.message.user { 
+  background: #667eea; 
+  color: white; 
+  align-self: flex-end;
+  border-bottom-right-radius: 6px;
+}
+.message.bot { 
+  background: white; 
+  color: #333; 
+  align-self: flex-start;
+  border: 1px solid #e1e5e9;
+  border-bottom-left-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.typing-indicator {
+  display: none;
+  align-self: flex-start;
+  background: white;
+  padding: 12px 16px;
+  border-radius: 18px;
+  border-bottom-left-radius: 6px;
+  border: 1px solid #e1e5e9;
+}
+.typing-dots { display: flex; gap: 4px; }
+.typing-dots span {
+  width: 8px; height: 8px; background: #667eea; border-radius: 50%;
+  animation: typing 1.4s infinite ease-in-out;
+}
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typing {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-10px); }
+}
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+.suggestion-btn {
+  background: #f8f9fa;
+  border: 1px solid #e1e5e9;
+  padding: 8px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: all 0.3s;
+}
+.suggestion-btn:hover {
+  background: #667eea;
+  color: white;
+}
+.chat-input-container { 
+  padding: 20px; 
+  background: white; 
+  border-top: 1px solid #e1e5e9;
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+.chat-input { 
+  flex: 1; 
+  padding: 12px 16px; 
+  border: 1px solid #e1e5e9; 
+  border-radius: 25px; 
+  resize: none;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  max-height: 100px;
+}
+.chat-input:focus { border-color: #667eea; }
+.send-btn { 
+  background: #667eea; 
+  color: white; 
+  border: none; 
+  padding: 12px 20px; 
+  border-radius: 25px; 
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+.send-btn:hover { background: #5a6fd8; transform: translateY(-1px); }
+.send-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
 ${openEnd}style${closeEnd}
 ${openEnd}head${closeEnd}
 ${open}body${close}
+${open}div class="chat-container"${close}
 ${open}div class="chat-header"${close}
-${open}h3${close}💬 Support CCISN${openEnd}h3${closeEnd}
-${open}p${close}Agent en ligne - Réponse rapide${openEnd}p${closeEnd}
+${open}h3${close}🤖 Assistant CCISN${openEnd}h3${closeEnd}
+${open}p${close}Votre guide personnel pour l'entrepreneuriat${openEnd}p${closeEnd}
 ${openEnd}div${closeEnd}
 ${open}div class="chat-body" id="chatBody"${close}
-${open}div class="message support"${close}
-${open}strong${close}Agent Support:${openEnd}strong${closeEnd}${open}br${close}
-Bonjour ! Comment puis-je vous aider aujourd'hui ? 😊
+${open}div class="message bot"${close}
+🎉 Bonjour et bienvenue ! Je suis votre assistant virtuel CCISN.${open}br${close}${open}br${close}
+Je suis là pour vous aider avec :${open}br${close}
+• 📋 Démarches d'adhésion${open}br${close}
+• 📄 Demandes de certificats${open}br${close}
+• 💼 Conseils entrepreneuriat${open}br${close}
+• 🌍 Services export${open}br${close}
+• 📞 Prise de rendez-vous${open}br${close}${open}br${close}
+Comment puis-je vous aider aujourd'hui ?
+${openEnd}div${closeEnd}
+${open}div class="suggestions" id="suggestions"${close}
+${open}div class="suggestion-btn" onclick="sendSuggestion('Comment devenir membre ?')"${close}💡 Comment devenir membre ?${openEnd}div${closeEnd}
+${open}div class="suggestion-btn" onclick="sendSuggestion('Demander un certificat d\\'origine')"${close}📄 Certificat d'origine${openEnd}div${closeEnd}
+${open}div class="suggestion-btn" onclick="sendSuggestion('Créer mon entreprise')"${close}🚀 Créer mon entreprise${openEnd}div${closeEnd}
+${open}div class="suggestion-btn" onclick="sendSuggestion('Services export')"${close}🌍 Services export${openEnd}div${closeEnd}
+${openEnd}div${closeEnd}
+${open}div class="typing-indicator" id="typingIndicator"${close}
+${open}div class="typing-dots"${close}
+${open}span${close}${openEnd}span${closeEnd}${open}span${close}${openEnd}span${closeEnd}${open}span${close}${openEnd}span${closeEnd}
 ${openEnd}div${closeEnd}
 ${openEnd}div${closeEnd}
-${open}div class="chat-input"${close}
-${open}input type="text" id="messageInput" placeholder="Tapez votre message..."${close}
-${open}button onclick="sendMessage()"${close}Envoyer${openEnd}button${closeEnd}
+${openEnd}div${closeEnd}
+${open}div class="chat-input-container"${close}
+${open}textarea class="chat-input" id="messageInput" placeholder="Tapez votre question..." rows="1"${close}${openEnd}textarea${closeEnd}
+${open}button class="send-btn" id="sendBtn" onclick="sendMessage()"${close}Envoyer${openEnd}button${closeEnd}
+${openEnd}div${closeEnd}
 ${openEnd}div${closeEnd}
 ${open}script${close}
+// Base de connaissances du chatbot
+const knowledgeBase = {
+  'adhesion|membre|inscription|devenir': {
+    response: "🎯 Pour devenir membre de la CCISN :\\n\\n1️⃣ Remplissez le formulaire d'adhésion en ligne\\n2️⃣ Fournissez vos documents (RC, Patente, CIN)\\n3️⃣ Payez la cotisation annuelle (500 DH)\\n4️⃣ Validation sous 48h\\n\\nℹ️ Avantages membres :\\n• Tarifs préférentiels sur tous les services\\n• Accompagnement personnalisé\\n• Accès aux formations gratuites\\n• Réseau d'affaires",
+    suggestions: ['Voir les documents requis', 'Tarifs des services', 'Prendre rendez-vous']
+  },
+  'certificat|origine|export|douane': {
+    response: "📄 Certificat d'origine - Procédure :\\n\\n1️⃣ Connectez-vous à votre espace membre\\n2️⃣ Menu 'Services' > 'Certificats'\\n3️⃣ Remplissez le formulaire en ligne\\n4️⃣ Joignez facture + liste de colisage\\n5️⃣ Paiement en ligne (80 DH)\\n6️⃣ Récupération sous 24h-48h\\n\\n⏰ Délai d'urgence : 4h (150 DH)\\n📍 Récupération : Siège CCISN ou envoi postal",
+    suggestions: ['Documents requis', 'Tarifs certificats', 'Formulaire en ligne']
+  },
+  'entreprise|création|business|startup': {
+    response: "🚀 Créer votre entreprise - Guide complet :\\n\\n📋 Étapes essentielles :\\n1️⃣ Étude de marché et business plan\\n2️⃣ Choix de la forme juridique (SARL, SA, Auto-entrepreneur)\\n3️⃣ Dépôt des statuts au tribunal\\n4️⃣ Inscription au registre de commerce\\n5️⃣ Obtention de la patente\\n6️⃣ Ouverture compte bancaire\\n\\n💡 La CCISN vous accompagne à chaque étape !",
+    suggestions: ['Types d\\'entreprises', 'Accompagnement CCISN', 'Formations entrepreneur']
+  },
+  'export|international|etranger|marche': {
+    response: "🌍 Services Export CCISN :\\n\\n📊 Nos accompagnements :\\n• Étude de marchés internationaux\\n• Prospection commerciale\\n• Mise en relation d'affaires\\n• Formation aux techniques export\\n• Carnets ATA pour salons\\n• Certificats d'origine\\n\\n🎯 Marchés prioritaires : Europe, Afrique, Moyen-Orient\\n📈 +150 entreprises accompagnées/an",
+    suggestions: ['Carnets ATA', 'Prospection commerciale', 'Formations export']
+  },
+  'rendez-vous|rdv|rencontrer|consultation': {
+    response: "📅 Prendre rendez-vous :\\n\\n🕒 Horaires d'accueil :\\n• Lundi - Vendredi : 8h00 - 17h00\\n• Samedi : 8h00 - 12h00\\n\\n📞 Réservation :\\n• En ligne : www.ccisn.ma/rdv\\n• Téléphone : +212 536 12 34 56\\n• Email : contact@ccisn.ma\\n\\n💼 Types de consultations :\\n• Conseil juridique\\n• Accompagnement création\\n• Services export",
+    suggestions: ['Réserver en ligne', 'Types de consultations', 'Nous contacter']
+  },
+  'prix|tarif|cout|frais': {
+    response: "💰 Grille Tarifaire CCISN 2024 :\\n\\n📄 Certificats :\\n• Certificat d'origine : 80 DH (urgent: 150 DH)\\n• Attestation domiciliation : 200 DH\\n• Carnet ATA : 300 DH + caution\\n\\n👥 Adhésion :\\n• Personne physique : 500 DH/an\\n• Personne morale : 800 DH/an\\n\\n🎓 Formations : 50% de réduction pour les membres",
+    suggestions: ['Voir tous les tarifs', 'Devenir membre', 'Formations disponibles']
+  },
+  'formation|cours|apprentissage|competence': {
+    response: "🎓 Formations CCISN :\\n\\n📚 Catalogue 2024 :\\n• Création d'entreprise (3 jours)\\n• Marketing digital (2 jours)\\n• Techniques de vente (2 jours)\\n• Comptabilité de base (4 jours)\\n• Export-Import (3 jours)\\n• Leadership (2 jours)\\n\\n💡 Avantages membres : -50% sur toutes les formations\\n📅 Sessions mensuelles",
+    suggestions: ['Programme formations', 'Inscriptions', 'Calendrier 2024']
+  }
+};
+
+// Suggestions par défaut
+const defaultSuggestions = [
+  'Comment devenir membre ?',
+  'Demander un certificat',
+  'Créer mon entreprise',
+  'Services export',
+  'Prendre rendez-vous',
+  'Voir les tarifs'
+];
+
+let isTyping = false;
+
 function sendMessage() {
-const input = document.getElementById("messageInput");
-const chatBody = document.getElementById("chatBody");
-if (input.value.trim()) {
-const userMsg = document.createElement("div");
-userMsg.className = "message";
-userMsg.innerHTML = "${open}strong${close}Vous:${openEnd}strong${closeEnd}${open}br${close}" + input.value;
-chatBody.appendChild(userMsg);
-setTimeout(() => {
-const botMsg = document.createElement("div");
-botMsg.className = "message support";
-botMsg.innerHTML = "${open}strong${close}Agent Support:${openEnd}strong${closeEnd}${open}br${close}Merci pour votre message. Un de nos agents va vous répondre sous peu.";
-chatBody.appendChild(botMsg);
-chatBody.scrollTop = chatBody.scrollHeight;
-}, 1000);
-input.value = "";
-chatBody.scrollTop = chatBody.scrollHeight;
+  const input = document.getElementById('messageInput');
+  const message = input.value.trim();
+  
+  if (message && !isTyping) {
+    addUserMessage(message);
+    input.value = '';
+    setTimeout(() => processMessage(message), 500);
+  }
 }
+
+function sendSuggestion(suggestion) {
+  const input = document.getElementById('messageInput');
+  input.value = suggestion;
+  sendMessage();
 }
-document.getElementById("messageInput").addEventListener("keypress", function(e) {
-if (e.key === "Enter") { sendMessage(); }
+
+function addUserMessage(message) {
+  const chatBody = document.getElementById('chatBody');
+  const messageDiv = document.createElement('div');
+  messageDiv.className = 'message user';
+  messageDiv.textContent = message;
+  chatBody.appendChild(messageDiv);
+  scrollToBottom();
+}
+
+function addBotMessage(message, suggestions = []) {
+  const chatBody = document.getElementById('chatBody');
+  
+  // Supprimer l'indicateur de frappe
+  const typingIndicator = document.getElementById('typingIndicator');
+  typingIndicator.style.display = 'none';
+  
+  // Ajouter le message du bot
+  const messageDiv = document.createElement('div');
+  messageDiv.className = 'message bot';
+  messageDiv.innerHTML = message.replace(/\\n/g, '${open}br${close}');
+  chatBody.appendChild(messageDiv);
+  
+  // Ajouter les suggestions
+  if (suggestions.length > 0) {
+    addSuggestions(suggestions);
+  }
+  
+  scrollToBottom();
+  isTyping = false;
+}
+
+function addSuggestions(suggestions) {
+  const chatBody = document.getElementById('chatBody');
+  const suggestionsDiv = document.createElement('div');
+  suggestionsDiv.className = 'suggestions';
+  
+  suggestions.forEach(suggestion => {
+    const btn = document.createElement('div');
+    btn.className = 'suggestion-btn';
+    btn.textContent = suggestion;
+    btn.onclick = () => sendSuggestion(suggestion);
+    suggestionsDiv.appendChild(btn);
+  });
+  
+  chatBody.appendChild(suggestionsDiv);
+}
+
+function showTyping() {
+  const typingIndicator = document.getElementById('typingIndicator');
+  typingIndicator.style.display = 'flex';
+  scrollToBottom();
+}
+
+function processMessage(message) {
+  isTyping = true;
+  showTyping();
+  
+  const lowerMessage = message.toLowerCase();
+  let response = null;
+  let suggestions = [];
+  
+  // Recherche dans la base de connaissances
+  for (const [keywords, data] of Object.entries(knowledgeBase)) {
+    const keywordList = keywords.split('|');
+    if (keywordList.some(keyword => lowerMessage.includes(keyword))) {
+      response = data.response;
+      suggestions = data.suggestions;
+      break;
+    }
+  }
+  
+  // Réponse par défaut si aucune correspondance
+  if (!response) {
+    if (lowerMessage.includes('merci') || lowerMessage.includes('thanks')) {
+      response = "😊 De rien ! Je suis là pour vous aider.\\n\\nN'hésitez pas si vous avez d'autres questions !";
+      suggestions = defaultSuggestions.slice(0, 3);
+    } else if (lowerMessage.includes('bonjour') || lowerMessage.includes('salut')) {
+      response = "👋 Bonjour ! Ravi de vous revoir.\\n\\nComment puis-je vous aider aujourd'hui ?";
+      suggestions = defaultSuggestions.slice(0, 4);
+    } else {
+      response = "🤔 Je ne suis pas sûr de comprendre votre question.\\n\\nPouvez-vous la reformuler ou choisir un sujet ci-dessous ?";
+      suggestions = defaultSuggestions;
+    }
+  }
+  
+  // Délai de réponse réaliste
+  setTimeout(() => {
+    addBotMessage(response, suggestions);
+  }, 1500 + Math.random() * 1000);
+}
+
+function scrollToBottom() {
+  const chatBody = document.getElementById('chatBody');
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+// Auto-resize textarea
+const textarea = document.getElementById('messageInput');
+textarea.addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 100) + 'px';
 });
+
+// Enter pour envoyer (Shift+Enter pour nouvelle ligne)
+textarea.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+// Désactiver le bouton pendant la frappe
+function updateSendButton() {
+  const sendBtn = document.getElementById('sendBtn');
+  sendBtn.disabled = isTyping;
+}
+
+setInterval(updateSendButton, 100);
 ${openEnd}script${closeEnd}
 ${openEnd}body${closeEnd}
 ${openEnd}html${closeEnd}`
